@@ -1,4 +1,4 @@
-package app.extr.data.json
+package app.extr.utils.helpers.json
 
 import android.content.Context
 import app.extr.data.types.MoneyType

@@ -7,13 +7,13 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.extr.data.daos.MoneyTypeDao
-import app.extr.data.json.JsonParsers
+import app.extr.utils.helpers.json.JsonParsers
 import app.extr.data.types.MoneyType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [MoneyType::class], version = 3)
+@Database(entities = [MoneyType::class], version = 4)
 //@TypeConverters(Converters::class)
 abstract class ExTrDatabase : RoomDatabase() {
 

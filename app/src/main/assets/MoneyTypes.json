@@ -2,13 +2,13 @@
   {
     "id": 1,
     "name": "Card",
-    "colorName": "Blue",
-    "iconName": "card_icon"
+    "iconId": 1,
+    "colorId": 2
   },
   {
     "id": 2,
     "name": "Cash",
-    "colorName": "Green",
-    "iconName": "card_icon"
+    "iconId": 1,
+    "colorId": 2
   }
 ]

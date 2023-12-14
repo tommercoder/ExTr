@@ -3,8 +3,8 @@ package app.extr
 import android.app.Application
 import app.extr.data.AppContainer
 import app.extr.data.AppContainerImpl
-import app.extr.ui.theme.helpers.ResourceProvider
-import app.extr.ui.theme.helpers.ResourceProviderImpl
+import app.extr.utils.helpers.ResourceProvider
+import app.extr.utils.helpers.ResourceProviderImpl
 
 class ExTrApplication : Application() {
     companion object {

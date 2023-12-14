@@ -1,12 +1,11 @@
 package app.extr
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -15,7 +14,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -26,8 +24,12 @@ import app.extr.ui.theme.ExTrTheme
 import app.extr.ui.theme.viewmodels.MoneyTypeViewModel
 import app.extr.ui.theme.viewmodels.ViewModelsProvider
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import app.extr.utils.helpers.Res
+import app.extr.utils.helpers.resproviders.MoneyTypeRes
+
 //import app.extr.data.types.IconFromId
 
 
@@ -80,11 +82,24 @@ fun ExTrApp() {
             ) {
                 // Iterate over moneyTypes and create a menu item for each
                 moneytypes.value.forEach { moneyType ->
+
                     DropdownMenuItem(
                         onClick = {
                             expanded = false
                         },
                         text = { Text(moneyType.name) },
+                        leadingIcon = {
+                            Icon(
+                                painterResource(
+                                    id = MoneyTypeRes().getAttributesById(
+                                        moneyType.iconId
+                                    ).icon
+                                ), contentDescription = null
+                            )
+                        },
+                        modifier = Modifier.background(MoneyTypeRes().getAttributesById(moneyType.iconId).color)
+                        )
+                }
 //                        leadingIcon = {Icon(
 //                            painterResource(LocalContext.current.resources.getIdentifier(
 //                            moneyType.iconName, "drawable", LocalContext.current.packageName)),
@@ -95,22 +110,22 @@ fun ExTrApp() {
 //                                contentDescription = null
 //                            )
 //                        }
-                        leadingIcon = {
-                            Icon(
-                                painterResource(
-                                    id = ExTrApplication.resourceProvider.getIconByname(
-                                        moneyType.iconName
-                                    )
-                                ),
-                                contentDescription = null
-                            )
-                        }
-                    )
-                }
+//                        leadingIcon = {
+//                            Icon(
+//                                painterResource(
+//                                    id = ExTrApplication.resourceProvider.getIconByname(
+//                                        moneyType.iconName
+//                                    )
+//                                ),
+//                                contentDescription = null
+//                            )
+//                        }
+
             }
         }
     }
 }
+
 
 @Preview
 @Composable
