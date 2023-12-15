@@ -12,6 +12,6 @@ interface CurrencyDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllFromJson(items: List<Currency>)
 
-    @Query("SELECT * FROM money_types")
-    suspend fun getAll() : List<MoneyType>
+    @Query("SELECT * FROM currencies")
+    suspend fun getAll() : List<Currency>
 }

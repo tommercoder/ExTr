@@ -24,11 +24,8 @@ import app.extr.ui.theme.ExTrTheme
 import app.extr.ui.theme.viewmodels.MoneyTypeViewModel
 import app.extr.ui.theme.viewmodels.ViewModelsProvider
 import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import app.extr.utils.helpers.Res
-import app.extr.utils.helpers.resproviders.MoneyTypeRes
+import app.extr.utils.helpers.resproviders.MoneyTypesRes
 
 //import app.extr.data.types.IconFromId
 
@@ -91,36 +88,13 @@ fun ExTrApp() {
                         leadingIcon = {
                             Icon(
                                 painterResource(
-                                    id = MoneyTypeRes().getAttributesById(
-                                        moneyType.iconId
-                                    ).icon
+                                    id = MoneyTypesRes.getRes(moneyType.iconId).icon
                                 ), contentDescription = null
                             )
                         },
-                        modifier = Modifier.background(MoneyTypeRes().getAttributesById(moneyType.iconId).color)
+                        modifier = Modifier.background(MoneyTypesRes.getRes(moneyType.iconId).color)
                         )
                 }
-//                        leadingIcon = {Icon(
-//                            painterResource(LocalContext.current.resources.getIdentifier(
-//                            moneyType.iconName, "drawable", LocalContext.current.packageName)),
-//                            contentDescription = null)}
-//                        leadingIcon = {
-//                            Icon(
-//                                painterResource(id = IconFromId.asRes(moneyType.iconId)),
-//                                contentDescription = null
-//                            )
-//                        }
-//                        leadingIcon = {
-//                            Icon(
-//                                painterResource(
-//                                    id = ExTrApplication.resourceProvider.getIconByname(
-//                                        moneyType.iconName
-//                                    )
-//                                ),
-//                                contentDescription = null
-//                            )
-//                        }
-
             }
         }
     }

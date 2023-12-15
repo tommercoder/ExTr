@@ -3,12 +3,12 @@
     "id": 1,
     "shortName": "USD",
     "fullName": "Dollar",
-    "iconName": "card_icon"
+    "iconId": 1
   },
   {
     "id": 2,
     "shortName": "UAH",
     "fullName": "Hryvnia",
-    "iconName": "card_icon"
+    "iconId": 2
   }
 ]
