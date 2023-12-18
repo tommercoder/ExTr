@@ -21,10 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.extr.ui.theme.ExTrTheme
-import app.extr.ui.theme.viewmodels.MoneyTypeViewModel
+import app.extr.ui.theme.viewmodels.MoneyTypesViewModel
 import app.extr.ui.theme.viewmodels.ViewModelsProvider
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.findNavController
 import app.extr.utils.helpers.resproviders.MoneyTypesRes
 
 //import app.extr.data.types.IconFromId
@@ -41,8 +43,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     ExTrApp()
-
-
                 }
             }
         }
@@ -51,58 +51,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun ExTrApp() {
-
-    //navcontroller here?
-    //top bar
-    //bottom bar
-    Scaffold(
-        topBar = {
-            Text(text = "test")
-        },
-        bottomBar = {
-            Text(text = "test")
-        }
-    ) { innerPadding ->
-        val temp = innerPadding
-
-        val viewmodeltest: MoneyTypeViewModel = viewModel(factory = ViewModelsProvider.Factory)
-        val moneytypes = viewmodeltest.moneyTypes.observeAsState(initial = emptyList())
-        var expanded by remember { mutableStateOf(true) }
-
-        Box {
-            Text("Choose Money Type", Modifier.clickable { expanded = true })
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                // Iterate over moneyTypes and create a menu item for each
-                moneytypes.value.forEach { moneyType ->
-
-                    DropdownMenuItem(
-                        onClick = {
-                            expanded = false
-                        },
-                        text = { Text(moneyType.name) },
-                        leadingIcon = {
-                            Icon(
-                                painterResource(
-                                    id = MoneyTypesRes.getRes(moneyType.iconId).icon
-                                ), contentDescription = null
-                            )
-                        },
-                        modifier = Modifier.background(MoneyTypesRes.getRes(moneyType.iconId).color)
-                        )
-                }
-            }
-        }
-    }
-}
-
-
-@Preview
-@Composable
-fun preview() {
-    ExTrApp()
-}

@@ -8,19 +8,22 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.extr.data.daos.CurrencyDao
 import app.extr.data.daos.MoneyTypeDao
+import app.extr.data.daos.UserDao
 import app.extr.data.types.Currency
 import app.extr.utils.helpers.json.JsonParsers
 import app.extr.data.types.MoneyType
+import app.extr.data.types.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [MoneyType::class, Currency::class], version = 6)
+@Database(entities = [MoneyType::class, Currency::class, User::class], version = 8)
 //@TypeConverters(Converters::class)
 abstract class ExTrDatabase : RoomDatabase() {
 
     abstract fun moneyTypeDao(): MoneyTypeDao
-    abstract fun currencyDao() : CurrencyDao
+    abstract fun currencyDao(): CurrencyDao
+    abstract fun userDao(): UserDao
 
     companion object {
         @Volatile //thread safety

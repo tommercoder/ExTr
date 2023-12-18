@@ -9,5 +9,5 @@ data class Currency(
     val id : Int,
     val shortName : String,
     val fullName : String,
-    val iconId : Int
+    val symbol : String
 )
