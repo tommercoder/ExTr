@@ -13,6 +13,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
@@ -64,7 +65,13 @@ fun ExTrTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = ExTrTypography,
         content = content
     )
+}
+
+object AppPadding {
+    val Small = 8.dp
+    val Medium = 16.dp
+    val Large = 24.dp
 }

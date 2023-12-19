@@ -17,7 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [MoneyType::class, Currency::class, User::class], version = 8)
+@Database(entities = [MoneyType::class, Currency::class, User::class], version = 1, exportSchema = false)
 //@TypeConverters(Converters::class)
 abstract class ExTrDatabase : RoomDatabase() {
 
@@ -58,6 +58,14 @@ abstract class ExTrDatabase : RoomDatabase() {
             curencies?.let {
                 database?.currencyDao()?.insertAllFromJson(it)
             }
+
+            //test
+            val user : User = User(0, "Test", true);
+            val user2 : User = User(0, "Test2", false);
+            val user3 : User = User(0, "Test3", false);
+            database?.userDao()?.insert(user)
+            database?.userDao()?.insert(user2)
+            database?.userDao()?.insert(user3)
         }
     }
 }

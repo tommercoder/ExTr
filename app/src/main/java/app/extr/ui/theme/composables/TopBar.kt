@@ -89,7 +89,7 @@ fun TopBar(
                             selectedItem?.iconId?.let { MoneyTypesRes.getRes(it).icon }
 
                         Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
+                            imageVector = Icons.Filled.ArrowDropDown,
                             contentDescription = "Dropdown Arrow"
                         )
                         Spacer(modifier = Modifier.width(8.dp))

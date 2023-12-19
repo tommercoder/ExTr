@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">ExTr</string>
     <string name="money_type_error">Failed to load money types</string>
+
+    <!--PROFILE-->
+    <string name="no_users_added_yet">NO USERS ADDED YET</string>
+    <string name="label_users">USERS</string>
+
 </resources>

@@ -20,6 +20,7 @@ import app.extr.utils.helpers.navigateSingleTopTo
 fun BottomBar(navController: NavHostController) {
     NavigationBar(
         //containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp) // fix color to match back
+
     ) {
         val navBackStackEntry =
             navController.currentBackStackEntryAsState().value?.destination?.route

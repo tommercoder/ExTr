@@ -1,5 +1,6 @@
 package app.extr
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +30,7 @@ import app.extr.ui.theme.viewmodels.ViewModelsProvider
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import app.extr.ui.theme.viewmodels.UsersViewModel
 
@@ -81,8 +83,9 @@ fun ExTrApp(
                 val viewModel: UsersViewModel = viewModel(factory = ViewModelsProvider.Factory)
                 val uiState by viewModel.uiState.collectAsState()
                 ProfileScreen(
+                    modifier = Modifier.fillMaxSize(),
                     uiState = uiState,
-                    modifier = Modifier.fillMaxSize()
+                    onEvent = viewModel::onEvent
                 )
             }
         }
