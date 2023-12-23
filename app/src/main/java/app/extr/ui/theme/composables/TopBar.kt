@@ -33,96 +33,104 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import app.extr.R
+import app.extr.data.types.CurrencyLastSelected
 import app.extr.data.types.MoneyType
+import app.extr.data.types.UserWithCurrencies
 import app.extr.ui.theme.composables.reusablecomponents.ReusableDropdownMenu
 import app.extr.ui.theme.mappers.toDropdownItem
 import app.extr.ui.theme.viewmodels.MoneyTypeUiState
+import app.extr.utils.helpers.UiState
 import app.extr.utils.helpers.resproviders.MoneyTypesRes
 import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
-    uiState: MoneyTypeUiState,
+    uiState: UiState<List<CurrencyLastSelected>>,
     onItemSelected: (MoneyType) -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
     isAddButtonVisible: Boolean
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    val selectedItem by remember(uiState.list) {
-        mutableStateOf(uiState.list.firstOrNull())
-    }
 
-    LargeTopAppBar(
-        title = {},
-        scrollBehavior = scrollBehavior,
-        navigationIcon = {
-            if (isAddButtonVisible) {
-                IconButton(onClick = {  }) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Navigation icon"
-                    )
-                }
+    when (uiState) {
+        is UiState.Loading -> {
+//            CircularProgressIndicator(
+//                strokeWidth = 2.dp,
+//                modifier = Modifier.size(16.dp)
+//            )
+        }
+
+        is UiState.Success -> {
+            var expanded by remember { mutableStateOf(false) }
+            val selectedItem by remember(uiState.data) {
+                mutableStateOf(uiState.data.firstOrNull { it.lastSelected })
             }
-        },
-        actions = {
-            Box(
-                modifier = Modifier
-                    .clickable { expanded = true }
-                    .clip(MaterialTheme.shapes.medium)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(16.dp)
-                ) {
-                    if (uiState.isLoading) {
-                        CircularProgressIndicator(
-                            strokeWidth = 2.dp,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    } else {
-                        val selectedItemText = selectedItem?.name
-                        //todo: replace with symbol
-                        val selectedItemIcon =
-                            selectedItem?.iconId?.let { MoneyTypesRes.getRes(it).icon }
 
-                        Icon(
-                            imageVector = Icons.Filled.ArrowDropDown,
-                            contentDescription = "Dropdown Arrow"
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        when {
-                            selectedItemText != null -> Text(text = selectedItemText)
-                            else -> {}
+            LargeTopAppBar(
+                title = {},
+                scrollBehavior = scrollBehavior,
+                navigationIcon = {
+                    if (isAddButtonVisible) {
+                        IconButton(onClick = { }) {
+                            Icon(
+                                imageVector = Icons.Filled.Add,
+                                contentDescription = "Navigation icon"
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    Box(
+                        modifier = Modifier
+                            .clickable { expanded = true }
+                            .clip(MaterialTheme.shapes.medium)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(16.dp)
+                        ) {
+
+                            val selectedItemText = selectedItem?.currency?.fullName
+                            //todo: replace with symbol
+                            val selectedItemSymbol = selectedItem?.currency?.symbol
+
+                            Icon(
+                                imageVector = Icons.Filled.ArrowDropDown,
+                                contentDescription = "Dropdown Arrow"
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            if(selectedItemText != null && selectedItemSymbol != null){
+                                Text(text = selectedItemSymbol + selectedItemText)
+                            }
+                            else {//error
+                             }
+                        }
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        uiState.data.forEach {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        it.currency.fullName,
+                                        style = MaterialTheme.typography.labelMedium
+                                    )
+                                },
+                                onClick = { //todo
+                                     },
+
+                            )
                         }
                     }
                 }
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                uiState.list.forEach { it ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                it.name,
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                        },
-                        onClick = { onItemSelected(it) },
-                        leadingIcon = {
-                            Icon(
-                                painterResource(id = MoneyTypesRes.getRes(it.iconId).icon),
-                                contentDescription = null
-                            )
-                        },
-                    )
-                }
-            }
+            )
         }
-    )
+
+        is UiState.Error -> {}
+    }
+
 }

@@ -5,8 +5,10 @@ import app.extr.data.repositories.CurrenciesRepository
 import app.extr.data.repositories.CurrenciesRepositoryImpl
 import app.extr.data.repositories.MoneyTypeRepository
 import app.extr.data.repositories.MoneyTypeRepositoryImpl
-import app.extr.data.repositories.UsersRepository
-import app.extr.data.repositories.UsersRepositoryImpl
+import app.extr.data.repositories.UserCurrenciesRepository
+import app.extr.data.repositories.UserCurrenciesRepositoryImpl
+import app.extr.data.repositories.UserRepository
+import app.extr.data.repositories.UserRepositoryImpl
 import app.extr.data.types.MoneyType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +16,8 @@ import kotlinx.coroutines.flow.Flow
 interface AppContainer {
     val moneyTypeRepository: MoneyTypeRepository
     val currenciesRepository: CurrenciesRepository
-    val usersRepository: UsersRepository
+    val UserRepository: UserRepository
+    val userCurrenciesRepository: UserCurrenciesRepository
 }
 
 class AppContainerImpl(private val context: Context) : AppContainer {
@@ -27,7 +30,11 @@ class AppContainerImpl(private val context: Context) : AppContainer {
         CurrenciesRepositoryImpl(ExTrDatabase.getDatabase(context).currencyDao())
     }
 
-    override val usersRepository: UsersRepository by lazy {
-        UsersRepositoryImpl(ExTrDatabase.getDatabase(context).userDao())
+    override val UserRepository: UserRepository by lazy {
+        UserRepositoryImpl(ExTrDatabase.getDatabase(context).userDao())
+    }
+
+    override val userCurrenciesRepository: UserCurrenciesRepository by lazy {
+        UserCurrenciesRepositoryImpl(ExTrDatabase.getDatabase(context).userCurrencyDao())
     }
 }

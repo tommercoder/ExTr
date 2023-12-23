@@ -4,26 +4,32 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.extr.data.daos.CurrencyDao
 import app.extr.data.daos.MoneyTypeDao
+import app.extr.data.daos.UserCurrencyDao
 import app.extr.data.daos.UserDao
 import app.extr.data.types.Currency
 import app.extr.utils.helpers.json.JsonParsers
 import app.extr.data.types.MoneyType
 import app.extr.data.types.User
+import app.extr.data.types.UserCurrencyCrossRef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [MoneyType::class, Currency::class, User::class], version = 1, exportSchema = false)
+@Database(
+    entities = [MoneyType::class, Currency::class, User::class, UserCurrencyCrossRef::class],
+    version = 4,
+    exportSchema = false
+)
 //@TypeConverters(Converters::class)
 abstract class ExTrDatabase : RoomDatabase() {
 
     abstract fun moneyTypeDao(): MoneyTypeDao
     abstract fun currencyDao(): CurrencyDao
     abstract fun userDao(): UserDao
+    abstract fun userCurrencyDao(): UserCurrencyDao
 
     companion object {
         @Volatile //thread safety
@@ -54,18 +60,12 @@ abstract class ExTrDatabase : RoomDatabase() {
                 database?.moneyTypeDao()?.insertAllFromJson(it)
             }
 
-            val curencies = JsonParsers.parseCurrencies(context)
-            curencies?.let {
+            val currencies = JsonParsers.parseCurrencies(context)
+            currencies?.let {
                 database?.currencyDao()?.insertAllFromJson(it)
             }
 
-            //test
-            val user : User = User(0, "Test", true);
-            val user2 : User = User(0, "Test2", false);
-            val user3 : User = User(0, "Test3", false);
-            database?.userDao()?.insert(user)
-            database?.userDao()?.insert(user2)
-            database?.userDao()?.insert(user3)
+
         }
     }
 }

@@ -4,21 +4,29 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,76 +43,57 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import app.extr.ui.theme.AppPadding
 import app.extr.utils.helpers.resproviders.MoneyTypesRes
 
 @Composable
 fun ProfileScreen(
-    modifier: Modifier,
-    uiState: UiState<List<User>>,
+    modifier: Modifier = Modifier,
+    uiState: UiState<User>,
     onEvent: (UserUiEvent) -> Unit
 ) {
     when (uiState) {
         is UiState.Success -> {
-            if (uiState.data.isNotEmpty()) {
-                var expanded by remember { mutableStateOf(true/*change to false later*/) }
-                val selectedItem by remember(uiState.data) {
-                    mutableStateOf(uiState.data.firstOrNull { it.lastSelected })
-                }
-
-//                Column(
-//                    modifier = modifier,
-//                    horizontalAlignment = Alignment.Start
-//                ) {
-//                    Text(
-//                        text = selectedItem?.name?: "",//stringResource(R.string.label_users),
-//                        style = MaterialTheme.typography.titleLarge
-//                    )
-
-                    Box(
-                        modifier = Modifier
-                            .clickable { expanded = true }
-                            .clip(MaterialTheme.shapes.medium)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            val selectedItemText = selectedItem?.name
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = "Dropdown Arrow"
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            when {
-                                selectedItemText != null -> Text(text = selectedItemText)
-                                else -> {}
-                            }
-                        }
-
-                        }
-
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        uiState.data.forEach {
-                            DropdownMenuItem(
-                                text = { Text(text = it.name) },
-                                onClick = {
-                                    onEvent(UserUiEvent.UserSelected(it.id))
-                                })
-                        }
-                    }
-               // }
-            } else {
-                Column(
-                    modifier = modifier,
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+            var showChangeUserNameDialog by remember { mutableStateOf(false) }
+            val data = uiState.data
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(AppPadding.Small),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = stringResource(id = R.string.no_users_added_yet))
+                    Text(
+                        text = stringResource(id = R.string.label_user, data.name),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    IconButton(onClick = {
+                        showChangeUserNameDialog = true
+                    }) {
+                        Icon(Icons.Filled.Edit, contentDescription = null)
+                    }
+                    if (showChangeUserNameDialog) {
+                        ChangeNameDialog(
+                            currentName = data.name,
+                            onNameChange = { onEvent(UserUiEvent.UserNameChanged(it)) },
+                            onDismiss = { showChangeUserNameDialog = false }
+                        )
+                    }
                 }
+                Divider(thickness = 1.dp)
+                Spacer(modifier = Modifier.size(15.dp))
+                Text(
+                    text = stringResource(id = R.string.label_settings),
+                    style = MaterialTheme.typography.titleLarge
+                )
+
             }
+
         }
 
         is UiState.Loading -> {
@@ -125,18 +114,55 @@ fun ProfileScreen(
 
 }
 
+@Composable
+fun ChangeNameDialog(
+    currentName: String,
+    onNameChange: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var text by remember { mutableStateOf(currentName) }
+    AlertDialog(
+        onDismissRequest = {},
+        title = { Text(stringResource(id = R.string.change_username)) },
+        text = {
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text(stringResource(id = R.string.username)) }
+            )
+        },
+        confirmButton = {
+            Button(onClick = {
+                onNameChange(text)
+                onDismiss()
+            }
+            ) {
+                Text(stringResource(id = R.string.button_ok))
+            }
+        },
+        dismissButton = {
+            Button(onClick = {
+                onDismiss()
+            }) {
+                Text(stringResource(id = R.string.button_cancel))
+            }
+        }
+    )
+}
+
 @Preview
 @Composable
 fun profileScreenPreview() {
-    val previewList = listOf(User(0, "name1", false), User(1, "name2", true))
-    val uiState = UiState.Success(previewList)
+    val user = User(0, "name1")
+    val uiState = UiState.Success(user)
 
     ExTrTheme {
         Surface {
-            ProfileScreen(modifier = Modifier.fillMaxSize(),
-                uiState = uiState,
-                onEvent = {}
-            )
+//            ProfileScreen(modifier = Modifier.fillMaxSize(),
+//                uiState = uiState,
+//                onEvent = {}
+//            )
+            ChangeNameDialog("Serhii", {}, {})
         }
     }
 }

@@ -15,7 +15,10 @@ object ViewModelsProvider {
             CurrenciesViewModel(ExTrApplication.container.currenciesRepository)
         }
         initializer {
-            UsersViewModel(ExTrApplication.container.usersRepository)
+            UserViewModel(ExTrApplication.container.UserRepository)
+        }
+        initializer {
+            UserCurrenciesViewModel(ExTrApplication.container.userCurrenciesRepository)
         }
     }
 }

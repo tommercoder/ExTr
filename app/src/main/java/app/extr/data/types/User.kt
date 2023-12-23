@@ -3,10 +3,9 @@ package app.extr.data.types
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "users")
+@Entity(tableName = "user")
 data class User(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int,
-    val name: String,
-    val lastSelected: Boolean
+    @PrimaryKey
+    val id: Int = 0,
+    val name: String = "No name"
 )

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import app.extr.R
 
@@ -19,25 +20,27 @@ sealed class Screens(val route : String) {
 
 data class BottomNavItem(
     val route: String,
-    val icon: ImageVector,
+    val iconId: Int,
+    val text: String = ""
 )
 
 val bottomNavItems = listOf(
     BottomNavItem(
         route = Screens.Home.route,
-        icon = Icons.Filled.Home,
+        iconId = R.drawable.home_icon,
     ),
     BottomNavItem(
         route = Screens.RoundChart.route,
-        icon = Icons.Filled.AccountBox,
+        iconId = R.drawable.round_chart_icon,
     ),
     BottomNavItem(
         route = Screens.Chart.route,
-        icon = Icons.Filled.List,
+        iconId = R.drawable.chart_icon,
     ),
     BottomNavItem(
         route = Screens.Profile.route,
-        icon = Icons.Filled.Call,
+        iconId = R.drawable.profile_icon,
+        //text = stringResource(id = R.string.label_topbar)
     ),
 )
 

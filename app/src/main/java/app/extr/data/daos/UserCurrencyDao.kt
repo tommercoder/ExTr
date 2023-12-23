@@ -3,28 +3,31 @@ package app.extr.data.daos
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import app.extr.data.types.UserCurrency
+import app.extr.data.types.CurrencyLastSelected
+import app.extr.data.types.UserCurrencyCrossRef
+import app.extr.data.types.UserWithCurrencies
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserCurrencyDao {
 
-    @Insert
-    suspend fun insert(userCurrency: UserCurrency)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(userCurrency: UserCurrencyCrossRef)
 
     @Delete
-    suspend fun delete(userCurrency: UserCurrency)
+    suspend fun delete(userCurrency: UserCurrencyCrossRef)
 
     @Query(
         """
-        SELECT user_currencies.*, currencies.fullName
+        SELECT currencies.*, user_currencies.lastSelected 
         FROM user_currencies
         JOIN currencies ON user_currencies.currencyId = currencies.id
         WHERE userId = :userId
         """
     )
-    fun getCurrenciesForUser(userId: Int): Flow<List<UserCurrency>>
+    fun getCurrenciesForUser(userId: Int): Flow<List<CurrencyLastSelected>>
 
     @Query("""
         UPDATE user_currencies 

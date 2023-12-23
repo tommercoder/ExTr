@@ -2,8 +2,16 @@
     <string name="app_name">ExTr</string>
     <string name="money_type_error">Failed to load money types</string>
 
+    <!--GENERAL-->
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Cancel</string>
+
     <!--PROFILE-->
-    <string name="no_users_added_yet">NO USERS ADDED YET</string>
-    <string name="label_users">USERS</string>
+    <string name="label_user">Hello, %1$s</string>
+    <string name="change_username">Change your username</string>
+    <string name="username">USERNAME</string>
+    <string name="label_topbar">PROFILE</string>
+    <string name="label_settings">SETTINGS</string>
+
 
 </resources>
