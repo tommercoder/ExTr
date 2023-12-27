@@ -1,12 +1,12 @@
 [
   {
-    "id": 1,
+    "moneyTypeId": 1,
     "name": "Card",
     "iconId": 1,
     "colorId": 2
   },
   {
-    "id": 2,
+    "moneyTypeId": 2,
     "name": "Cash",
     "iconId": 1,
     "colorId": 2

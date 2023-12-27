@@ -17,7 +17,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "money_types")
 data class MoneyType(
     @PrimaryKey
-    val id: Int,
+    val moneyTypeId: Int,
     val name: String,
     val iconId: Int,
     val colorId: Int

@@ -11,4 +11,4 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 //money types
-val mt_card_color = Color(0xFFA4C639)
+val mt_card_color = Color(0xFFF7E0D5)

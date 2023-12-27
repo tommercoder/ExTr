@@ -86,7 +86,7 @@ fun ProfileScreen(
                     }
                 }
                 Divider(thickness = 1.dp)
-                Spacer(modifier = Modifier.size(15.dp))
+                Spacer(modifier = Modifier.size(25.dp))
                 Text(
                     text = stringResource(id = R.string.label_settings),
                     style = MaterialTheme.typography.titleLarge

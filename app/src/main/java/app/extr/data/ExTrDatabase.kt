@@ -5,22 +5,22 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import app.extr.data.daos.BalanceDao
 import app.extr.data.daos.CurrencyDao
 import app.extr.data.daos.MoneyTypeDao
-import app.extr.data.daos.UserCurrencyDao
 import app.extr.data.daos.UserDao
+import app.extr.data.types.Balance
 import app.extr.data.types.Currency
 import app.extr.utils.helpers.json.JsonParsers
 import app.extr.data.types.MoneyType
 import app.extr.data.types.User
-import app.extr.data.types.UserCurrencyCrossRef
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [MoneyType::class, Currency::class, User::class, UserCurrencyCrossRef::class],
-    version = 4,
+    entities = [MoneyType::class, Currency::class, User::class, Balance::class],
+    version = 5,
     exportSchema = false
 )
 //@TypeConverters(Converters::class)
@@ -29,7 +29,7 @@ abstract class ExTrDatabase : RoomDatabase() {
     abstract fun moneyTypeDao(): MoneyTypeDao
     abstract fun currencyDao(): CurrencyDao
     abstract fun userDao(): UserDao
-    abstract fun userCurrencyDao(): UserCurrencyDao
+    abstract fun balanceDao(): BalanceDao
 
     companion object {
         @Volatile //thread safety

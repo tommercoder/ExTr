@@ -2,7 +2,7 @@ package app.extr.ui.theme.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.extr.data.repositories.MoneyTypeRepository
+import app.extr.data.repositories.MoneyTypesRepository
 import app.extr.data.types.MoneyType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +17,7 @@ data class MoneyTypeUiState(
 )
 
 class MoneyTypesViewModel(
-    private val moneyTypeRepository: MoneyTypeRepository
+    private val moneyTypeRepository: MoneyTypesRepository
 ) : ViewModel() {
     private val _moneyTypes = MutableStateFlow(MoneyTypeUiState())
     val uiState: StateFlow<MoneyTypeUiState> = _moneyTypes.asStateFlow()

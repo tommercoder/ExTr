@@ -9,16 +9,16 @@ import app.extr.ExTrApplication
 object ViewModelsProvider {
     val Factory = viewModelFactory {
         initializer {
-            MoneyTypesViewModel(ExTrApplication.container.moneyTypeRepository)
+            MoneyTypesViewModel(ExTrApplication.container.moneyTypesRepository)
         }
         initializer {
             CurrenciesViewModel(ExTrApplication.container.currenciesRepository)
         }
         initializer {
-            UserViewModel(ExTrApplication.container.UserRepository)
+            UserViewModel(ExTrApplication.container.userRepository)
         }
         initializer {
-            UserCurrenciesViewModel(ExTrApplication.container.userCurrenciesRepository)
+            BalancesViewModel(ExTrApplication.container.balancesRepository)
         }
     }
 }

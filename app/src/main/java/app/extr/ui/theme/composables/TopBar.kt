@@ -37,7 +37,7 @@ import app.extr.data.types.CurrencyLastSelected
 import app.extr.data.types.MoneyType
 import app.extr.data.types.UserWithCurrencies
 import app.extr.ui.theme.composables.reusablecomponents.ReusableDropdownMenu
-import app.extr.ui.theme.mappers.toDropdownItem
+//import app.extr.ui.theme.mappers.toDropdownItem
 import app.extr.ui.theme.viewmodels.MoneyTypeUiState
 import app.extr.utils.helpers.UiState
 import app.extr.utils.helpers.resproviders.MoneyTypesRes

@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.extr.data.repositories.CurrenciesRepository
-import app.extr.data.repositories.MoneyTypeRepository
 import app.extr.data.types.Currency
 import app.extr.data.types.MoneyType
 import kotlinx.coroutines.launch

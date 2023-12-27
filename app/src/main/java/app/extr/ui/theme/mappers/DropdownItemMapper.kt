@@ -11,12 +11,12 @@ interface DropdownItemUi {
     val color: Color?
     val symbol: String?
 }
-
-fun MoneyType.toDropdownItem() =
-    object : DropdownItemUi {
-        override val id: Int = this@toDropdownItem.id
-        override val name: String = this@toDropdownItem.name
-        override val icon: Int = MoneyTypesRes.getRes(this@toDropdownItem.iconId).icon
-        override val color: Color = MoneyTypesRes.getRes(this@toDropdownItem.colorId).color
-        override val symbol: String? = null
-    }
+//
+//fun MoneyType.toDropdownItem() =
+//    object : DropdownItemUi {
+//        override val id: Int = this@toDropdownItem.id
+//        override val name: String = this@toDropdownItem.name
+//        override val icon: Int = MoneyTypesRes.getRes(this@toDropdownItem.iconId).icon
+//        override val color: Color = MoneyTypesRes.getRes(this@toDropdownItem.colorId).color
+//        override val symbol: String? = null
+//    }
