@@ -20,8 +20,8 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [MoneyType::class, Currency::class, User::class, Balance::class],
-    version = 5,
-    exportSchema = false
+    version = 2,
+    exportSchema = true
 )
 //@TypeConverters(Converters::class)
 abstract class ExTrDatabase : RoomDatabase() {
@@ -65,6 +65,16 @@ abstract class ExTrDatabase : RoomDatabase() {
                 database?.currencyDao()?.insertAllFromJson(it)
             }
 
+//            val currency = Currency(0, "USD", "DOllar", "$")
+//            val currency2 = Currency(9, "SEK", "DOllar", "kr")
+//            val moneyType = MoneyType(1, "Card", 1, 2)
+//            val moneyType2 = MoneyType(2, "Cash", 1, 2)
+
+            val balance = Balance(currencyId = 1, moneyTypeId = 1, amount = 13.123f, customName = "blabla")
+            val balance2 = Balance(currencyId = 9, moneyTypeId = 2, amount = 12323.3125f, customName = "blabla")
+
+            database?.balanceDao()?.insert(balance)
+            database?.balanceDao()?.insert(balance2)
 
         }
     }

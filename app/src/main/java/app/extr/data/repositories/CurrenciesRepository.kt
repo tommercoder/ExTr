@@ -4,13 +4,14 @@ import app.extr.data.daos.CurrencyDao
 import app.extr.data.daos.MoneyTypeDao
 import app.extr.data.types.Currency
 import app.extr.data.types.MoneyType
+import kotlinx.coroutines.flow.Flow
 
 interface CurrenciesRepository {
-    suspend fun getAllCurrencies(): List<Currency>
+    fun getAllCurrencies(): Flow<List<Currency>>
 }
 
 class CurrenciesRepositoryImpl(private val currencyDao: CurrencyDao) : CurrenciesRepository {
-    override suspend fun getAllCurrencies(): List<Currency> {
+    override fun getAllCurrencies(): Flow<List<Currency>> {
         return currencyDao.getAll()
     }
 }

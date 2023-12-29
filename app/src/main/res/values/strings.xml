@@ -13,5 +13,6 @@
     <string name="label_topbar">PROFILE</string>
     <string name="label_settings">SETTINGS</string>
 
-
+    <!--CURRENCIES-->
+    <string name="label_selected_currency">selected currency:</string>
 </resources>

@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import app.extr.data.types.Currency
 import app.extr.data.types.MoneyType
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CurrencyDao {
@@ -13,5 +14,5 @@ interface CurrencyDao {
     suspend fun insertAllFromJson(items: List<Currency>)
 
     @Query("SELECT * FROM currencies")
-    suspend fun getAll() : List<Currency>
+    fun getAll() : Flow<List<Currency>>
 }

@@ -4,23 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.extr.data.repositories.MoneyTypesRepository
 import app.extr.data.types.MoneyType
+import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.launch
-
-//todo: remove if not used afterall
-data class MoneyTypeUiState(
-    val isLoading: Boolean = false,
-    val list: List<MoneyType> = emptyList(),
-    //val errorMessage: String? = null
-)
 
 class MoneyTypesViewModel(
     private val moneyTypeRepository: MoneyTypesRepository
 ) : ViewModel() {
-    private val _moneyTypes = MutableStateFlow(MoneyTypeUiState())
-    val uiState: StateFlow<MoneyTypeUiState> = _moneyTypes.asStateFlow()
+    private val _moneyTypes = MutableStateFlow<UiState<List<MoneyType>>>(UiState.Loading)
+    val moneyTypes: StateFlow<UiState<List<MoneyType>>> = _moneyTypes.asStateFlow()
 
     init {
         loadMoneyTypes()
@@ -28,13 +24,13 @@ class MoneyTypesViewModel(
 
     private fun loadMoneyTypes() {
         viewModelScope.launch {
+            _moneyTypes.value = UiState.Loading
             try {
-                _moneyTypes.value = MoneyTypeUiState(isLoading = true)
-                val list = moneyTypeRepository.getAllMoneyTypes()
-                _moneyTypes.value = MoneyTypeUiState(list = list)
+                moneyTypeRepository.getAllMoneyTypes().collect {
+                    _moneyTypes.value = UiState.Success(it)
+                }
             } catch (e: Exception) {
-                //_moneyTypes.value = MoneyTypeUiState(errorMessage = "error")
-//                    MoneyTypeUiState(errorMessage = getString(R.string.money_type_error))
+
             }
         }
     }

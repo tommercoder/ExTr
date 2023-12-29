@@ -14,5 +14,5 @@ interface MoneyTypeDao {
     suspend fun insertAllFromJson(items: List<MoneyType>)
 
     @Query("SELECT * FROM money_types")
-    suspend fun getAll() : List<MoneyType>
+    fun getAll() : Flow<List<MoneyType>>
 }

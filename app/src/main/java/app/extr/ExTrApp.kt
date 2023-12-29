@@ -25,25 +25,36 @@ import app.extr.ui.theme.viewmodels.BottomBar
 import app.extr.ui.theme.viewmodels.ViewModelsProvider
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.compose.currentBackStackEntryAsState
+import app.extr.ui.theme.composables.BalanceBottomSheet
 import app.extr.ui.theme.viewmodels.BalancesViewModel
+import app.extr.ui.theme.viewmodels.CurrenciesViewModel
+import app.extr.ui.theme.viewmodels.MoneyTypesViewModel
 import app.extr.ui.theme.viewmodels.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExTrApp(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    currenciesViewModel: CurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory),
+    moneyTypesViewModel: MoneyTypesViewModel = viewModel(factory = ViewModelsProvider.Factory)
 ) {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val navBackStackEntry =
         navController.currentBackStackEntryAsState().value?.destination?.route
 
+    val currenciesUiState by currenciesViewModel.currencies.collectAsState()
+    val moneyTypesUiState by moneyTypesViewModel.moneyTypes.collectAsState()
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            //.nestedScroll(scrollBehavior.nestedScrollConnection),
-                ,
+        //.nestedScroll(scrollBehavior.nestedScrollConnection),
+        ,
         topBar = {
 //            val uiState by userCurrenciesViewModel.uiState.collectAsState()
 //            TopBar(
@@ -66,8 +77,26 @@ fun ExTrApp(
             composable(Screens.Home.route) {
                 val viewModel: BalancesViewModel = viewModel(factory = ViewModelsProvider.Factory)
                 val uiState by viewModel.uiState.collectAsState()
+                var isAddBalanceSheetShown by remember {
+                    mutableStateOf(false)
+                }
 
-                HomeScreen(uiState)
+                HomeScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    uiState = uiState,
+                    onAddBalanceClicked = {
+                        isAddBalanceSheetShown = true
+                    }
+                )
+
+                if (isAddBalanceSheetShown) {
+                    BalanceBottomSheet(
+                        currenciesUiState = currenciesUiState,
+                        moneyTypeUiState = moneyTypesUiState,
+                        onSaveClicked = {},
+                        onDismissed = { isAddBalanceSheetShown = false }
+                    )
+                }
             }
             composable(Screens.RoundChart.route) {
                 RoundChartScreen()
