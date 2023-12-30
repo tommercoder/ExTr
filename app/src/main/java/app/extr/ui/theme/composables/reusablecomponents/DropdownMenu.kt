@@ -58,19 +58,21 @@ fun CurrenciesDropDownMenu(
     var selectedItem by remember { mutableStateOf(items[0]) }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .clip(MaterialTheme.shapeScheme.large)
             .then(
                 if (borderShown)
                     Modifier.border(
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.inverseSurface),
-                        shape = MaterialTheme.shapeScheme.large)
+                        shape = MaterialTheme.shapeScheme.large
+                    )
                 else Modifier
             )
             .wrapContentSize(Alignment.TopStart)
     ) {
         Row(
             modifier = Modifier
+                .fillMaxWidth()
                 .clickable(onClick = { expanded = !expanded })
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -85,7 +87,7 @@ fun CurrenciesDropDownMenu(
         }
     }
     DropdownMenu(
-        modifier = modifier,
+        modifier = Modifier,
         expanded = expanded,
         onDismissRequest = { expanded = false }
     ) {
@@ -117,91 +119,73 @@ fun CurrenciesDropDownPreview() {
 //todo: display icon in an item, and cleanup
 @Composable
 fun ReusableDropdownMenu(
-    items: List<DropdownItemUi>,
     modifier: Modifier = Modifier,
+    items: List<DropdownItemUi>,
     selectedItem: DropdownItemUi? = null,
     onItemSelected: (DropdownItemUi) -> Unit,
-    isLoading: Boolean,
     dropdownContentColor: Color = LocalContentColor.current,
     dropdownBackgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant
 ) {
     val selected by remember(items) {
-        mutableStateOf(items.firstOrNull())
+        mutableStateOf(selectedItem ?: items.firstOrNull())
     }
     var expanded by remember { mutableStateOf(false) }
 
-    Box(modifier = modifier) {
+    Box(modifier = modifier
+        .clip(MaterialTheme.shapeScheme.extraRoundedCorners)
+        .clickable(onClick = { expanded = !expanded })
+        .background((selected?.color) ?: dropdownBackgroundColor)
+        .padding(horizontal = 16.dp, vertical = 8.dp),) {
         Row(
-            modifier = modifier
-                .clip(MaterialTheme.shapeScheme.extraRoundedCorners)
-                .clickable(onClick = { expanded = !isLoading && !expanded })
-                .background((selected?.color) ?: dropdownBackgroundColor)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    color = dropdownContentColor,
-                    strokeWidth = 2.dp,
-                    modifier = Modifier.size(16.dp)
-                )
-            } else {
-                val symbol = selected?.symbol
-                val icon = selected?.icon
-
-                when {
-                    symbol != null -> Text(text = symbol, color = dropdownContentColor)
-                    icon != null -> Icon(
-                        painterResource(id = icon),
-                        contentDescription = null,
-                        tint = dropdownContentColor
-                    )
-
-                    else -> {} // Do nothing if no symbol or icon is provided
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = selected?.name ?: "",
-                    color = dropdownContentColor
-                )
+            val icon = selected?.icon
+            if (icon != null) {
                 Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Dropdown Arrow",
+                    painterResource(id = icon),
+                    contentDescription = null,
                     tint = dropdownContentColor
                 )
             }
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = selected?.name ?: "",
+                color = dropdownContentColor
+            )
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "Dropdown Arrow",
+                tint = dropdownContentColor
+            )
         }
+    }
 
-        DropdownMenu(
-            expanded = expanded && !isLoading,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Color.Transparent)
-        ) {
-            items.forEach { item ->
-                DropdownMenuItem(
-                    onClick = {
-                        onItemSelected(item)
-                        expanded = false
-                    },
-                    text = {
-                        val symbol = selected?.symbol
-                        val icon = selected?.icon
-
-                        if (symbol != null) {
-                            Text(text = symbol, color = item.color ?: dropdownContentColor)
-                        } else {
-                            Text(
-                                text = item.name
-                            )
-                        }
-                    },
-                    modifier = Modifier.background(
-                        color = item.color ?: dropdownContentColor,
-                        //shape = menuShape
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false },
+        modifier = Modifier.background(Color.Transparent)
+    ) {
+        items.forEach { item ->
+            DropdownMenuItem(
+                onClick = {
+                    onItemSelected(item)
+                    expanded = false
+                },
+                text = {
+                    //todo: add icon support here?
+                    val icon = selected?.icon
+                    Text(
+                        text = item.name
                     )
-                )
-            }
 
+                },
+                modifier = Modifier.background(
+                    color = item.color ?: dropdownContentColor,
+                    //shape = menuShape
+                )
+            )
         }
+
     }
 }
