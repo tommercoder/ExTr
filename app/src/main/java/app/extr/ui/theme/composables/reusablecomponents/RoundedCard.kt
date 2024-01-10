@@ -3,6 +3,8 @@ package app.extr.ui.theme.composables.reusablecomponents
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -48,22 +51,39 @@ import app.extr.ui.theme.AppPadding
 fun RoundedCard(
     @DrawableRes icon: Int,
     text: String,
-    secondaryText: String?,
     @ColorRes color: Color,
-    currencySymbol: String, //Todo: change to CHAR
+    currencySymbol: Char,
     number: Float,
+    secondaryText: String = "",
+    onClick: (() -> Unit)? = null,
+    onLongPress: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-
     var padding by remember { mutableStateOf(0.dp) }
-    var numberSize by remember{ mutableStateOf(0.sp) }
-    Card(
-        modifier = modifier
-            .onSizeChanged { size->
+    var numberSize by remember { mutableStateOf(0.sp) }
+
+    val combinedModifier = modifier
+        .onSizeChanged { size ->
             padding = (size.width * 0.01f).dp
         }
-            //.padding(padding),
-                ,
+        .let {
+            if (onClick != null) {
+                it.clickable { onClick() }
+            } else it
+        }
+        .let {
+            if (onLongPress != null) {
+                it.pointerInput(Unit) {
+                    detectTapGestures(
+                        onLongPress = { onLongPress() },
+                        onTap = { onClick?.invoke() }
+                    )
+                }
+            } else it
+        }
+
+    Card(
+        modifier = combinedModifier,
         colors = CardDefaults.cardColors(color),
         shape = MaterialTheme.shapes.extraLarge
     ) {
@@ -71,7 +91,9 @@ fun RoundedCard(
             modifier = modifier.padding(padding)
         ) {
             Row(
-                modifier = Modifier.weight(2f).fillMaxWidth(),
+                modifier = Modifier
+                    .weight(2f)
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
@@ -88,24 +110,39 @@ fun RoundedCard(
                         modifier = Modifier.aspectRatio(0.5f)
                     )
                 }
-                Text(
-                    text = text,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(start = padding*2))
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    //horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = text,
+                        modifier = Modifier
+                            //.align(Alignment.CenterVertically)
+                            .padding(start = padding * 2)
+                    )
+
+                    Text(
+                        text = secondaryText,
+                        modifier = Modifier
+                            //.align(Alignment.CenterVertically)
+                            .padding(start = padding * 2)
+                    )
+                }
             }
 
             Row(
-                modifier = Modifier.weight(2f)
+                modifier = Modifier
+                    .weight(2f)
                     .fillMaxWidth()
-                    .onSizeChanged { size->
-                    numberSize = (size.height * 0.15f).sp
-                },
+                    .onSizeChanged { size ->
+                        numberSize = (size.height * 0.15f).sp
+                    },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = currencySymbol,
+                    text = currencySymbol.toString(),
                     style = MaterialTheme.typography.labelSmall.copy(fontSize = numberSize/2),
                     color = Color.Gray
                 )
@@ -125,9 +162,9 @@ fun RoundedCardPreview() {
     RoundedCard(
         icon = R.drawable.card_icon,
         text = "Card",
-        secondaryText = null,
+        secondaryText = "blabla",
         color = mt_card_color,
-        currencySymbol = "$",
+        currencySymbol = '$',
         number = 25.123f,
         modifier = Modifier.size(180.dp, 180.dp)
     )

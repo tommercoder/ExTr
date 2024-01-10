@@ -21,3 +21,11 @@ fun MoneyType.toDropdownItem() =
         override val symbol: String? = null
     }
 
+fun DropdownItemUi.toMoneyType(): MoneyType {
+    return MoneyType(
+        moneyTypeId = this.id,
+        name = this.name,
+        iconId = MoneyTypesRes.findIconIdByRes(this.icon!!),
+        colorId = MoneyTypesRes.findColorIdByRes(this.color!!),
+    )
+}

@@ -8,12 +8,16 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.extr.R
 import app.extr.data.types.Balance
@@ -29,13 +33,17 @@ import app.extr.utils.helpers.resproviders.MoneyTypesRes
 fun HomeScreen(
     modifier: Modifier = Modifier,
     uiState: UiState<List<BalanceWithDetails>>,
-    onAddBalanceClicked: () -> Unit
+    onAddBalanceClicked: () -> Unit,
+    onDeleteBalanceClicked: (Int) -> Unit
 ) {
-    when(uiState){
+    when (uiState) {
         is UiState.Loading -> {
 
         }
+
         is UiState.Success -> {
+            var showDeleteDialog by remember { mutableStateOf(false) }
+            var longPressedBalanceId by remember { mutableStateOf(0) }
             val data = uiState.data
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -49,11 +57,15 @@ fun HomeScreen(
                     RoundedCard(
                         icon = MoneyTypesRes.getRes(data[i].moneyType.iconId).icon,
                         text = data[i].moneyType.name,
-                        secondaryText = null,
+                        secondaryText = data[i].balance.customName,
                         color = MoneyTypesRes.getRes(data[i].moneyType.colorId).color,
                         currencySymbol = data[i].currency.symbol,
                         number = data[i].balance.amount,
-                        modifier = Modifier.size(elementSize)
+                        modifier = Modifier.size(elementSize),
+                        onLongPress = {
+                            longPressedBalanceId = data[i].balance.balanceId
+                            showDeleteDialog = true
+                        }
                     )
                 }
                 item {
@@ -61,9 +73,43 @@ fun HomeScreen(
                 }
             }
 
+            if (showDeleteDialog) {
+                DeleteBalanceDialog(
+                    onDeleteClicked = { onDeleteBalanceClicked(longPressedBalanceId) },
+                    onDismissed = { showDeleteDialog = false }
+                )
+            }
         }
+
         is UiState.Error -> {
 
         }
     }
+}
+
+@Composable
+fun DeleteBalanceDialog(
+    onDeleteClicked: () -> Unit,
+    onDismissed: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onDismissed() },
+        title = { Text(stringResource(id = R.string.label_delete_balance)) },
+        text = { Text(stringResource(id = R.string.label_delete_balance_confirmation)) },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onDeleteClicked()
+                    onDismissed()
+                }
+            ) {
+                Text(stringResource(id = R.string.button_ok))
+            }
+        },
+        dismissButton = {
+            Button(onClick = { onDismissed() }) {
+                Text(stringResource(id = R.string.button_cancel))
+            }
+        }
+    )
 }

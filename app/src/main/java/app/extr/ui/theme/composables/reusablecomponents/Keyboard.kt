@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -37,16 +39,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.extr.R
 import app.extr.ui.theme.AppPadding
+import app.extr.ui.theme.ExTrTheme
 import app.extr.ui.theme.shapeScheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomKeyboard(
-    currencySymbol: String,
+    currencySymbol: Char,
     onValueChange: (String) -> Unit,
     inputValue: String,
     onNameChange: (String) -> Unit,
@@ -54,27 +59,44 @@ fun CustomKeyboard(
     showCalendar: Boolean,
     onEraseClick: () -> Unit,
     onCalendarClick: () -> Unit = {}, // Optional calendar click handler
-    onAcceptClick: () -> Unit,
-    textFieldLabel: String = stringResource(id = R.string.label_add_custom_name),
+    onAcceptClick: () -> Unit, //todo: disable accept until valid data is there
+    textFieldDefaultText: String = stringResource(id = R.string.label_add_custom_name),
+    maxTextFieldCharacters: Int = 5
 ) {
     Column {
         // Display the currency and the inputted text
-        Text(
-            text = "$currencySymbol$inputValue",
-            style = MaterialTheme.typography.displaySmall,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.align(
+                Alignment.CenterHorizontally)
+        ) {
+            Text(
+                text = currencySymbol.toString(),
+                style = MaterialTheme.typography.displaySmall
+            )
+
+            Text(
+                text = inputValue,
+                style = MaterialTheme.typography.displayLarge
+            )
+        }
+
 
         TextField(
             value = nameValue,
-            onValueChange = onNameChange,
-            label = { Text(textFieldLabel) },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-            )
+            //textStyle = TextStyle(textAlign = TextAlign.Center),
+            placeholder = { Text(text = textFieldDefaultText, textAlign = TextAlign.Center) },
+            onValueChange = {
+                if (it.length <= maxTextFieldCharacters) {
+                    onNameChange(it)
+                }
+            },
+            //label = { Text(textFieldLabel) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = AppPadding.Medium, bottom = AppPadding.Medium)
         )
 
         // Keyboard grid
@@ -83,7 +105,7 @@ fun CustomKeyboard(
             modifier = Modifier.fillMaxWidth()
         ) {
             //todo: move buttons modifier to a const
-            val buttonTempSize = 80.dp
+            val buttonTempSize = 100.dp
             // Numeric buttons
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
@@ -132,7 +154,7 @@ fun CustomKeyboard(
                             .size(buttonTempSize)
                             .padding(AppPadding.ExtraSmall)//.weight(1f).aspectRatio(1f),
                         , icon = Icons.Rounded.Email,
-                        onClicked = { onEraseClick() }
+                        onClicked = { onCalendarClick() }
                     )
                 } else {
                     //Spacer(modifier = Modifier.weight(1f).aspectRatio(1f)) // Empty space
@@ -140,9 +162,10 @@ fun CustomKeyboard(
                 SquareButtonIcon(
                     modifier = Modifier
                         .size(buttonTempSize)
+                        .fillMaxHeight()
                         .padding(AppPadding.ExtraSmall)//.weight(1f).aspectRatio(1f),
                     , icon = Icons.Rounded.Check,
-                    onClicked = { onEraseClick() }
+                    onClicked = { onAcceptClick() }
                 )
             }
         }
@@ -187,4 +210,22 @@ fun SquareButtonIcon(
             Icon(imageVector = icon, contentDescription = null)
         }
     )
+}
+
+@Composable
+@Preview
+fun KeyboardPreview() {
+    ExTrTheme() {
+        Surface() {
+            CustomKeyboard(
+                currencySymbol = '$',
+                onValueChange = {},
+                inputValue = "10.304",
+                onNameChange = {},
+                nameValue = "",
+                showCalendar = true,
+                onEraseClick = { /*TODO*/ },
+                onAcceptClick = { /*TODO*/ })
+        }
+    }
 }

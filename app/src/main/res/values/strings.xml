@@ -18,4 +18,7 @@
 
     <!--BALANCES-->
     <string name="label_add_custom_name">Add custom name...</string>
+    <string name="label_balance">Balance</string>
+    <string name="label_delete_balance">Delete balance</string>
+    <string name="label_delete_balance_confirmation">Are you sure you want to delete this balance?</string> <!--todo: change to accept an argument-->
 </resources>

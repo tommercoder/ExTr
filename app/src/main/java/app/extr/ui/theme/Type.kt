@@ -36,6 +36,13 @@ val ExTrTypography = Typography(
         lineHeight = 23.sp,
         letterSpacing = 1.sp
     ),
+    labelMedium = TextStyle(
+        fontFamily = latoRegular,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 21.sp,
+        letterSpacing = 0.5.sp
+    ),
     labelSmall = TextStyle(
         fontFamily = latoRegular,
         fontWeight = FontWeight.Medium,

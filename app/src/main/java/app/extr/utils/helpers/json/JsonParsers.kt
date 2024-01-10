@@ -3,6 +3,7 @@ package app.extr.utils.helpers.json
 import android.content.Context
 import app.extr.data.types.Currency
 import app.extr.data.types.MoneyType
+import app.extr.utils.helpers.CharConverter
 import com.beust.klaxon.Klaxon
 
 object JsonParsers {
@@ -13,6 +14,7 @@ object JsonParsers {
 
     fun parseCurrencies(context: Context) : List<Currency>? {
         val json = context.assets.open("Currencies.json").bufferedReader().use { it.readText() }
-        return Klaxon().parseArray<Currency>(json)
+        val klaxon = Klaxon().converter(CharConverter())
+        return klaxon.parseArray<Currency>(json)
     }
 }

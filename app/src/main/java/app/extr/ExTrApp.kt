@@ -86,6 +86,9 @@ fun ExTrApp(
                     uiState = uiState,
                     onAddBalanceClicked = {
                         isAddBalanceSheetShown = true
+                    },
+                    onDeleteBalanceClicked = { balanceId ->
+                        viewModel.deleteBalance(balanceId)
                     }
                 )
 
@@ -93,7 +96,9 @@ fun ExTrApp(
                     BalanceBottomSheet(
                         currenciesUiState = currenciesUiState,
                         moneyTypeUiState = moneyTypesUiState,
-                        onSaveClicked = {},
+                        onSaveClicked = { balance ->
+                            viewModel.addBalance(balance)
+                        },
                         onDismissed = { isAddBalanceSheetShown = false }
                     )
                 }
