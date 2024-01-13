@@ -15,10 +15,22 @@ interface BalanceDao {
     @Insert
     suspend fun insert(balance: Balance)
 
-    @Query("DELETE FROM balances WHERE balanceId = :balanceId") //todo: add used_currencies logic here
-    suspend fun delete(balanceId: Int)
+    //@Query("DELETE FROM balances WHERE balanceId = :balanceId") //todo: add used_currencies logic here
+    @Delete
+    suspend fun delete(balance: Balance)
 
-    @Transaction
-    @Query("SELECT * FROM balances")
+    @Transaction //do I need it here?
+    @Query("""
+        SELECT * FROM balances 
+        WHERE currencyId IN (
+            SELECT currencyId FROM used_currencies 
+            WHERE selectionIndex = (
+                SELECT MAX(selectionIndex) FROM used_currencies
+            )
+        )
+    """)
     fun getBalancesForCurrentCurrency() : Flow<List<BalanceWithDetails>>
+
+    @Query("SELECT COUNT(*) FROM balances WHERE currencyId = :currencyId")
+    suspend fun getBalanceCountForCurrentCurrency(currencyId: Int): Int
 }

@@ -33,12 +33,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import app.extr.data.types.CurrencyLastSelected
 import app.extr.data.types.MoneyType
+import app.extr.data.types.UsedCurrency
+import app.extr.data.types.UsedCurrencyDetails
 import app.extr.utils.helpers.UiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
-    uiState: UiState<List<CurrencyLastSelected>>,
+    uiState: UiState<List<UsedCurrencyDetails>>,
     onItemSelected: (MoneyType) -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
     isAddButtonVisible: Boolean
@@ -46,17 +48,14 @@ fun TopBar(
 
     when (uiState) {
         is UiState.Loading -> {
-//            CircularProgressIndicator(
-//                strokeWidth = 2.dp,
-//                modifier = Modifier.size(16.dp)
-//            )
+            CircularProgressIndicator(
+                strokeWidth = 2.dp,
+                modifier = Modifier.size(16.dp)
+            )
         }
 
         is UiState.Success -> {
             var expanded by remember { mutableStateOf(false) }
-            val selectedItem by remember(uiState.data) {
-                mutableStateOf(uiState.data.firstOrNull { it.lastSelected })
-            }
 
             LargeTopAppBar(
                 title = {},
@@ -72,6 +71,12 @@ fun TopBar(
                     }
                 },
                 actions = {
+                    if(uiState.data.isEmpty()){
+                        return@LargeTopAppBar
+                    }
+                    val selectedItem by remember(uiState.data) {
+                        mutableStateOf(uiState.data.maxBy { it.usedCurrency.selectionIndex })
+                    }
                     Box(
                         modifier = Modifier
                             .clickable { expanded = true }
@@ -83,20 +88,18 @@ fun TopBar(
                                 .padding(16.dp)
                         ) {
 
-                            val selectedItemText = selectedItem?.currency?.fullName
+                            val selectedItemText = selectedItem.currency.fullName
                             //todo: replace with symbol
-                            val selectedItemSymbol = selectedItem?.currency?.symbol
+                            val selectedItemSymbol = selectedItem.currency.symbol
 
                             Icon(
                                 imageVector = Icons.Filled.ArrowDropDown,
                                 contentDescription = "Dropdown Arrow"
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            if(selectedItemText != null && selectedItemSymbol != null){
-                                Text(text = selectedItemSymbol + selectedItemText)
-                            }
-                            else {//error
-                             }
+
+                            Text(text = selectedItemSymbol + selectedItemText)
+
                         }
                     }
 

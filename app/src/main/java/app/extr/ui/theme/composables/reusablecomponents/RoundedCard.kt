@@ -1,9 +1,14 @@
 package app.extr.ui.theme.composables.reusablecomponents
 
+import android.view.MotionEvent
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,11 +38,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -46,7 +54,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.extr.ui.theme.AppPadding
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun RoundedCard(
     @DrawableRes icon: Int,
@@ -54,13 +64,20 @@ fun RoundedCard(
     @ColorRes color: Color,
     currencySymbol: Char,
     number: Float,
+    modifier: Modifier = Modifier,
     secondaryText: String = "",
     onClick: (() -> Unit)? = null,
-    onLongPress: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    onLongPress: (() -> Unit)? = null
 ) {
     var padding by remember { mutableStateOf(0.dp) }
     var numberSize by remember { mutableStateOf(0.sp) }
+    var isLongPressed by remember { mutableStateOf(false) }
+    val coroutineScope =  rememberCoroutineScope()
+
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isLongPressed) Color.LightGray else color, //todo: works for dark mode?
+        animationSpec = tween(durationMillis = 100)
+    )
 
     val combinedModifier = modifier
         .onSizeChanged { size ->
@@ -75,17 +92,27 @@ fun RoundedCard(
             if (onLongPress != null) {
                 it.pointerInput(Unit) {
                     detectTapGestures(
-                        onLongPress = { onLongPress() },
-                        onTap = { onClick?.invoke() }
+                        onLongPress = {
+                            onLongPress()
+                        },
+                        onPress = {
+                            isLongPressed = true
+                            onClick?.invoke()
+                            coroutineScope.launch {
+                                awaitRelease()
+                                isLongPressed = false
+                            }
+                        }
                     )
                 }
             } else it
         }
+    //.background(backgroundColor)
 
     Card(
+        colors = CardDefaults.cardColors(backgroundColor),
+        shape = MaterialTheme.shapes.extraLarge,
         modifier = combinedModifier,
-        colors = CardDefaults.cardColors(color),
-        shape = MaterialTheme.shapes.extraLarge
     ) {
         Column(
             modifier = modifier.padding(padding)
@@ -143,7 +170,7 @@ fun RoundedCard(
             ) {
                 Text(
                     text = currencySymbol.toString(),
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = numberSize/2),
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = numberSize / 2),
                     color = Color.Gray
                 )
                 Text(

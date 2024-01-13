@@ -58,14 +58,12 @@ fun CustomKeyboard(
     nameValue: String,
     showCalendar: Boolean,
     onEraseClick: () -> Unit,
+    onAcceptClick: () -> Unit,
     onCalendarClick: () -> Unit = {}, // Optional calendar click handler
-    onAcceptClick: () -> Unit, //todo: disable accept until valid data is there
     textFieldDefaultText: String = stringResource(id = R.string.label_add_custom_name),
     maxTextFieldCharacters: Int = 5
 ) {
     Column {
-        // Display the currency and the inputted text
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
@@ -165,7 +163,8 @@ fun CustomKeyboard(
                         .fillMaxHeight()
                         .padding(AppPadding.ExtraSmall)//.weight(1f).aspectRatio(1f),
                     , icon = Icons.Rounded.Check,
-                    onClicked = { onAcceptClick() }
+                    onClicked = { onAcceptClick() },
+                    isEnabled = inputValue.isNotBlank()
                 )
             }
         }
@@ -197,7 +196,8 @@ fun SquareButtonText(
 fun SquareButtonIcon(
     modifier: Modifier = Modifier,
     icon: ImageVector,
-    onClicked: () -> Unit
+    onClicked: () -> Unit,
+    isEnabled: Boolean = true
 ) {
     IconButton(
         onClick = onClicked,
@@ -208,7 +208,8 @@ fun SquareButtonIcon(
             ),
         content = {
             Icon(imageVector = icon, contentDescription = null)
-        }
+        },
+        enabled = isEnabled
     )
 }
 

@@ -33,6 +33,7 @@ import app.extr.ui.theme.composables.BalanceBottomSheet
 import app.extr.ui.theme.viewmodels.BalancesViewModel
 import app.extr.ui.theme.viewmodels.CurrenciesViewModel
 import app.extr.ui.theme.viewmodels.MoneyTypesViewModel
+import app.extr.ui.theme.viewmodels.UsedCurrenciesViewModel
 import app.extr.ui.theme.viewmodels.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,14 +57,16 @@ fun ExTrApp(
         //.nestedScroll(scrollBehavior.nestedScrollConnection),
         ,
         topBar = {
-//            val uiState by userCurrenciesViewModel.uiState.collectAsState()
-//            TopBar(
-//                uiState = uiState,
-//                onItemSelected = { /*update last selected of UserCurrencies*/ },
-//                scrollBehavior = scrollBehavior,
-//                isAddButtonVisible = navBackStackEntry == Screens.RoundChart.route
-//                        || navBackStackEntry == Screens.Chart.route
-//            )
+            val viewModel: UsedCurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory)
+            val uiState by viewModel.uiState.collectAsState()
+
+            TopBar(
+                uiState = uiState,
+                onItemSelected = { /*update last selected of UserCurrencies*/ },
+                scrollBehavior = scrollBehavior,
+                isAddButtonVisible = navBackStackEntry == Screens.RoundChart.route
+                        || navBackStackEntry == Screens.Chart.route
+            )
         },
         bottomBar = {
             BottomBar(navController)

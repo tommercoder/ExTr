@@ -8,19 +8,21 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import app.extr.data.daos.BalanceDao
 import app.extr.data.daos.CurrencyDao
 import app.extr.data.daos.MoneyTypeDao
+import app.extr.data.daos.UsedCurrencyDao
 import app.extr.data.daos.UserDao
 import app.extr.data.types.Balance
 import app.extr.data.types.Currency
 import app.extr.utils.helpers.json.JsonParsers
 import app.extr.data.types.MoneyType
+import app.extr.data.types.UsedCurrency
 import app.extr.data.types.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [MoneyType::class, Currency::class, User::class, Balance::class],
-    version = 5,
+    entities = [MoneyType::class, Currency::class, User::class, Balance::class, UsedCurrency::class],
+    version = 6,
     exportSchema = true
 )
 //@TypeConverters(Converters::class)
@@ -30,6 +32,7 @@ abstract class ExTrDatabase : RoomDatabase() {
     abstract fun currencyDao(): CurrencyDao
     abstract fun userDao(): UserDao
     abstract fun balanceDao(): BalanceDao
+    abstract fun usedCurrencyDao(): UsedCurrencyDao
 
     companion object {
         @Volatile //thread safety
@@ -65,16 +68,6 @@ abstract class ExTrDatabase : RoomDatabase() {
                 database?.currencyDao()?.insertAllFromJson(it)
             }
 
-//            val currency = Currency(0, "USD", "DOllar", "$")
-//            val currency2 = Currency(9, "SEK", "DOllar", "kr")
-//            val moneyType = MoneyType(1, "Card", 1, 2)
-//            val moneyType2 = MoneyType(2, "Cash", 1, 2)
-
-            val balance = Balance(currencyId = 1, moneyTypeId = 1, amount = 13.123f, customName = "blabla")
-            val balance2 = Balance(currencyId = 9, moneyTypeId = 2, amount = 12323.3125f, customName = "blabla")
-
-            database?.balanceDao()?.insert(balance)
-            database?.balanceDao()?.insert(balance2)
 
         }
     }

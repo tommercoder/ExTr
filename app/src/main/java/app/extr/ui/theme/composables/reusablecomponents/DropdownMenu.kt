@@ -48,12 +48,13 @@ import app.extr.ui.theme.shapeScheme
 @Composable
 fun CurrenciesDropDownMenu(
     modifier: Modifier = Modifier,
-    items: List<Currency>,
+    items: List<Currency>, //passed list must be not empty
     onItemSelected: (Currency) -> Unit,
-    borderShown: Boolean
+    borderShown: Boolean,
+    selectedPassed: Currency? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf(items[0]) }
+    var selectedItem by remember { mutableStateOf(selectedPassed ?: items.first()) }
 
     Box(
         modifier = modifier

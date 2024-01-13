@@ -48,9 +48,9 @@ class BalancesViewModel(
         }
     }
 
-    fun deleteBalance(balanceId: Int){
+    fun deleteBalance(balance: Balance){
         viewModelScope.launch {
-            balancesRepository.delete(balanceId)
+            balancesRepository.delete(balance)
         }
     }
 }
