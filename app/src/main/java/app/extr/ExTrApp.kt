@@ -59,13 +59,16 @@ fun ExTrApp(
         topBar = {
             val viewModel: UsedCurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory)
             val uiState by viewModel.uiState.collectAsState()
-
+            val currentlySelectedCurrency by viewModel.currentlySelectedCurrency.collectAsState()
             TopBar(
                 uiState = uiState,
-                onItemSelected = { /*update last selected of UserCurrencies*/ },
+                onItemSelected = { currency ->
+                    viewModel.selectCurrency(currencyId = currency.currencyId)
+                },
                 scrollBehavior = scrollBehavior,
                 isAddButtonVisible = navBackStackEntry == Screens.RoundChart.route
-                        || navBackStackEntry == Screens.Chart.route
+                        || navBackStackEntry == Screens.Chart.route,
+                selectedCurrency = currentlySelectedCurrency?.currency
             )
         },
         bottomBar = {

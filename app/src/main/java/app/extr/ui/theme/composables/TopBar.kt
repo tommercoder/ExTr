@@ -26,24 +26,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import app.extr.data.types.Currency
 import app.extr.data.types.CurrencyLastSelected
 import app.extr.data.types.MoneyType
 import app.extr.data.types.UsedCurrency
 import app.extr.data.types.UsedCurrencyDetails
+import app.extr.ui.theme.composables.reusablecomponents.CurrenciesDropDownMenu
 import app.extr.utils.helpers.UiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
     uiState: UiState<List<UsedCurrencyDetails>>,
-    onItemSelected: (MoneyType) -> Unit,
+    onItemSelected: (Currency) -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
-    isAddButtonVisible: Boolean
+    isAddButtonVisible: Boolean,
+    selectedCurrency: Currency? = null
 ) {
 
     when (uiState) {
@@ -74,53 +78,16 @@ fun TopBar(
                     if(uiState.data.isEmpty()){
                         return@LargeTopAppBar
                     }
-                    val selectedItem by remember(uiState.data) {
-                        mutableStateOf(uiState.data.maxBy { it.usedCurrency.selectionIndex })
-                    }
-                    Box(
-                        modifier = Modifier
-                            .clickable { expanded = true }
-                            .clip(MaterialTheme.shapes.medium)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(16.dp)
-                        ) {
+                    val data by rememberUpdatedState(uiState.data)
 
-                            val selectedItemText = selectedItem.currency.fullName
-                            //todo: replace with symbol
-                            val selectedItemSymbol = selectedItem.currency.symbol
-
-                            Icon(
-                                imageVector = Icons.Filled.ArrowDropDown,
-                                contentDescription = "Dropdown Arrow"
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            Text(text = selectedItemSymbol + selectedItemText)
-
-                        }
-                    }
-
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        uiState.data.forEach {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        it.currency.fullName,
-                                        style = MaterialTheme.typography.labelMedium
-                                    )
-                                },
-                                onClick = { //todo
-                                     },
-
-                            )
-                        }
-                    }
+                    CurrenciesDropDownMenu(
+                        items = data.map { it.currency }, // extract a list of currencies only // todo: move to viewmodel
+                        onItemSelected = { currency ->
+                            onItemSelected(currency)
+                        },
+                        borderShown = false,
+                        selectedPassed = selectedCurrency
+                    )
                 }
             )
         }

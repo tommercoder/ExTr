@@ -54,7 +54,7 @@ fun CurrenciesDropDownMenu(
     selectedPassed: Currency? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf(selectedPassed ?: items.first()) }
+    var selectedItem by remember(selectedPassed) { mutableStateOf(selectedPassed ?: items.first()) }
 
     Box(
         modifier = modifier

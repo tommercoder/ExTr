@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.Flow
 interface UsedCurrenciesRepository{
     suspend fun insertIfNotExists(usedCurrency: UsedCurrency) //OnConflictStrategy.IGNORE
     suspend fun delete(usedCurrencyId: Int)
+    suspend fun selectCurrency(currencyId: Int)
     fun getUsedCurrencies() : Flow<List<UsedCurrencyDetails>>
+    fun getCurrentlySelectedUsedCurrency() : Flow<UsedCurrencyDetails>
 }
 
 class UsedCurrenciesRepositoryImpl(private val usedCurrencyDao: UsedCurrencyDao) : UsedCurrenciesRepository {
@@ -22,5 +24,13 @@ class UsedCurrenciesRepositoryImpl(private val usedCurrencyDao: UsedCurrencyDao)
 
     override fun getUsedCurrencies(): Flow<List<UsedCurrencyDetails>> {
          return usedCurrencyDao.getUsedCurrencies()
+    }
+
+    override suspend fun selectCurrency(currencyId: Int){
+        usedCurrencyDao.updateIndices(currencyId)
+    }
+
+    override fun getCurrentlySelectedUsedCurrency(): Flow<UsedCurrencyDetails> {
+        return usedCurrencyDao.getCurrentlySelectedUsedCurrency()
     }
 }
