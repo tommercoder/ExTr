@@ -1,6 +1,8 @@
 package app.extr.ui.theme
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.wear.compose.material3.ContentAlpha
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
@@ -12,3 +14,5 @@ val Pink40 = Color(0xFF7D5260)
 
 //money types
 val mt_card_color = Color(0xFFF7E0D5)
+
+val Color.muted @Composable get() = this.copy(alpha = ContentAlpha.medium)

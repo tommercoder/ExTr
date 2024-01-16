@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface UsedCurrencyDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(usedCurrency: UsedCurrency)
 
     @Query("DELETE FROM used_currencies WHERE currencyId = :currencyId")

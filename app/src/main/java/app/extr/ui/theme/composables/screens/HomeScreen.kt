@@ -1,7 +1,9 @@
 package app.extr.ui.theme.composables.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -9,6 +11,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -17,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -27,6 +31,8 @@ import app.extr.ui.theme.composables.BalanceBottomSheet
 import app.extr.ui.theme.composables.reusablecomponents.PlusButton
 import app.extr.ui.theme.composables.reusablecomponents.RoundedCard
 import app.extr.ui.theme.mt_card_color
+import app.extr.ui.theme.muted
+import app.extr.utils.helpers.AnimatedText
 import app.extr.utils.helpers.UiState
 import app.extr.utils.helpers.resproviders.MoneyTypesRes
 
@@ -43,44 +49,69 @@ fun HomeScreen(
         }
 
         is UiState.Success -> {
-            var showDeleteDialog by remember { mutableStateOf(false) }
-            var longPressedBalance by remember { mutableStateOf<Balance?>(null) }
-            val data by rememberUpdatedState(uiState.data)
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                contentPadding = PaddingValues(13.dp),
-                verticalArrangement = Arrangement.spacedBy(7.dp),
-                horizontalArrangement = Arrangement.spacedBy(7.dp),
 
-                ) {
-                val elementSize = 180.dp
-                items(data.size) { i ->
-                    RoundedCard(
-                        icon = MoneyTypesRes.getRes(data[i].moneyType.iconId).icon,
-                        text = data[i].moneyType.name,
-                        secondaryText = data[i].balance.customName,
-                        color = MoneyTypesRes.getRes(data[i].moneyType.colorId).color,
-                        currencySymbol = data[i].currency.symbol,
-                        number = data[i].balance.amount,
-                        modifier = Modifier.size(elementSize),
-                        onLongPress = {
-                            longPressedBalance = data[i].balance
-                            showDeleteDialog = true
-                        }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            )
+            {
+                Text(
+                    text = stringResource(R.string.label_total_balance),
+                    style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.inverseSurface.muted)
+                )
+
+                Row() {
+
+                    Text(
+                        text = "$",
+                        style = MaterialTheme.typography.displaySmall.copy(color = MaterialTheme.colorScheme.inverseSurface.muted)
+                    )
+
+                    AnimatedText(targetValue = 10.245f, textStyle = MaterialTheme.typography.displayLarge)
+                    //Text(text = "10.245", style = MaterialTheme.typography.displayLarge)
+                }
+
+
+                var showDeleteDialog by remember { mutableStateOf(false) }
+                var longPressedBalance by remember { mutableStateOf<Balance?>(null) }
+                val data by rememberUpdatedState(uiState.data)
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(13.dp),
+                    verticalArrangement = Arrangement.spacedBy(7.dp),
+                    horizontalArrangement = Arrangement.spacedBy(7.dp),
+
+                    ) {
+                    val elementSize = 180.dp
+                    items(data.size) { i ->
+                        RoundedCard(
+                            icon = MoneyTypesRes.getRes(data[i].moneyType.iconId).icon,
+                            text = data[i].moneyType.name,
+                            secondaryText = data[i].balance.customName,
+                            color = MoneyTypesRes.getRes(data[i].moneyType.colorId).color,
+                            currencySymbol = data[i].currency.symbol,
+                            number = data[i].balance.amount,
+                            modifier = Modifier.size(elementSize),
+                            onLongPress = {
+                                longPressedBalance = data[i].balance
+                                showDeleteDialog = true
+                            }
+                        )
+                    }
+                    item {
+                        PlusButton(onClick = { onAddBalanceClicked() }, size = elementSize)
+                    }
+                }
+
+
+                if (showDeleteDialog) {
+                    DeleteBalanceDialog(
+                        onDeleteClicked = {
+                            onDeleteBalanceClicked(longPressedBalance!!)
+                        },
+                        onDismissed = { showDeleteDialog = false }
                     )
                 }
-                item {
-                    PlusButton(onClick = { onAddBalanceClicked() }, size = elementSize)
-                }
-            }
-
-            if (showDeleteDialog) {
-                DeleteBalanceDialog(
-                    onDeleteClicked = {
-                        onDeleteBalanceClicked(longPressedBalance!!)
-                    },
-                    onDismissed = { showDeleteDialog = false }
-                )
             }
         }
 

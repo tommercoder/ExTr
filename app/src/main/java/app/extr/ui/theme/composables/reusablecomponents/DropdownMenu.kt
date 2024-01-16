@@ -8,12 +8,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -35,8 +37,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontVariation.width
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.extr.R
@@ -55,9 +59,11 @@ fun CurrenciesDropDownMenu(
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedItem by remember(selectedPassed) { mutableStateOf(selectedPassed ?: items.first()) }
+    var boxWidth by remember { mutableStateOf(0.dp) }
 
     Box(
         modifier = modifier
+            .onSizeChanged { boxWidth = it.width.dp }
             .clip(MaterialTheme.shapeScheme.large)
             .then(
                 if (borderShown)
@@ -67,9 +73,6 @@ fun CurrenciesDropDownMenu(
                     )
                 else Modifier
             ),
-//        expanded = expanded,
-//        onExpandedChange = { expanded = !expanded }
-        //.wrapContentSize(Alignment.TopStart)
     ) {
         Row(
             modifier = Modifier
@@ -93,24 +96,37 @@ fun CurrenciesDropDownMenu(
         }
 
         DropdownMenu(
-            modifier = Modifier,
+            modifier = Modifier
+                .widthIn(max = boxWidth)
+                .padding(0.dp)
+                .clip(MaterialTheme.shapeScheme.large),
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
-                    modifier = Modifier.clip(MaterialTheme.shapeScheme.large),
-                    text = { Text(item.symbol + " " + item.shortName) },
+                    modifier = Modifier
+                        .width(boxWidth)
+                        .padding(0.dp),
+                    text = {
+                        Text(
+                            text = item.symbol + " " + item.shortName,
+                           /// modifier = Modifier.width(boxWidth)
+                        )
+                    },
                     onClick = {
                         onItemSelected(item)
-                        selectedItem = item
                         expanded = false
+
+                        if (selectedPassed == null) {
+                            selectedItem =
+                                item // for those dropdowns where a user should immediately see selected value without additional logic
+                        }
                     }
                 )
             }
         }
     }
-
 }
 
 @Preview

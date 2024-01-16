@@ -1,9 +1,11 @@
 package app.extr.ui.theme
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -52,15 +54,13 @@ fun TopBar(
 
     when (uiState) {
         is UiState.Loading -> {
-            CircularProgressIndicator(
-                strokeWidth = 2.dp,
-                modifier = Modifier.size(16.dp)
-            )
+//            CircularProgressIndicator(
+//                strokeWidth = 2.dp,
+//                modifier = Modifier.size(16.dp)
+//            )
         }
 
         is UiState.Success -> {
-            var expanded by remember { mutableStateOf(false) }
-
             LargeTopAppBar(
                 title = {},
                 scrollBehavior = scrollBehavior,
@@ -75,19 +75,25 @@ fun TopBar(
                     }
                 },
                 actions = {
-                    if(uiState.data.isEmpty()){
+                    if (uiState.data.isEmpty()) {
                         return@LargeTopAppBar
                     }
                     val data by rememberUpdatedState(uiState.data)
 
-                    CurrenciesDropDownMenu(
-                        items = data.map { it.currency }, // extract a list of currencies only // todo: move to viewmodel
-                        onItemSelected = { currency ->
-                            onItemSelected(currency)
-                        },
-                        borderShown = false,
-                        selectedPassed = selectedCurrency
-                    )
+                    Row(
+                        //modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        CurrenciesDropDownMenu(
+                            modifier = Modifier.fillMaxWidth(0.5f),
+                            items = data.map { it.currency }, // extract a list of currencies only // todo: move to viewmodel
+                            onItemSelected = { currency ->
+                                onItemSelected(currency)
+                            },
+                            borderShown = false,
+                            selectedPassed = selectedCurrency
+                        )
+                    }
                 }
             )
         }
