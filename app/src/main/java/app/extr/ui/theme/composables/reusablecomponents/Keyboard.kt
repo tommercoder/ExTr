@@ -1,23 +1,15 @@
 package app.extr.ui.theme.composables.reusablecomponents
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Email
@@ -25,21 +17,28 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,8 +46,9 @@ import app.extr.R
 import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.ExTrTheme
 import app.extr.ui.theme.shapeScheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomKeyboard(
     currencySymbol: Char,
@@ -68,68 +68,127 @@ fun CustomKeyboard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.align(
-                Alignment.CenterHorizontally)
+                Alignment.CenterHorizontally
+            )
         ) {
             Text(
+                modifier = Modifier
+                    .padding(end = AppPadding.ExtraSmall),
                 text = currencySymbol.toString(),
-                style = MaterialTheme.typography.displaySmall
+                style = MaterialTheme.typography.displaySmall.copy(color = MaterialTheme.colorScheme.secondary)
             )
 
             Text(
-                text = inputValue,
-                style = MaterialTheme.typography.displayLarge
+                modifier = Modifier.align(Alignment.CenterVertically),
+                text = inputValue.ifBlank { "0.00" },
+                style = if (inputValue.isNotBlank())
+                    MaterialTheme.typography.displayLarge
+                else
+                    MaterialTheme.typography.displayLarge.copy(color = MaterialTheme.colorScheme.secondary)
             )
         }
 
+        val focusManager = LocalFocusManager.current
+        val keyboardController = LocalSoftwareKeyboardController.current
 
         TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = AppPadding.Medium, bottom = AppPadding.Medium),
             value = nameValue,
-            //textStyle = TextStyle(textAlign = TextAlign.Center),
-            placeholder = { Text(text = textFieldDefaultText, textAlign = TextAlign.Center) },
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent,
+                //cursorColor = Color.Transparent,
+            ),
+            textStyle = TextStyle(textAlign = TextAlign.Center),
+            placeholder = {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        //modifier = Modifier.align(Alignment.CenterHorizontally),
+                        text = textFieldDefaultText,
+                        //textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center)
+                    )
+                }
+            },
             onValueChange = {
                 if (it.length <= maxTextFieldCharacters) {
                     onNameChange(it)
                 }
             },
-            //label = { Text(textFieldLabel) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = AppPadding.Medium, bottom = AppPadding.Medium)
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+                focusManager.clearFocus(force = true)
+            }),
         )
 
         // Keyboard grid
-        val keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0")
+        val configuration = LocalConfiguration.current
+        val screenWidth = configuration.screenWidthDp.dp
+        val squareSize = screenWidth / 4
+        //Log.d("TAG", squareSize.toString()) //102.75.dp
+        val keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", ".")
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
             //todo: move buttons modifier to a const
-            val buttonTempSize = 100.dp
             // Numeric buttons
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                modifier = Modifier.weight(2f),
-                contentPadding = PaddingValues(AppPadding.Small)
-            ) {
-                items(keys.size) { index ->
-                    val key = keys[index]
-                    if (key.isNotBlank()) {
-                        SquareButtonText(
-                            key = key,
-                            onClicked = { onValueChange(it) },
-                            modifier = Modifier
-                                .size(buttonTempSize)
-                                .padding(AppPadding.ExtraSmall)//.weight(1f).aspectRatio(1f)
-                        )
-                    }
-                }
-                item {
+//            LazyVerticalGrid(
+//                columns = GridCells.Fixed(3),
+//                modifier = Modifier.weight(3f),
+//                contentPadding = PaddingValues(AppPadding.ExtraSmall)
+//            ) {
+//                items(keys.size) { index ->
+//                    val key = keys[index]
+//                    if (key.isNotBlank()) {
+//                        SquareButtonText(
+//                            key = key,
+//                            onClicked = { onValueChange(it) },
+//                            modifier = Modifier
+//                                .size(squareSize)
+//                                .padding(AppPadding.ExtraSmall)
+//                        )
+//                    }
+//                }
+//                item {
+//                    SquareButtonText(
+//                        key = ".",
+//                        onClicked = { onValueChange(it) },
+//                        modifier = Modifier
+//                            .size(squareSize)
+//                            .padding(AppPadding.ExtraSmall),
+//                        isEnabled = inputValue.isNotBlank() && !inputValue.contains('.')
+//                    )
+//                }
+//            }
+
+            NonLazyGrid(
+                columns = 3,
+                itemCount = keys.size,
+                modifier = Modifier
+                    .padding(AppPadding.ExtraSmall)
+                    .weight(3f)
+            ) { it ->
+                if (keys[it].isNotBlank()) {
                     SquareButtonText(
-                        key = ".",
-                        onClicked = { onValueChange(it) },
+                        key = keys[it],
+                        onClicked = {
+                            onValueChange(it)
+                        },
                         modifier = Modifier
-                            .size(buttonTempSize)
-                            .padding(AppPadding.ExtraSmall)//.weight(1f).aspectRatio(1f),
-                        , isEnabled = inputValue.isNotBlank() && !inputValue.contains('.')
+                            .size(squareSize)
+                            .padding(AppPadding.ExtraSmall),
+                        isEnabled = if (keys[it] == ".") inputValue.isNotBlank() && !inputValue.contains(
+                            '.'
+                        ) else true
                     )
                 }
             }
@@ -137,32 +196,31 @@ fun CustomKeyboard(
 
             // Function buttons
             Column(
-                Modifier.padding(AppPadding.Small)
+                Modifier
+                    .padding(AppPadding.ExtraSmall)
+                    .weight(1f)
             ) {
                 SquareButtonIcon(
                     modifier = Modifier
-                        .size(buttonTempSize)
-                        .padding(AppPadding.ExtraSmall)//.weight(1f).aspectRatio(1f),
-                    , icon = Icons.Rounded.Clear,
+                        .size(squareSize)
+                        .padding(AppPadding.ExtraSmall),
+                    icon = Icons.Rounded.Clear,
                     onClicked = { onEraseClick() }
                 )
                 if (showCalendar) {
                     SquareButtonIcon(
                         modifier = Modifier
-                            .size(buttonTempSize)
-                            .padding(AppPadding.ExtraSmall)//.weight(1f).aspectRatio(1f),
-                        , icon = Icons.Rounded.Email,
+                            .size(squareSize)
+                            .padding(AppPadding.ExtraSmall),
+                        icon = Icons.Rounded.Email,
                         onClicked = { onCalendarClick() }
                     )
-                } else {
-                    //Spacer(modifier = Modifier.weight(1f).aspectRatio(1f)) // Empty space
                 }
                 SquareButtonIcon(
                     modifier = Modifier
-                        .size(buttonTempSize)
-                        .fillMaxHeight()
-                        .padding(AppPadding.ExtraSmall)//.weight(1f).aspectRatio(1f),
-                    , icon = Icons.Rounded.Check,
+                        .size(width = squareSize, height = squareSize * 2)
+                        .padding(AppPadding.ExtraSmall),
+                    icon = Icons.Rounded.Check,
                     onClicked = { onAcceptClick() },
                     isEnabled = inputValue.isNotBlank()
                 )
@@ -180,12 +238,12 @@ fun SquareButtonText(
 ) {
     Button(
         onClick = { if (key.isNotBlank()) onClicked(key) },
-        modifier = modifier,
+        modifier = modifier,//.aspectRatio(1f),
         enabled = isEnabled,
         shape = MaterialTheme.shapeScheme.extraLarge,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.inversePrimary
+            contentColor = MaterialTheme.colorScheme.onPrimary
         )
     ) {
         Text(text = key, style = MaterialTheme.typography.titleLarge)
@@ -199,18 +257,18 @@ fun SquareButtonIcon(
     onClicked: () -> Unit,
     isEnabled: Boolean = true
 ) {
-    IconButton(
+    Button(
         onClick = onClicked,
-        modifier = modifier
-            .background(
-                color = MaterialTheme.colorScheme.primary,
-                shape = MaterialTheme.shapeScheme.extraLarge
-            ),
-        content = {
-            Icon(imageVector = icon, contentDescription = null)
-        },
-        enabled = isEnabled
-    )
+        modifier = modifier,
+        enabled = isEnabled,
+        shape = MaterialTheme.shapeScheme.extraLarge,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        )
+    ) {
+        Icon(imageVector = icon, contentDescription = null)
+    }
 }
 
 @Composable

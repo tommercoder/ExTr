@@ -23,23 +23,11 @@ class BalancesViewModel(
     private var _balances = MutableStateFlow<UiState<List<BalanceWithDetails>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<BalanceWithDetails>>> = _balances.asStateFlow()
 
+    private var _totalBalance = MutableStateFlow(0.0f)
+    val totalBalance: StateFlow<Float> = _totalBalance.asStateFlow()
+
     init {
         loadData()
-    }
-
-    private fun loadData() {
-        viewModelScope.launch {
-            _balances.value = UiState.Loading
-            try {
-                balancesRepository.getBalancesForCurrentCurrency().collect {
-                    _balances.value =
-                        UiState.Success(it)
-                }
-            } catch (e: Exception) {
-                Log.e("YourViewModel", "Error fetching balances", e)
-
-            }
-        }
     }
 
     fun addBalance(balance: Balance){
@@ -53,4 +41,30 @@ class BalancesViewModel(
             balancesRepository.delete(balance)
         }
     }
+
+    private fun loadData() {
+        viewModelScope.launch {
+            _balances.value = UiState.Loading
+            try {
+                balancesRepository.getBalancesForCurrentCurrency().collect { balances ->
+                    _balances.value =
+                        UiState.Success(balances)
+
+                    updateTotalBalance(balances)
+                }
+            } catch (e: Exception) {
+                Log.e("YourViewModel", "Error fetching balances", e)
+
+            }
+        }
+    }
+
+    private fun updateTotalBalance(balances: List<BalanceWithDetails>) {
+        var total = 0.0f
+        for (balance in balances) {
+            total += balance.balance.amount
+        }
+        _totalBalance.value = total
+    }
+
 }

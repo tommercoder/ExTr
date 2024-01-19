@@ -102,7 +102,7 @@ fun ProfileScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CircularProgressIndicator()
+//                CircularProgressIndicator()
             }
 
         }

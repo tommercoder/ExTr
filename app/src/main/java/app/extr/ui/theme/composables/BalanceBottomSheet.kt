@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -11,8 +12,11 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -44,7 +48,7 @@ import app.extr.ui.theme.mappers.toMoneyType
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun BalanceBottomSheet(
     modifier: Modifier = Modifier,
@@ -66,7 +70,6 @@ fun BalanceBottomSheet(
     var inputValue by remember { mutableStateOf("") }
     var nameValue by remember { mutableStateOf("") }
 
-    // Side effects for initializing states
     LaunchedEffect(currenciesUiState) {
         if (currenciesUiState is UiState.Success && currenciesUiState.data.isNotEmpty()) {
             selectedCurrency = currenciesUiState.data.first()
@@ -83,9 +86,12 @@ fun BalanceBottomSheet(
         onDismissRequest = { onDismissed() },
         //modifier = Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.7f),
         sheetState = sheetState,
-        modifier = Modifier.padding(bottom = bottomPadding)
+        //windowInsets = WindowInsets.navigationBars
+
     ) {
-        Column {
+        Column(
+            //modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)//.padding(bottom = bottomPadding)
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,10 +128,11 @@ fun BalanceBottomSheet(
             }
 
             Text(
-                text = stringResource(id = R.string.label_balance),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(top = AppPadding.Small, bottom = AppPadding.Small)
+                    .padding(top = AppPadding.Small, bottom = AppPadding.Small),
+                text = stringResource(id = R.string.label_balance),
+                style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.secondary)
             )
 
             CustomKeyboard(

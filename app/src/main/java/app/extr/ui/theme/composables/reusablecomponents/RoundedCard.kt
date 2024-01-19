@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import app.extr.R
-import app.extr.ui.theme.mt_card_color
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +53,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.extr.ui.theme.AppPadding
+import com.example.compose.md_theme_light_primary
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
@@ -72,6 +73,7 @@ fun RoundedCard(
     var padding by remember { mutableStateOf(0.dp) }
     var numberSize by remember { mutableStateOf(0.sp) }
     var isLongPressed by remember { mutableStateOf(false) }
+    var isLongPressDetected by remember { mutableStateOf(false) }
     val coroutineScope =  rememberCoroutineScope()
 
     val backgroundColor by animateColorAsState(
@@ -85,25 +87,28 @@ fun RoundedCard(
         }
         .let {
             if (onClick != null) {
-                it.clickable { onClick() }
+                it.clickable {
+                    onClick() }
             } else it
         }
         .let {
             if (onLongPress != null) {
-                it.pointerInput(Unit) {
-                    detectTapGestures(
-                        onLongPress = {
-                            onLongPress()
-                        },
-                        onPress = {
+                it.pointerInteropFilter { motionEvent ->
+                    when (motionEvent.action) {
+                        MotionEvent.ACTION_DOWN -> {
                             isLongPressed = true
-                            onClick?.invoke()
                             coroutineScope.launch {
-                                awaitRelease()
-                                isLongPressed = false
+                                delay(500) // Long Press Threshold
+                                if (isLongPressed) {
+                                    onLongPress?.invoke()
+                                }
                             }
                         }
-                    )
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                            isLongPressed = false
+                        }
+                    }
+                    true
                 }
             } else it
         }
@@ -126,7 +131,7 @@ fun RoundedCard(
                 Box(
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(color = Color.White)
+                        .background(color = MaterialTheme.colorScheme.onPrimary)
                         .aspectRatio(1f)
                         .padding(padding),
                     contentAlignment = Alignment.Center,
@@ -169,9 +174,12 @@ fun RoundedCard(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
+                    modifier = Modifier.padding(end = AppPadding.ExtraSmall),
                     text = currencySymbol.toString(),
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = numberSize / 2),
-                    color = Color.Gray
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontSize = numberSize / 2,
+                        color = MaterialTheme.colorScheme.secondary
+                    ),
                 )
                 Text(
                     text = number.toString(),
@@ -190,7 +198,7 @@ fun RoundedCardPreview() {
         icon = R.drawable.card_icon,
         text = "Card",
         secondaryText = "blabla",
-        color = mt_card_color,
+        color = md_theme_light_primary,
         currencySymbol = '$',
         number = 25.123f,
         modifier = Modifier.size(180.dp, 180.dp)

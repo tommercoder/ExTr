@@ -22,4 +22,6 @@
     <string name="label_delete_balance">Delete balance</string>
     <string name="label_delete_balance_confirmation">Are you sure you want to delete this balance?</string> <!--todo: change to accept an argument-->
     <string name="label_total_balance">Total balance</string>
+    <string name="label_no_balances">No balances yet</string>
+    <string name="label_create_balance_hint">Create a new balance by pressing the "plus" button below</string>
 </resources>

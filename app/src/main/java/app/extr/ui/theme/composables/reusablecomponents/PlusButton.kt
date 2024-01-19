@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,15 +38,15 @@ fun PlusButton(
             Modifier
                 .size(circleSize)
                 .clip(CircleShape)
-                .background(Color.LightGray)
+                .background(MaterialTheme.colorScheme.primary)
                 .clickable { onClick() },
             contentAlignment = Alignment.Center
-        )
-        {
+        ) {
             Icon(
                 Icons.Filled.Add,
                 contentDescription = "Add",
-                modifier = Modifier.size(iconSize)
+                modifier = Modifier.size(iconSize),
+                //tint = MaterialTheme.colorScheme.background
             )
         }
 

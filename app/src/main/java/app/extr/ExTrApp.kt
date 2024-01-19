@@ -83,6 +83,7 @@ fun ExTrApp(
             composable(Screens.Home.route) {
                 val viewModel: BalancesViewModel = viewModel(factory = ViewModelsProvider.Factory)
                 val uiState by viewModel.uiState.collectAsState()
+                val totalBalance by viewModel.totalBalance.collectAsState()
                 var isAddBalanceSheetShown by remember {
                     mutableStateOf(false)
                 }
@@ -90,6 +91,7 @@ fun ExTrApp(
                 HomeScreen(
                     modifier = Modifier.fillMaxSize(),
                     uiState = uiState,
+                    totalBalance = totalBalance,
                     onAddBalanceClicked = {
                         isAddBalanceSheetShown = true
                     },

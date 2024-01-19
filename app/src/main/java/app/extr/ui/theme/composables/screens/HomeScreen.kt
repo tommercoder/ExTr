@@ -1,16 +1,22 @@
 package app.extr.ui.theme.composables.screens
 
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,24 +28,32 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.extr.R
 import app.extr.data.types.Balance
 import app.extr.data.types.BalanceWithDetails
+import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.composables.BalanceBottomSheet
 import app.extr.ui.theme.composables.reusablecomponents.PlusButton
 import app.extr.ui.theme.composables.reusablecomponents.RoundedCard
-import app.extr.ui.theme.mt_card_color
-import app.extr.ui.theme.muted
 import app.extr.utils.helpers.AnimatedText
 import app.extr.utils.helpers.UiState
 import app.extr.utils.helpers.resproviders.MoneyTypesRes
+import com.example.compose.balance_light_card_color
+import com.example.compose.balance_light_cash_color
+import com.example.compose.balance_light_electronic_wallet_color
+import com.example.compose.balance_light_savings_color
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     uiState: UiState<List<BalanceWithDetails>>,
+    totalBalance: Float,
     onAddBalanceClicked: () -> Unit,
     onDeleteBalanceClicked: (Balance) -> Unit
 ) {
@@ -49,39 +63,37 @@ fun HomeScreen(
         }
 
         is UiState.Success -> {
+            var showDeleteDialog by remember { mutableStateOf(false) }
+            var longPressedBalance by remember { mutableStateOf<Balance?>(null) }
+            val data by rememberUpdatedState(uiState.data)
 
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            )
-            {
-                Text(
-                    text = stringResource(R.string.label_total_balance),
-                    style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.inverseSurface.muted)
-                )
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(40.dp))
 
-                Row() {
-
-                    Text(
-                        text = "$",
-                        style = MaterialTheme.typography.displaySmall.copy(color = MaterialTheme.colorScheme.inverseSurface.muted)
+                if(totalBalance == 0.0f){
+                    NoBalancesYet()
+                }
+                else {
+                    TotalBalance(
+                        totalBalance = totalBalance,
+                        currencySign = data.firstOrNull()?.currency?.symbol ?: ' '
                     )
-
-                    AnimatedText(targetValue = 10.245f, textStyle = MaterialTheme.typography.displayLarge)
-                    //Text(text = "10.245", style = MaterialTheme.typography.displayLarge)
+                    Spacer(modifier = Modifier.height(50.dp))
                 }
 
-
-                var showDeleteDialog by remember { mutableStateOf(false) }
-                var longPressedBalance by remember { mutableStateOf<Balance?>(null) }
-                val data by rememberUpdatedState(uiState.data)
+//                AnimatedVisibility(
+//                    visible = true,
+//                    enter = fadeIn() + expandVertically(),
+//                    exit = fadeOut() + shrinkVertically()
+//                ) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(13.dp),
                     verticalArrangement = Arrangement.spacedBy(7.dp),
                     horizontalArrangement = Arrangement.spacedBy(7.dp),
-
-                    ) {
+                ) {
                     val elementSize = 180.dp
                     items(data.size) { i ->
                         RoundedCard(
@@ -95,6 +107,9 @@ fun HomeScreen(
                             onLongPress = {
                                 longPressedBalance = data[i].balance
                                 showDeleteDialog = true
+                            },
+                            onClick = {
+                                Log.d("TAG", "Clicked " + data[i].balance.amount)
                             }
                         )
                     }
@@ -102,7 +117,7 @@ fun HomeScreen(
                         PlusButton(onClick = { onAddBalanceClicked() }, size = elementSize)
                     }
                 }
-
+                // }
 
                 if (showDeleteDialog) {
                     DeleteBalanceDialog(
@@ -115,9 +130,101 @@ fun HomeScreen(
             }
         }
 
+
         is UiState.Error -> {
 
         }
+    }
+}
+
+@Composable
+fun TotalBalance(
+    modifier: Modifier = Modifier,
+    totalBalance: Float,
+    currencySign: Char
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = stringResource(R.string.label_total_balance),
+            style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.secondary)
+        )
+        Row(
+            modifier = Modifier
+                .padding(top = AppPadding.Medium)
+                .align(
+                    Alignment.CenterHorizontally
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                modifier = Modifier.padding(end = AppPadding.Small),
+                text = currencySign.toString(),
+                style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.secondary)
+            )
+            AnimatedText(
+                targetValue = totalBalance,
+                textStyle = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.ExtraBold),
+                durationMillis = 700
+            )
+        }
+    }
+}
+
+@Composable
+fun NoBalancesYet(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val iconSize = 60.dp
+            Icon(
+                modifier = Modifier.size(iconSize),
+                painter = painterResource(id = R.drawable.card_icon),
+                contentDescription = null,
+                tint = balance_light_card_color
+            )
+            Icon(
+                modifier = Modifier.size(iconSize),
+                painter = painterResource(id = R.drawable.ewallet_icon),
+                contentDescription = null,
+                tint = balance_light_electronic_wallet_color
+            )
+            Icon(
+                modifier = Modifier.size(iconSize),
+                painter = painterResource(id = R.drawable.savings_icon),
+                contentDescription = null,
+                tint = balance_light_savings_color
+            )
+            Icon(
+                modifier = Modifier.size(iconSize),
+                painter = painterResource(id = R.drawable.cash_icon),
+                contentDescription = null,
+                tint = balance_light_cash_color
+            )
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Text(
+            text = stringResource(id = R.string.label_no_balances),
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        Text(
+            text = stringResource(id = R.string.label_create_balance_hint),
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
+        )
     }
 }
 

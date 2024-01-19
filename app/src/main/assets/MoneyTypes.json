@@ -1,14 +1,26 @@
 [
   {
-    "moneyTypeId": 1,
+    "moneyTypeId": 0,
     "name": "Card",
+    "iconId": 0,
+    "colorId": 0
+  },
+  {
+    "moneyTypeId": 1,
+    "name": "Cash",
     "iconId": 1,
-    "colorId": 2
+    "colorId": 1
   },
   {
     "moneyTypeId": 2,
-    "name": "Cash",
-    "iconId": 1,
+    "name": "Savings",
+    "iconId": 2,
     "colorId": 2
+  },
+  {
+    "moneyTypeId": 3,
+    "name": "E-Wallet",
+    "iconId": 3,
+    "colorId": 3
   }
 ]

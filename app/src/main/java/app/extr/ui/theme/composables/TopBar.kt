@@ -23,6 +23,7 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -61,7 +62,8 @@ fun TopBar(
         }
 
         is UiState.Success -> {
-            LargeTopAppBar(
+           // LargeTopAppBar(
+            TopAppBar (
                 title = {},
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
@@ -76,7 +78,7 @@ fun TopBar(
                 },
                 actions = {
                     if (uiState.data.isEmpty()) {
-                        return@LargeTopAppBar
+                        return@TopAppBar
                     }
                     val data by rememberUpdatedState(uiState.data)
 
