@@ -6,17 +6,20 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,7 +27,11 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,17 +44,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontVariation.width
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.extr.R
 import app.extr.ui.theme.mappers.DropdownItemUi
 import app.extr.data.types.Currency
 import app.extr.ui.theme.shapeScheme
+import app.extr.utils.helpers.crop
 
+
+//todo: move textfield to common composable
+//todo: Create common item?
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrenciesDropDownMenu(
@@ -59,59 +72,65 @@ fun CurrenciesDropDownMenu(
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedItem by remember(selectedPassed) { mutableStateOf(selectedPassed ?: items.first()) }
-    var boxWidth by remember { mutableStateOf(0.dp) }
 
-    Box(
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
         modifier = modifier
-            .onSizeChanged { boxWidth = it.width.dp }
             .clip(MaterialTheme.shapeScheme.large)
             .then(
                 if (borderShown)
                     Modifier.border(
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.inverseSurface),
+                        border = BorderStroke(
+                            1.dp,
+                            MaterialTheme.colorScheme.inverseSurface
+                        ),
                         shape = MaterialTheme.shapeScheme.large
                     )
                 else Modifier
-            ),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = { expanded = !expanded })
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-
-            Text(text = selectedItem.symbol + " " + selectedItem.shortName)
-            Icon(
-                imageVector = if (expanded)
-                    ImageVector.vectorResource(id = R.drawable.expand_less_icon)
-                else
-                    ImageVector.vectorResource(
-                        id = R.drawable.expand_more_icon
-                    ),
-                contentDescription = "Dropdown Arrow"
             )
-        }
-
-        DropdownMenu(
+    ) {
+        TextField(
             modifier = Modifier
-                .widthIn(max = boxWidth)
-                .padding(0.dp)
-                .clip(MaterialTheme.shapeScheme.large),
+                .menuAnchor(),
+            value = selectedItem.symbol + " " + selectedItem.shortName,
+            onValueChange = {},
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
+            ),
+            textStyle = MaterialTheme.typography.bodyMedium,
+            readOnly = true,
+            trailingIcon = {
+                Icon(
+                    imageVector = if (expanded)
+                        ImageVector.vectorResource(id = R.drawable.expand_less_icon)
+                    else
+                        ImageVector.vectorResource(
+                            id = R.drawable.expand_more_icon
+                        ),
+                    contentDescription = null
+                )
+            },
+        )
+
+        ExposedDropdownMenu(
+            modifier = Modifier
+                .crop(vertical = 8.dp),
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
                     modifier = Modifier
-                        .width(boxWidth)
-                        .padding(0.dp),
+                        .clip(MaterialTheme.shapeScheme.large),
                     text = {
                         Text(
                             text = item.symbol + " " + item.shortName,
-                           /// modifier = Modifier.width(boxWidth)
+                            style = MaterialTheme.typography.bodySmall
                         )
                     },
                     onClick = {
@@ -143,87 +162,92 @@ fun CurrenciesDropDownPreview() {
 
 //todo: display icon in an item, and cleanup
 //todo: can I make sure the items are not null?
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReusableDropdownMenu(
     modifier: Modifier = Modifier,
     items: List<DropdownItemUi>,
     onItemSelected: (DropdownItemUi) -> Unit,
     dropdownContentColor: Color = LocalContentColor.current,
-    dropdownBackgroundColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     selectedItem: DropdownItemUi? = null
 ) {
     var selected by remember {
-        mutableStateOf(selectedItem ?: items.firstOrNull())
+        mutableStateOf(selectedItem ?: items.first())
     }
     var expanded by remember { mutableStateOf(false) }
 
-    Box(
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
         modifier = modifier
             .clip(MaterialTheme.shapeScheme.large)
-            .background((selected?.color) ?: dropdownBackgroundColor)
-            .wrapContentSize(Alignment.TopStart),
+            .background(selected.color)
     ) {
-        Row(
+        TextField(
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = { expanded = !expanded })
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val icon = selected?.icon
-            if (icon != null) {
+                .menuAnchor(),
+            value = selected.name,
+            onValueChange = {},
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
+            ),
+            textStyle = MaterialTheme.typography.bodyMedium,
+            readOnly = true,
+            leadingIcon = {
                 Icon(
-                    painterResource(id = icon),
+                    painterResource(id = selected.icon),
                     contentDescription = null,
                     tint = dropdownContentColor
                 )
+            },
+            trailingIcon = {
+                Icon(
+                    imageVector = if (expanded)
+                        ImageVector.vectorResource(id = R.drawable.expand_less_icon)
+                    else
+                        ImageVector.vectorResource(
+                            id = R.drawable.expand_more_icon
+                        ),
+                    contentDescription = null
+                )
             }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = selected?.name ?: "",
-                color = dropdownContentColor
-            )
+        )
 
-            Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                imageVector = if (expanded)
-                    ImageVector.vectorResource(id = R.drawable.expand_less_icon)
-                else
-                    ImageVector.vectorResource(
-                        id = R.drawable.expand_more_icon
-                    ),
-                contentDescription = "Dropdown Arrow",
-                tint = dropdownContentColor
-            )
-        }
-
-
-        DropdownMenu(
+        ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.background(Color.Transparent)
+            modifier = Modifier
+                .crop(vertical = 1.dp)
+                //.background(color = selected.color),
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapeScheme.large),
+                    colors = MenuDefaults.itemColors(
+
+                    ),
                     onClick = {
                         onItemSelected(item)
                         selected = item
                         expanded = false
                     },
                     text = {
-                        //todo: add icon support here?
-                        val icon = selected?.icon
                         Text(
                             text = item.name,
-                            color = item.color ?: dropdownContentColor
+                            style = MaterialTheme.typography.bodyMedium
                         )
-
                     },
-//                    modifier = Modifier.background(
-//                        color = item.color
-//                            ?: dropdownContentColor, //todo: text should be colored I think not the back
-//                        //shape = menuShape
-//                    )
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = item.icon),
+                            contentDescription = null
+                        )
+                    }
                 )
             }
 

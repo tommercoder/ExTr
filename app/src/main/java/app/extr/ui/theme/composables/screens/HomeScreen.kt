@@ -38,16 +38,13 @@ import app.extr.R
 import app.extr.data.types.Balance
 import app.extr.data.types.BalanceWithDetails
 import app.extr.ui.theme.AppPadding
+import app.extr.ui.theme.*
 import app.extr.ui.theme.composables.BalanceBottomSheet
 import app.extr.ui.theme.composables.reusablecomponents.PlusButton
 import app.extr.ui.theme.composables.reusablecomponents.RoundedCard
 import app.extr.utils.helpers.AnimatedText
 import app.extr.utils.helpers.UiState
 import app.extr.utils.helpers.resproviders.MoneyTypesRes
-import com.example.compose.balance_light_card_color
-import com.example.compose.balance_light_cash_color
-import com.example.compose.balance_light_electronic_wallet_color
-import com.example.compose.balance_light_savings_color
 
 @Composable
 fun HomeScreen(
@@ -66,6 +63,8 @@ fun HomeScreen(
             var showDeleteDialog by remember { mutableStateOf(false) }
             var longPressedBalance by remember { mutableStateOf<Balance?>(null) }
             val data by rememberUpdatedState(uiState.data)
+            val currentPalette = LocalCustomColorsPalette.current
+            val moneyTypesRes = remember { MoneyTypesRes(currentPalette) }
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -97,10 +96,10 @@ fun HomeScreen(
                     val elementSize = 180.dp
                     items(data.size) { i ->
                         RoundedCard(
-                            icon = MoneyTypesRes.getRes(data[i].moneyType.iconId).icon,
+                            icon = moneyTypesRes.getRes(data[i].moneyType.iconId).icon,
                             text = data[i].moneyType.name,
                             secondaryText = data[i].balance.customName,
-                            color = MoneyTypesRes.getRes(data[i].moneyType.colorId).color,
+                            color = moneyTypesRes.getRes(data[i].moneyType.iconId).color,
                             currencySymbol = data[i].currency.symbol,
                             number = data[i].balance.amount,
                             modifier = Modifier.size(elementSize),
@@ -191,25 +190,25 @@ fun NoBalancesYet(
                 modifier = Modifier.size(iconSize),
                 painter = painterResource(id = R.drawable.card_icon),
                 contentDescription = null,
-                tint = balance_light_card_color
+                tint = LocalCustomColorsPalette.current.balanceCardColor
             )
             Icon(
                 modifier = Modifier.size(iconSize),
                 painter = painterResource(id = R.drawable.ewallet_icon),
                 contentDescription = null,
-                tint = balance_light_electronic_wallet_color
+                tint = LocalCustomColorsPalette.current.balanceCashColor
             )
             Icon(
                 modifier = Modifier.size(iconSize),
                 painter = painterResource(id = R.drawable.savings_icon),
                 contentDescription = null,
-                tint = balance_light_savings_color
+                tint = LocalCustomColorsPalette.current.balanceSavingsColor
             )
             Icon(
                 modifier = Modifier.size(iconSize),
                 painter = painterResource(id = R.drawable.cash_icon),
                 contentDescription = null,
-                tint = balance_light_cash_color
+                tint = LocalCustomColorsPalette.current.balanceEWalletColor
             )
         }
         Spacer(modifier = Modifier.height(10.dp))

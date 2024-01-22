@@ -67,16 +67,6 @@ val md_theme_dark_surfaceTint = Color(0xFF95CCFF)
 val md_theme_dark_outlineVariant = Color(0xFF42474E)
 val md_theme_dark_scrim = Color(0xFF000000)
 
-//balances
-val balance_light_card_color = Color(0xFFF7E0D5)
-val balance_light_cash_color = Color(0XFFE2EBFD)
-val balance_light_savings_color = Color(0XFFFBF2C0)
-val balance_light_electronic_wallet_color = Color(0XFFC4FFDF)
-
-val balance_dark_card_color = Color(0XFF7B706A)
-val balance_dark_cash_color = Color(0XFF71757E)
-val balance_dark_savings_color = Color(0XFF7D7960)
-val balance_dark_electronic_wallet_color = Color(0XFF627F6F)
 
 val seed = Color(0xFF006399)
 

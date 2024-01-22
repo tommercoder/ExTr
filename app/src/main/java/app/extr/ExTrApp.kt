@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import app.extr.ui.theme.composables.BalanceBottomSheet
 import app.extr.ui.theme.viewmodels.BalancesViewModel
@@ -48,8 +49,8 @@ fun ExTrApp(
     val navBackStackEntry =
         navController.currentBackStackEntryAsState().value?.destination?.route
 
-    val currenciesUiState by currenciesViewModel.currencies.collectAsState()
-    val moneyTypesUiState by moneyTypesViewModel.moneyTypes.collectAsState()
+    val currenciesUiState by currenciesViewModel.currencies.collectAsStateWithLifecycle()
+    val moneyTypesUiState by moneyTypesViewModel.moneyTypes.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = Modifier
@@ -58,8 +59,8 @@ fun ExTrApp(
         ,
         topBar = {
             val viewModel: UsedCurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory)
-            val uiState by viewModel.uiState.collectAsState()
-            val currentlySelectedCurrency by viewModel.currentlySelectedCurrency.collectAsState()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+            val currentlySelectedCurrency by viewModel.currentlySelectedCurrency.collectAsStateWithLifecycle()
             TopBar(
                 uiState = uiState,
                 onItemSelected = { currency ->
@@ -82,8 +83,8 @@ fun ExTrApp(
         ) {
             composable(Screens.Home.route) {
                 val viewModel: BalancesViewModel = viewModel(factory = ViewModelsProvider.Factory)
-                val uiState by viewModel.uiState.collectAsState()
-                val totalBalance by viewModel.totalBalance.collectAsState()
+                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+                val totalBalance by viewModel.totalBalance.collectAsStateWithLifecycle()
                 var isAddBalanceSheetShown by remember {
                     mutableStateOf(false)
                 }
@@ -119,7 +120,7 @@ fun ExTrApp(
             }
             composable(Screens.Profile.route) {
                 val viewModel: UserViewModel = viewModel(factory = ViewModelsProvider.Factory)
-                val uiState by viewModel.uiState.collectAsState()
+                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
                 ProfileScreen(
                     modifier = Modifier.fillMaxSize(),
                     uiState = uiState,

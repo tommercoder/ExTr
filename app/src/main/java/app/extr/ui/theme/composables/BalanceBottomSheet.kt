@@ -44,6 +44,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import app.extr.R
 import app.extr.data.types.Balance
+import app.extr.ui.theme.CustomColorsPalette
+import app.extr.ui.theme.LocalCustomColorsPalette
 import app.extr.ui.theme.mappers.toMoneyType
 import kotlinx.coroutines.launch
 
@@ -118,7 +120,7 @@ fun BalanceBottomSheet(
                     if (moneyTypes.isNotEmpty()) {
                         ReusableDropdownMenu(
                             modifier = Modifier.weight(1f),
-                            items = moneyTypes.map { it.toDropdownItem() },
+                            items = moneyTypes.map { it.toDropdownItem(LocalCustomColorsPalette.current) },
                             onItemSelected = {
                                 selectedMoneyType = it.toMoneyType()
                             },

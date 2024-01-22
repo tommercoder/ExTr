@@ -15,22 +15,23 @@ abstract class ResProvider {
     protected abstract val predefinedAttributes: Map<Int, ResIconColor>
 
     @DrawableRes
-    private val defaultIcon = R.drawable.ic_launcher_background //todo: pick new default icon
-
+    private val defaultIcon = R.drawable.question_mark
     @ColorRes
-    private val defaultColor = md_theme_light_primary
+    private val defaultColor = Color.Unspecified
 
     fun getRes(id: Int): ResIconColor {
         return predefinedAttributes[id] ?: ResIconColor(defaultIcon, defaultColor)
     }
 
-    fun findIconIdByRes(icon: Int): Int {
-        return predefinedAttributes.entries.firstOrNull { it.value.icon == icon }?.key
-            ?: Constants.DefaultIconId
-    }
+//    todo: remove if not used
 
-    fun findColorIdByRes(color: Color): Int {
-        return predefinedAttributes.entries.firstOrNull { it.value.color == color }?.key
-            ?: Constants.DefaultColorId
-    }
+//    fun findIconIdByRes(icon: Int): Int {
+//        return predefinedAttributes.entries.firstOrNull { it.value.icon == icon }?.key
+//            ?: Constants.DefaultIconId
+//    }
+//
+//    fun findColorIdByRes(color: Color): Int {
+//        return predefinedAttributes.entries.firstOrNull { it.value.color == color }?.key
+//            ?: Constants.DefaultColorId
+//    }
 }

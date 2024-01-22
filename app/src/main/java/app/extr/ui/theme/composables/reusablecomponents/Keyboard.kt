@@ -61,7 +61,7 @@ fun CustomKeyboard(
     onAcceptClick: () -> Unit,
     onCalendarClick: () -> Unit = {}, // Optional calendar click handler
     textFieldDefaultText: String = stringResource(id = R.string.label_add_custom_name),
-    maxTextFieldCharacters: Int = 5
+    maxTextFieldCharacters: Int = 8
 ) {
     Column {
         Row(
@@ -132,10 +132,12 @@ fun CustomKeyboard(
 
         // Keyboard grid
         val configuration = LocalConfiguration.current
-        val screenWidth = configuration.screenWidthDp.dp
-        val squareSize = screenWidth / 4
+        val screenWidth = remember(configuration) { configuration.screenWidthDp.dp }
+        val squareSize = remember(configuration) { screenWidth / 4 }
         //Log.d("TAG", squareSize.toString()) //102.75.dp
-        val keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", ".")
+        val dotSign = "."
+        val keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", dotSign)
+
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -181,18 +183,20 @@ fun CustomKeyboard(
                     SquareButtonText(
                         key = keys[it],
                         onClicked = {
-                            onValueChange(it)
+                            if(isValidInput(inputValue + it)) {
+                                onValueChange(it)
+                            }
                         },
                         modifier = Modifier
                             .size(squareSize)
                             .padding(AppPadding.ExtraSmall),
-                        isEnabled = if (keys[it] == ".") inputValue.isNotBlank() && !inputValue.contains(
-                            '.'
-                        ) else true
+                        isEnabled = if (keys[it] == dotSign)
+                            inputValue.isNotBlank() && !inputValue.contains(dotSign)
+                        else
+                            isValidInput(inputValue + keys[it])
                     )
                 }
             }
-
 
             // Function buttons
             Column(
@@ -286,5 +290,14 @@ fun KeyboardPreview() {
                 onEraseClick = { /*TODO*/ },
                 onAcceptClick = { /*TODO*/ })
         }
+    }
+}
+
+fun isValidInput(currentValue: String): Boolean {
+    val parts = currentValue.split(".")
+    return when {
+        parts.size > 2 -> false
+        parts.size == 2 -> parts[0].length <= 5 && parts[1].length <= 2
+        else -> currentValue.length <= 5
     }
 }
