@@ -226,7 +226,7 @@ fun CustomKeyboard(
                         .padding(AppPadding.ExtraSmall),
                     icon = Icons.Rounded.Check,
                     onClicked = { onAcceptClick() },
-                    isEnabled = inputValue.isNotBlank()
+                    isEnabled = inputValue.isNotBlank() && nameValue.isNotBlank()
                 )
             }
         }

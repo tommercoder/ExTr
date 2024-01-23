@@ -1,15 +1,17 @@
 package app.extr
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -27,15 +29,20 @@ import app.extr.ui.theme.viewmodels.ViewModelsProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
+import app.extr.data.types.Balance
 import app.extr.ui.theme.composables.BalanceBottomSheet
 import app.extr.ui.theme.viewmodels.BalancesViewModel
 import app.extr.ui.theme.viewmodels.CurrenciesViewModel
 import app.extr.ui.theme.viewmodels.MoneyTypesViewModel
 import app.extr.ui.theme.viewmodels.UsedCurrenciesViewModel
 import app.extr.ui.theme.viewmodels.UserViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,6 +53,10 @@ fun ExTrApp(
 ) {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
+    val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
     val navBackStackEntry =
         navController.currentBackStackEntryAsState().value?.destination?.route
 
@@ -57,6 +68,7 @@ fun ExTrApp(
             .fillMaxSize()
         //.nestedScroll(scrollBehavior.nestedScrollConnection),
         ,
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         topBar = {
             val viewModel: UsedCurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory)
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -85,9 +97,7 @@ fun ExTrApp(
                 val viewModel: BalancesViewModel = viewModel(factory = ViewModelsProvider.Factory)
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
                 val totalBalance by viewModel.totalBalance.collectAsStateWithLifecycle()
-                var isAddBalanceSheetShown by remember {
-                    mutableStateOf(false)
-                }
+                var isAddBalanceSheetShown by remember { mutableStateOf(false) }
 
                 HomeScreen(
                     modifier = Modifier.fillMaxSize(),
@@ -101,12 +111,23 @@ fun ExTrApp(
                     }
                 )
 
+                val toastText = stringResource(id = R.string.label_snackbar_couldnt_create_balance)
+                var showToast by remember { mutableStateOf(false) }
+                if (showToast) {
+                    Toast.makeText(LocalContext.current, toastText, Toast.LENGTH_SHORT).show()
+                    showToast = false
+                }
                 if (isAddBalanceSheetShown) {
                     BalanceBottomSheet(
                         currenciesUiState = currenciesUiState,
                         moneyTypeUiState = moneyTypesUiState,
                         onSaveClicked = { balance ->
-                            viewModel.addBalance(balance)
+                            if (viewModel.doesBalanceExist(balance)) {
+                                showToast = true
+                            } else {
+                                viewModel.addBalance(balance)
+                                isAddBalanceSheetShown = false
+                            }
                         },
                         onDismissed = { isAddBalanceSheetShown = false }
                     )

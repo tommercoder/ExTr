@@ -30,13 +30,24 @@ class BalancesViewModel(
         loadData()
     }
 
-    fun addBalance(balance: Balance){
+    fun doesBalanceExist(balance: Balance): Boolean {
+        return when (val balances = _balances.value) {
+            is UiState.Success -> balances.data.any {
+                it.balance.currencyId == balance.currencyId
+                        && it.balance.moneyTypeId == balance.moneyTypeId
+                        && it.balance.customName == balance.customName
+            }
+            else -> false
+        }
+    }
+
+    fun addBalance(balance: Balance) {
         viewModelScope.launch {
             balancesRepository.insert(balance)
         }
     }
 
-    fun deleteBalance(balance: Balance){
+    fun deleteBalance(balance: Balance) {
         viewModelScope.launch {
             balancesRepository.delete(balance)
         }

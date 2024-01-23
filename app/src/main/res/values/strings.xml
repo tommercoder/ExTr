@@ -24,4 +24,5 @@
     <string name="label_total_balance">Total balance</string>
     <string name="label_no_balances">No balances yet</string>
     <string name="label_create_balance_hint">Create a new balance by pressing the "plus" button below</string>
+    <string name="label_snackbar_couldnt_create_balance">The same balance already exists.</string>
 </resources>
