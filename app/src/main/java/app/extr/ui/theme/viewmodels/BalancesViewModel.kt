@@ -3,6 +3,7 @@ package app.extr.ui.theme.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.extr.R
 import app.extr.data.repositories.BalancesRepository
 import app.extr.data.types.Balance
 import app.extr.data.types.BalanceWithDetails
@@ -30,6 +31,10 @@ class BalancesViewModel(
         loadData()
     }
 
+    fun refreshData() {
+        loadData()
+    }
+
     fun doesBalanceExist(balance: Balance): Boolean {
         return when (val balances = _balances.value) {
             is UiState.Success -> balances.data.any {
@@ -37,6 +42,7 @@ class BalancesViewModel(
                         && it.balance.moneyTypeId == balance.moneyTypeId
                         && it.balance.customName == balance.customName
             }
+
             else -> false
         }
     }
@@ -64,8 +70,7 @@ class BalancesViewModel(
                     updateTotalBalance(balances)
                 }
             } catch (e: Exception) {
-                Log.e("YourViewModel", "Error fetching balances", e)
-
+                _balances.value = UiState.Error(R.string.error_balances_couldnt_load)
             }
         }
     }

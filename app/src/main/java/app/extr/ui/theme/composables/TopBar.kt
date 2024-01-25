@@ -40,6 +40,7 @@ import app.extr.data.types.CurrencyLastSelected
 import app.extr.data.types.MoneyType
 import app.extr.data.types.UsedCurrency
 import app.extr.data.types.UsedCurrencyDetails
+import app.extr.ui.theme.animations.LoadingAnimation
 import app.extr.ui.theme.composables.reusablecomponents.CurrenciesDropDownMenu
 import app.extr.utils.helpers.UiState
 
@@ -52,13 +53,9 @@ fun TopBar(
     isAddButtonVisible: Boolean,
     selectedCurrency: Currency? = null
 ) {
-
     when (uiState) {
         is UiState.Loading -> {
-//            CircularProgressIndicator(
-//                strokeWidth = 2.dp,
-//                modifier = Modifier.size(16.dp)
-//            )
+
         }
 
         is UiState.Success -> {

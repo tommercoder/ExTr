@@ -42,6 +42,7 @@ import app.extr.ui.theme.viewmodels.CurrenciesViewModel
 import app.extr.ui.theme.viewmodels.MoneyTypesViewModel
 import app.extr.ui.theme.viewmodels.UsedCurrenciesViewModel
 import app.extr.ui.theme.viewmodels.UserViewModel
+import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -108,6 +109,9 @@ fun ExTrApp(
                     },
                     onDeleteBalanceClicked = { balanceId ->
                         viewModel.deleteBalance(balanceId)
+                    },
+                    onRefresh = {
+                        viewModel.refreshData()
                     }
                 )
 

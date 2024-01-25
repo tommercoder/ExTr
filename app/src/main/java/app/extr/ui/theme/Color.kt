@@ -2,7 +2,7 @@ package com.example.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.wear.compose.material3.ContentAlpha
+//import androidx.wear.compose.material3.ContentAlpha
 
 
 val md_theme_light_primary = Color(0xFF006399)
@@ -69,6 +69,3 @@ val md_theme_dark_scrim = Color(0xFF000000)
 
 
 val seed = Color(0xFF006399)
-
-
-val Color.muted @Composable get() = this.copy(alpha = ContentAlpha.medium) // todo: remove

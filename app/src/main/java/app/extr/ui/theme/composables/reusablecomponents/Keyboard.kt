@@ -94,7 +94,7 @@ fun CustomKeyboard(
         TextField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = AppPadding.Medium, bottom = AppPadding.Medium),
+                .padding(top = AppPadding.Medium),
             value = nameValue,
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Color.Transparent,
@@ -110,12 +110,18 @@ fun CustomKeyboard(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        //modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = textFieldDefaultText,
-                        //textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center)
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = textFieldDefaultText,
+                            style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center)
+                        )
+                        Text(
+                            text = stringResource(id = R.string.label_required),
+                            style = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Center)
+                        )
+                    }
                 }
             },
             onValueChange = {
@@ -141,37 +147,6 @@ fun CustomKeyboard(
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
-            //todo: move buttons modifier to a const
-            // Numeric buttons
-//            LazyVerticalGrid(
-//                columns = GridCells.Fixed(3),
-//                modifier = Modifier.weight(3f),
-//                contentPadding = PaddingValues(AppPadding.ExtraSmall)
-//            ) {
-//                items(keys.size) { index ->
-//                    val key = keys[index]
-//                    if (key.isNotBlank()) {
-//                        SquareButtonText(
-//                            key = key,
-//                            onClicked = { onValueChange(it) },
-//                            modifier = Modifier
-//                                .size(squareSize)
-//                                .padding(AppPadding.ExtraSmall)
-//                        )
-//                    }
-//                }
-//                item {
-//                    SquareButtonText(
-//                        key = ".",
-//                        onClicked = { onValueChange(it) },
-//                        modifier = Modifier
-//                            .size(squareSize)
-//                            .padding(AppPadding.ExtraSmall),
-//                        isEnabled = inputValue.isNotBlank() && !inputValue.contains('.')
-//                    )
-//                }
-//            }
-
             NonLazyGrid(
                 columns = 3,
                 itemCount = keys.size,
@@ -183,7 +158,7 @@ fun CustomKeyboard(
                     SquareButtonText(
                         key = keys[it],
                         onClicked = {
-                            if(isValidInput(inputValue + it)) {
+                            if (isValidInput(inputValue + it)) {
                                 onValueChange(it)
                             }
                         },

@@ -1,6 +1,11 @@
 package app.extr.ui.theme.composables.screens
 
 import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,6 +34,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.lazy.items
+
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,7 +47,10 @@ import app.extr.data.types.Balance
 import app.extr.data.types.BalanceWithDetails
 import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.*
+import app.extr.ui.theme.animations.CustomCircularProgressIndicator
+import app.extr.ui.theme.animations.LoadingAnimation
 import app.extr.ui.theme.composables.BalanceBottomSheet
+import app.extr.ui.theme.composables.reusablecomponents.ErrorScreen
 import app.extr.ui.theme.composables.reusablecomponents.PlusButton
 import app.extr.ui.theme.composables.reusablecomponents.RoundedCard
 import app.extr.utils.helpers.AnimatedText
@@ -52,11 +63,15 @@ fun HomeScreen(
     uiState: UiState<List<BalanceWithDetails>>,
     totalBalance: Float,
     onAddBalanceClicked: () -> Unit,
-    onDeleteBalanceClicked: (Balance) -> Unit
+    onDeleteBalanceClicked: (Balance) -> Unit,
+    onRefresh: () -> Unit
 ) {
     when (uiState) {
         is UiState.Loading -> {
-
+            //LoadingAnimation(modifier = Modifier.fillMaxSize())
+            Box(modifier = Modifier.fillMaxSize()) {
+                CustomCircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
         }
 
         is UiState.Success -> {
@@ -71,10 +86,9 @@ fun HomeScreen(
             ) {
                 Spacer(modifier = Modifier.height(40.dp))
 
-                if(totalBalance == 0.0f){
+                if (totalBalance == 0.0f) {
                     NoBalancesYet()
-                }
-                else {
+                } else {
                     TotalBalance(
                         totalBalance = totalBalance,
                         currencySign = data.firstOrNull()?.currency?.symbol ?: ' '
@@ -94,23 +108,32 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(7.dp),
                 ) {
                     val elementSize = 180.dp
-                    items(data.size) { i ->
-                        RoundedCard(
-                            icon = moneyTypesRes.getRes(data[i].moneyType.iconId).icon,
-                            text = data[i].moneyType.name,
-                            secondaryText = data[i].balance.customName,
-                            color = moneyTypesRes.getRes(data[i].moneyType.iconId).color,
-                            currencySymbol = data[i].currency.symbol,
-                            number = data[i].balance.amount,
-                            modifier = Modifier.size(elementSize),
-                            onLongPress = {
-                                longPressedBalance = data[i].balance
-                                showDeleteDialog = true
-                            },
-                            onClick = {
-                                Log.d("TAG", "Clicked " + data[i].balance.amount)
-                            }
-                        )
+                    items(
+                        count = data.size,
+                        key = { it }
+                    ) { i ->
+                        AnimatedVisibility(
+                            visible = true,
+                            enter = fadeIn() + expandVertically(),
+                            exit = fadeOut() + shrinkVertically()
+                        ) {
+                            RoundedCard(
+                                icon = moneyTypesRes.getRes(data[i].moneyType.iconId).icon,
+                                text = data[i].moneyType.name,
+                                secondaryText = data[i].balance.customName,
+                                color = moneyTypesRes.getRes(data[i].moneyType.iconId).color,
+                                currencySymbol = data[i].currency.symbol,
+                                number = data[i].balance.amount,
+                                modifier = Modifier.size(elementSize),
+                                onLongPress = {
+                                    longPressedBalance = data[i].balance
+                                    showDeleteDialog = true
+                                },
+                                onClick = {
+                                    Log.d("TAG", "Clicked " + data[i].balance.amount)
+                                }
+                            )
+                        }
                     }
                     item {
                         PlusButton(onClick = { onAddBalanceClicked() }, size = elementSize)
@@ -131,7 +154,10 @@ fun HomeScreen(
 
 
         is UiState.Error -> {
-
+            ErrorScreen(
+                onRefresh = { /*TODO*/ },
+                resourceId = uiState.resourceId
+            )
         }
     }
 }
@@ -147,7 +173,7 @@ fun TotalBalance(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = stringResource(R.string.label_total_balance),
+            text = stringResource(R.string.header_total_balance),
             style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.secondary)
         )
         Row(
