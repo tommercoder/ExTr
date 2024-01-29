@@ -91,7 +91,7 @@ fun ExTrApp(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screens.Home.route,
+            startDestination = Screens.RoundChart.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screens.Home.route) {

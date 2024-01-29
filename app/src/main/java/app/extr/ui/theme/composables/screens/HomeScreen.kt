@@ -2,10 +2,14 @@ package app.extr.ui.theme.composables.screens
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,8 +39,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.LaunchedEffect
 
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,7 +62,9 @@ import app.extr.ui.theme.composables.reusablecomponents.RoundedCard
 import app.extr.utils.helpers.AnimatedText
 import app.extr.utils.helpers.UiState
 import app.extr.utils.helpers.resproviders.MoneyTypesRes
+import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -112,11 +120,14 @@ fun HomeScreen(
                         count = data.size,
                         key = { it }
                     ) { i ->
-                        AnimatedVisibility(
-                            visible = true,
-                            enter = fadeIn() + expandVertically(),
-                            exit = fadeOut() + shrinkVertically()
-                        ) {
+                        // Initial scale set to 0 to grow from nothing
+//                        var scale by remember { mutableStateOf(0f) }
+//
+//                        // Coroutine to delay the animation slightly for each item
+//                        LaunchedEffect(Unit) {
+//                            delay(i * 100L) // Delay based on item index to stagger the animations
+//                            scale = 1f // Animate to full scale
+//                        }
                             RoundedCard(
                                 icon = moneyTypesRes.getRes(data[i].moneyType.iconId).icon,
                                 text = data[i].moneyType.name,
@@ -124,7 +135,11 @@ fun HomeScreen(
                                 color = moneyTypesRes.getRes(data[i].moneyType.iconId).color,
                                 currencySymbol = data[i].currency.symbol,
                                 number = data[i].balance.amount,
-                                modifier = Modifier.size(elementSize),
+                                modifier = Modifier
+                                    .size(elementSize)
+                                    .animateItemPlacement(
+
+                                    ),
                                 onLongPress = {
                                     longPressedBalance = data[i].balance
                                     showDeleteDialog = true
@@ -134,7 +149,6 @@ fun HomeScreen(
                                 }
                             )
                         }
-                    }
                     item {
                         PlusButton(onClick = { onAddBalanceClicked() }, size = elementSize)
                     }

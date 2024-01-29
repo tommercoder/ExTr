@@ -168,7 +168,7 @@ fun RoundedCard(
                     .weight(2f)
                     .fillMaxWidth()
                     .onSizeChanged { size ->
-                        numberSize = (size.height * 0.15f).sp
+                        numberSize = (size.height * 0.11f).sp
                     },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
@@ -184,7 +184,7 @@ fun RoundedCard(
                 Text(
                     text = number.toString(),
                     style = MaterialTheme.typography.titleLarge
-                        .copy(fontSize = numberSize, fontWeight = FontWeight.Bold)
+                        .copy(fontSize = numberSize, fontWeight = FontWeight.Medium)
                 )
             }
         }

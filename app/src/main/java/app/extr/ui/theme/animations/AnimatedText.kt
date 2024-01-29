@@ -1,6 +1,7 @@
 package app.extr.utils.helpers
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.*
@@ -38,7 +39,10 @@ fun AnimatedText(
     LaunchedEffect(targetValue) {
         animatedValue.animateTo(
             targetValue,
-            animationSpec = TweenSpec(durationMillis)
+            animationSpec = TweenSpec(
+                durationMillis = durationMillis,
+                easing = FastOutSlowInEasing // Using an easing function for a smoother animation
+            )
         )
     }
 
