@@ -23,5 +23,8 @@ object ViewModelsProvider {
         initializer {
             UsedCurrenciesViewModel(ExTrApplication.container.usedCurrenciesRepository)
         }
+        initializer {
+            ExpenseIncomeTypesViewModel(ExTrApplication.container.expenseIncomeTypesRepository)
+        }
     }
 }

@@ -22,6 +22,7 @@ interface UsedCurrencyDao {
     @Query("SELECT MAX(selectionIndex) FROM used_currencies")
     suspend fun getMaxSelectionIndex() : Int?
 
+    @Transaction
     @Query("SELECT * FROM used_currencies WHERE selectionIndex = (SELECT MAX(selectionIndex) FROM used_currencies)")
     fun getCurrentlySelectedUsedCurrency() : Flow<UsedCurrencyDetails>
 

@@ -1,7 +1,10 @@
 package app.extr
 
+import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -36,9 +39,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
 import app.extr.data.types.Balance
+import app.extr.data.types.TransactionType
 import app.extr.ui.theme.composables.BalanceBottomSheet
+import app.extr.ui.theme.composables.reusablecomponents.ExpenseIncomeDateRow
 import app.extr.ui.theme.viewmodels.BalancesViewModel
 import app.extr.ui.theme.viewmodels.CurrenciesViewModel
+import app.extr.ui.theme.viewmodels.ExpenseIncomeTypesViewModel
 import app.extr.ui.theme.viewmodels.MoneyTypesViewModel
 import app.extr.ui.theme.viewmodels.UsedCurrenciesViewModel
 import app.extr.ui.theme.viewmodels.UserViewModel
@@ -50,7 +56,8 @@ import kotlinx.coroutines.launch
 fun ExTrApp(
     navController: NavHostController = rememberNavController(),
     currenciesViewModel: CurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory),
-    moneyTypesViewModel: MoneyTypesViewModel = viewModel(factory = ViewModelsProvider.Factory)
+    moneyTypesViewModel: MoneyTypesViewModel = viewModel(factory = ViewModelsProvider.Factory),
+    expenseIncomeTypesViewModel: ExpenseIncomeTypesViewModel = viewModel(factory = ViewModelsProvider.Factory)
 ) {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -64,6 +71,16 @@ fun ExTrApp(
     val currenciesUiState by currenciesViewModel.currencies.collectAsStateWithLifecycle()
     val moneyTypesUiState by moneyTypesViewModel.moneyTypes.collectAsStateWithLifecycle()
 
+    val expenseTypesUiState by expenseIncomeTypesViewModel.expenseTypes.collectAsStateWithLifecycle()
+    val incomeTypesUiState by expenseIncomeTypesViewModel.incomeTypes.collectAsStateWithLifecycle()
+
+    if(expenseTypesUiState is UiState.Success)
+    {
+        val data = (expenseTypesUiState as UiState.Success<List<TransactionType>>).data
+        for(a in data){
+            Log.d("EXPENSE: ", a.name)
+        }
+    }
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -74,16 +91,28 @@ fun ExTrApp(
             val viewModel: UsedCurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory)
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val currentlySelectedCurrency by viewModel.currentlySelectedCurrency.collectAsStateWithLifecycle()
-            TopBar(
-                uiState = uiState,
-                onItemSelected = { currency ->
-                    viewModel.selectCurrency(currencyId = currency.currencyId)
-                },
-                scrollBehavior = scrollBehavior,
-                isAddButtonVisible = navBackStackEntry == Screens.RoundChart.route
-                        || navBackStackEntry == Screens.Chart.route,
-                selectedCurrency = currentlySelectedCurrency?.currency
-            )
+            val chartButtonsShown = navBackStackEntry == Screens.RoundChart.route
+                    || navBackStackEntry == Screens.Chart.route
+            Column {
+                TopBar(
+                    uiState = uiState,
+                    onItemSelected = { currency ->
+                        viewModel.selectCurrency(currencyId = currency.currencyId)
+                    },
+                    scrollBehavior = scrollBehavior,
+                    isAddButtonVisible = navBackStackEntry == Screens.RoundChart.route
+                            || navBackStackEntry == Screens.Chart.route,
+                    selectedCurrency = currentlySelectedCurrency?.currency
+                )
+                if(chartButtonsShown) {
+                    ExpenseIncomeDateRow(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        onSelected = {},
+                        onDateClicked = {}
+                    )
+                }
+            }
         },
         bottomBar = {
             BottomBar(navController)

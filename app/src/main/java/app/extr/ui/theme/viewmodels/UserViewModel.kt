@@ -2,7 +2,6 @@ package app.extr.ui.theme.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.extr.data.CommonDataHolder
 import app.extr.data.repositories.UserRepository
 import app.extr.data.types.User
 import app.extr.utils.helpers.UiState

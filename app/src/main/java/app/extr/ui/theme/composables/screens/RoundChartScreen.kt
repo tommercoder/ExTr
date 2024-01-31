@@ -14,32 +14,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.extr.ui.theme.AppPadding
-import app.extr.ui.theme.composables.reusablecomponents.ExpenseIncomeButton
+import app.extr.ui.theme.composables.reusablecomponents.ExpenseIncomeDateRow
 
 @Composable
 fun RoundChartScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = AppPadding.ExtraSmall)
+            .padding(horizontal = AppPadding.Small)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            ExpenseIncomeButton(
-                modifier = Modifier.weight(0.6f),
-                onSelected = {}
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Button(
-                modifier = Modifier.weight(0.35f),
-                onClick = {}
-            ){
-                Text("Temp")
-            }
-
-        }
 
 
     }

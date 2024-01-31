@@ -31,4 +31,8 @@
     <!--ERROR SCREEN-->
     <string name="header_error_occured">ERROR OCCURED</string>
     <string name="error_balances_couldnt_load">Couldn\'t load balances from the database.</string>
+
+    <!--CHART SCREENS-->
+    <string name="button_expenses">Expenses</string>
+    <string name="button_income">Income</string>
 </resources>

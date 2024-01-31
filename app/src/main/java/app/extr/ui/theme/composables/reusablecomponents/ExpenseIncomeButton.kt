@@ -35,9 +35,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import app.extr.R
 import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.ExTrTheme
 import app.extr.ui.theme.shapeScheme
@@ -47,75 +49,76 @@ enum class SelectedButton {
 }
 
 @Composable
-fun ExpenseIncomeButton(
+fun ExpenseIncomeDateRow(
     modifier: Modifier = Modifier,
-    onSelected: (SelectedButton) -> Unit
+    onSelected: (SelectedButton) -> Unit,
+    onDateClicked: () -> Unit
 ) {
     var selectedButton by remember { mutableStateOf(SelectedButton.EXPENSES) }
-    val expenseColor by animateColorAsState(
-        if (selectedButton == SelectedButton.EXPENSES) MaterialTheme.colorScheme.primary else Color.Transparent,
-        animationSpec = tween(
-            durationMillis = 600,
-            delayMillis = 30,
-            easing = LinearOutSlowInEasing
-        )
-    )
-    val incomeColor by animateColorAsState(
-        if (selectedButton == SelectedButton.INCOME) MaterialTheme.colorScheme.primary else Color.Transparent,
-        animationSpec = tween(
-            durationMillis = 600,
-            delayMillis = 30,
-            easing = LinearOutSlowInEasing
-        )
-    )
 
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(50)) // The shape of the Box background
-            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
-            .padding(4.dp) // Add horizontal padding if needed
-            //.width(IntrinsicSize.Min)
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row {
-            Button(
-                onClick = {
-                    selectedButton = SelectedButton.EXPENSES
-                    onSelected(SelectedButton.EXPENSES)
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp)
-                    .zIndex(if (selectedButton == SelectedButton.EXPENSES) 1f else 0f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = expenseColor
-                )
-            ) {
-                Text(
-                    "Expenses",
-                    color = if (selectedButton == SelectedButton.EXPENSES) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-                )
+        Box(
+            modifier = modifier
+                //.height(IntrinsicSize.Min)
+                .clip(MaterialTheme.shapeScheme.extraRoundedCorners)
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+                .padding(horizontal = 4.dp)
+                .weight(0.6f),
+            contentAlignment = Alignment.Center
+        ) {
+            Row {
+                Button(
+                    onClick = {
+                        selectedButton = SelectedButton.EXPENSES
+                        onSelected(SelectedButton.EXPENSES)
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        //.height(48.dp)
+                        .zIndex(if (selectedButton == SelectedButton.EXPENSES) 1f else 0f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor =  if (selectedButton == SelectedButton.EXPENSES) MaterialTheme.colorScheme.primary else Color.Transparent
+                    )
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.button_expenses),
+                        color = if (selectedButton == SelectedButton.EXPENSES) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        selectedButton = SelectedButton.INCOME
+                        onSelected(SelectedButton.INCOME)
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        //.offset(x = offset)
+                        //.height(48.dp)
+                        .zIndex(if (selectedButton == SelectedButton.EXPENSES) 1f else 0f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedButton == SelectedButton.INCOME) MaterialTheme.colorScheme.primary else Color.Transparent
+                    )
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.button_income),
+                        color = if (selectedButton == SelectedButton.INCOME) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
-            // A spacer that creates the overlap
-            //Spacer(modifier = Modifier.width((-16).dp))
-            Button(
-                onClick = {
-                    selectedButton = SelectedButton.INCOME
-                    onSelected(SelectedButton.INCOME)
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    //.offset(x = offset)
-                    .height(48.dp)
-                    .zIndex(if (selectedButton == SelectedButton.EXPENSES) 1f else 0f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = incomeColor
-                )
-            ) {
-                Text(
-                    "Income",
-                    color = if (selectedButton == SelectedButton.INCOME) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-                )
-            }
+        }
+        Spacer(modifier = Modifier.width(4.dp))
+        Button(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+                .padding(horizontal = 4.dp)
+                .weight(0.4f),
+            onClick = { onDateClicked() }
+        ) {
+            Text("01 Feb 24")
         }
     }
 }
@@ -124,15 +127,10 @@ fun ExpenseIncomeButton(
 @Composable
 fun OverlappingSegmentedControlPreview() {
     ExTrTheme {
-        Row(
-            
-        ) {
-            ExpenseIncomeButton(modifier = Modifier.weight(1.5f), onSelected = {})
-            Button(
-                modifier = Modifier.weight(0.5f),
-                onClick = { /*TODO*/ }) {
-                Text("BLABLA")
-            }
-        }
+            ExpenseIncomeDateRow(
+                modifier = Modifier,
+                onSelected = {},
+                onDateClicked = {}
+            )
     }
 }

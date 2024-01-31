@@ -1,0 +1,51 @@
+[
+  {
+    "id": 0,
+    "name": "Groceries",
+    "iconId": 0,
+    "colorId": 0,
+    "isCustom": false
+  },
+  {
+    "id": 1,
+    "name": "Utilities",
+    "iconId": 1,
+    "colorId": 1,
+    "isCustom": false
+  },
+  {
+    "id": 2,
+    "name": "Transportation",
+    "iconId": 2,
+    "colorId": 2,
+    "isCustom": false
+  },
+  {
+    "id": 3,
+    "name": "Rent/Mortgage",
+    "iconId": 3,
+    "colorId": 3,
+    "isCustom": false
+  },
+  {
+    "id": 4,
+    "name": "Dining Out",
+    "iconId": 4,
+    "colorId": 4,
+    "isCustom": false
+  },
+  {
+    "id": 5,
+    "name": "Entertainment",
+    "iconId": 5,
+    "colorId": 5,
+    "isCustom": false
+  },
+  {
+    "id": 6,
+    "name": "Healthcare",
+    "iconId": 6,
+    "colorId": 6,
+    "isCustom": false
+  }
+]
