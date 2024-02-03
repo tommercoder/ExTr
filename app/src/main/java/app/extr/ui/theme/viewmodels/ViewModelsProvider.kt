@@ -1,9 +1,7 @@
 package app.extr.ui.theme.viewmodels
 
-import android.text.Editable.Factory
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import app.extr.ExTrApp
 import app.extr.ExTrApplication
 
 object ViewModelsProvider {
@@ -24,7 +22,10 @@ object ViewModelsProvider {
             UsedCurrenciesViewModel(ExTrApplication.container.usedCurrenciesRepository)
         }
         initializer {
-            ExpenseIncomeTypesViewModel(ExTrApplication.container.expenseIncomeTypesRepository)
+            ExpensesIncomeTypesViewModel(ExTrApplication.container.expenseIncomeTypesRepository)
+        }
+        initializer {
+            ExpensesIncomeViewModel(ExTrApplication.container.expenseIncomeRepository)
         }
     }
 }

@@ -114,7 +114,7 @@ fun ExpenseIncomeDateRow(
         Button(
             modifier = Modifier
                 .height(IntrinsicSize.Min)
-                .padding(horizontal = 4.dp)
+                //.padding(horizontal = 4.dp)
                 .weight(0.4f),
             onClick = { onDateClicked() }
         ) {

@@ -1,22 +1,12 @@
 package app.extr.ui.theme.composables
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -26,10 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.unit.dp
 import app.extr.data.types.Currency
 import app.extr.data.types.MoneyType
 import app.extr.ui.theme.AppPadding
@@ -44,11 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import app.extr.R
 import app.extr.data.types.Balance
-import app.extr.ui.theme.CustomColorsPalette
 import app.extr.ui.theme.LocalCustomColorsPalette
+import app.extr.ui.theme.animations.CustomCircularProgressIndicator
+import app.extr.ui.theme.composables.reusablecomponents.ErrorScreen
 import app.extr.ui.theme.mappers.toMoneyType
-import kotlinx.coroutines.launch
-
+import app.extr.utils.helpers.Constants
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -58,106 +45,99 @@ fun BalanceBottomSheet(
     moneyTypeUiState: UiState<List<MoneyType>>,
     onSaveClicked: (Balance) -> Unit,
     onDismissed: () -> Unit
+    //todo: add notification on + press if loading was not complete?
 ) {
-    //dropdown for currencies --> //dropdown for money types
-    //label "balance"
-    //currency symbol + inputted number
-    //input name
-    //keyboard with no calendar button
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-    var selectedCurrency by remember { mutableStateOf(Currency()) }
-    var selectedMoneyType by remember { mutableStateOf(MoneyType()) }
 
+    val allDataLoaded = remember(currenciesUiState, moneyTypeUiState) {
+        currenciesUiState is UiState.Success && currenciesUiState.data.isNotEmpty()
+                && moneyTypeUiState is UiState.Success && moneyTypeUiState.data.isNotEmpty()
+    }
     var inputValue by remember { mutableStateOf("") }
     var nameValue by remember { mutableStateOf("") }
 
-    LaunchedEffect(currenciesUiState) {
-        if (currenciesUiState is UiState.Success && currenciesUiState.data.isNotEmpty()) {
-            selectedCurrency = currenciesUiState.data.first()
-        }
-    }
-    LaunchedEffect(moneyTypeUiState) {
-        if (moneyTypeUiState is UiState.Success && moneyTypeUiState.data.isNotEmpty()) {
-            selectedMoneyType = moneyTypeUiState.data.first()
-        }
-    }
-
-    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     ModalBottomSheet(
         onDismissRequest = { onDismissed() },
-        //modifier = Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.7f),
-        sheetState = sheetState,
-        //windowInsets = WindowInsets.navigationBars
-
+        sheetState = sheetState
     ) {
-        Column(
-            //modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars)//.padding(bottom = bottomPadding)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(AppPadding.Medium),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                if (currenciesUiState is UiState.Success) {
-                    val currencies = currenciesUiState.data
-                    if (currencies.isNotEmpty()) {
-                        CurrenciesDropDownMenu(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = AppPadding.Small),
-                            items = currencies,
-                            onItemSelected = {
-                                selectedCurrency = it
-                            },
-                            borderShown = true
-                        )
-                    }
-                }
-                if (moneyTypeUiState is UiState.Success) {
-                    val moneyTypes = moneyTypeUiState.data
-                    if (moneyTypes.isNotEmpty()) {
-                        ReusableDropdownMenu(
-                            modifier = Modifier.weight(1f),
-                            items = moneyTypes.map { it.toDropdownItem(LocalCustomColorsPalette.current) },
-                            onItemSelected = {
-                                selectedMoneyType = it.toMoneyType()
-                            },
-                        )
-                    }
-                }
+
+        if (allDataLoaded) {
+            val palette = LocalCustomColorsPalette.current
+            val currencies = remember(currenciesUiState) {
+                (currenciesUiState as UiState.Success<List<Currency>>).data
             }
 
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(top = AppPadding.Small, bottom = AppPadding.Small),
-                text = stringResource(id = R.string.label_balance),
-                style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.secondary)
-            )
+            val dropdownItems = remember(moneyTypeUiState) {
+                (moneyTypeUiState as UiState.Success<List<MoneyType>>).data.map {
+                    it.toDropdownItem(
+                        palette
+                    )
+                }
+            }
+            var selectedCurrency by remember { mutableStateOf(currencies.first()) }
+            var selectedMoneyType by remember { mutableStateOf(dropdownItems.first()) }
 
-            CustomKeyboard(
-                currencySymbol = selectedCurrency.symbol,
-                onValueChange = { inputValue += it },
-                inputValue = inputValue,
-                onNameChange = { nameValue = it },
-                nameValue = nameValue,
-                showCalendar = false,
-                onEraseClick = { inputValue = inputValue.dropLast(1) },
-                onCalendarClick = { },
-                onAcceptClick = {
-                    val balance = Balance(
-                        currencyId = selectedCurrency.currencyId,
-                        moneyTypeId = selectedMoneyType.moneyTypeId,
-                        amount = inputValue.toFloat(),
-                        customName = nameValue
+            Column {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(AppPadding.Medium),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    CurrenciesDropDownMenu(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = AppPadding.Small),
+                        items = currencies,
+                        onItemSelected = {
+                            selectedCurrency = it
+                        },
+                        borderShown = true
                     )
 
-                    onSaveClicked(balance)
-                    //onDismissed()
+                    ReusableDropdownMenu(
+                        modifier = Modifier.weight(1f),
+                        items = dropdownItems,
+                        onItemSelected = {
+                            selectedMoneyType = it
+                        },
+                    )
                 }
-            )
+
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = AppPadding.Small, bottom = AppPadding.Small),
+                    text = stringResource(id = R.string.label_balance),
+                    style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.secondary)
+                )
+
+                CustomKeyboard(
+                    currencySymbol = selectedCurrency.symbol,
+                    onValueChange = { inputValue += it },
+                    inputValue = inputValue,
+                    onNameChange = { nameValue = it },
+                    nameValue = nameValue,
+                    showCalendar = false,
+                    onEraseClick = { inputValue = inputValue.dropLast(1) },
+                    onCalendarClick = { },
+                    onAcceptClick = {
+                        val balance = Balance(
+                            currencyId = selectedCurrency.currencyId,
+                            moneyTypeId = selectedMoneyType.toMoneyType().moneyTypeId,
+                            amount = inputValue.toFloat(),
+                            customName = nameValue
+                        )
+
+                        onSaveClicked(balance)
+                    }
+                )
+            }
+        } else {
+            //ErrorScreen(onRefresh = { /*TODO*/ }, resourceId = )
+            //todo: disable the plus button if the ui states are not successful(create custom disable clicked composable that triggers toast)
         }
+
     }
 }

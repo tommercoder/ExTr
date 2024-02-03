@@ -1,6 +1,5 @@
 package app.extr
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
@@ -38,18 +36,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
-import app.extr.data.types.Balance
-import app.extr.data.types.TransactionType
+import app.extr.data.types.Expense
+import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.composables.BalanceBottomSheet
 import app.extr.ui.theme.composables.reusablecomponents.ExpenseIncomeDateRow
+import app.extr.ui.theme.composables.reusablecomponents.SelectedButton
 import app.extr.ui.theme.viewmodels.BalancesViewModel
 import app.extr.ui.theme.viewmodels.CurrenciesViewModel
-import app.extr.ui.theme.viewmodels.ExpenseIncomeTypesViewModel
+import app.extr.ui.theme.viewmodels.ExpensesIncomeTypesViewModel
+import app.extr.ui.theme.viewmodels.ExpensesIncomeViewModel
 import app.extr.ui.theme.viewmodels.MoneyTypesViewModel
 import app.extr.ui.theme.viewmodels.UsedCurrenciesViewModel
 import app.extr.ui.theme.viewmodels.UserViewModel
-import app.extr.utils.helpers.UiState
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,7 +55,8 @@ fun ExTrApp(
     navController: NavHostController = rememberNavController(),
     currenciesViewModel: CurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory),
     moneyTypesViewModel: MoneyTypesViewModel = viewModel(factory = ViewModelsProvider.Factory),
-    expenseIncomeTypesViewModel: ExpenseIncomeTypesViewModel = viewModel(factory = ViewModelsProvider.Factory)
+    expensesIncomeTypesViewModel: ExpensesIncomeTypesViewModel = viewModel(factory = ViewModelsProvider.Factory),
+    expenseIncomeViewModel: ExpensesIncomeViewModel = viewModel(factory = ViewModelsProvider.Factory)
 ) {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -71,22 +70,17 @@ fun ExTrApp(
     val currenciesUiState by currenciesViewModel.currencies.collectAsStateWithLifecycle()
     val moneyTypesUiState by moneyTypesViewModel.moneyTypes.collectAsStateWithLifecycle()
 
-    val expenseTypesUiState by expenseIncomeTypesViewModel.expenseTypes.collectAsStateWithLifecycle()
-    val incomeTypesUiState by expenseIncomeTypesViewModel.incomeTypes.collectAsStateWithLifecycle()
+    val expenseTypesUiState by expensesIncomeTypesViewModel.expenseTypes.collectAsStateWithLifecycle()
+    val incomeTypesUiState by expensesIncomeTypesViewModel.incomeTypes.collectAsStateWithLifecycle()
 
-    if(expenseTypesUiState is UiState.Success)
-    {
-        val data = (expenseTypesUiState as UiState.Success<List<TransactionType>>).data
-        for(a in data){
-            Log.d("EXPENSE: ", a.name)
-        }
-    }
+    val expensesUiState by expenseIncomeViewModel.uiStateExpenses.collectAsStateWithLifecycle()
+    val incomeUiState by expenseIncomeViewModel.uiStateIncome.collectAsStateWithLifecycle()
+
+    var selectedButton by remember { mutableStateOf(SelectedButton.EXPENSES) }
     Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-        //.nestedScroll(scrollBehavior.nestedScrollConnection),
-        ,
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
+            .fillMaxSize(),
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }, //todo: remove
         topBar = {
             val viewModel: UsedCurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory)
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -104,12 +98,24 @@ fun ExTrApp(
                             || navBackStackEntry == Screens.Chart.route,
                     selectedCurrency = currentlySelectedCurrency?.currency
                 )
-                if(chartButtonsShown) {
+                if (chartButtonsShown) {
                     ExpenseIncomeDateRow(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        onSelected = {},
-                        onDateClicked = {}
+                        onSelected = {
+                            selectedButton = it
+                        },
+                        onDateClicked = {
+                            val expense = Expense(
+                                typeId = 0,
+                                balanceId = 1,
+                                description = "blabla",
+                                amount = 0.3f,
+                                month = 2,
+                                year = 2024
+                            )
+                            expenseIncomeViewModel.insertExpense(expense)
+                        }
                     )
                 }
             }
@@ -120,7 +126,7 @@ fun ExTrApp(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screens.RoundChart.route,
+            startDestination = Screens.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screens.Home.route) {
@@ -156,7 +162,7 @@ fun ExTrApp(
                         moneyTypeUiState = moneyTypesUiState,
                         onSaveClicked = { balance ->
                             if (viewModel.doesBalanceExist(balance)) {
-                                showToast = true
+                                showToast = true //todo: move showing to a separate composable
                             } else {
                                 viewModel.addBalance(balance)
                                 isAddBalanceSheetShown = false
@@ -167,7 +173,12 @@ fun ExTrApp(
                 }
             }
             composable(Screens.RoundChart.route) {
-                RoundChartScreen()
+                RoundChartScreen(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = AppPadding.Small),
+                    uiState = if (selectedButton == SelectedButton.EXPENSES) expensesUiState else incomeUiState
+                )
             }
             composable(Screens.Chart.route) {
                 ChartScreen()

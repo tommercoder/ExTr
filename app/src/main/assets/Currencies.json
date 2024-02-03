@@ -1,60 +1,60 @@
 [
   {
-    "currencyId": 1,
+    "currencyId": 0,
     "shortName": "USD",
     "fullName": "United States Dollar",
     "symbol": "$"
   },
   {
-    "currencyId": 2,
+    "currencyId": 1,
     "shortName": "EUR",
     "fullName": "Euro",
     "symbol": "€"
   },
   {
-    "currencyId": 3,
+    "currencyId": 2,
     "shortName": "JPY",
     "fullName": "Japanese Yen",
     "symbol": "¥"
   },
   {
-    "currencyId": 4,
+    "currencyId": 3,
     "shortName": "GBP",
     "fullName": "British Pound Sterling",
     "symbol": "£"
   },
   {
-    "currencyId": 5,
+    "currencyId": 4,
     "shortName": "AUD",
     "fullName": "Australian Dollar",
     "symbol": "$"
   },
   {
-    "currencyId": 6,
+    "currencyId": 5,
     "shortName": "CAD",
     "fullName": "Canadian Dollar",
     "symbol": "$"
   },
   {
-    "currencyId": 7,
+    "currencyId": 6,
     "shortName": "CHF",
     "fullName": "Swiss Franc",
     "symbol": "CHF"
   },
   {
-    "currencyId": 8,
+    "currencyId": 7,
     "shortName": "CNY",
     "fullName": "Chinese Yuan",
     "symbol": "¥"
   },
   {
-    "currencyId": 9,
+    "currencyId": 8,
     "shortName": "SEK",
     "fullName": "Swedish Krona",
     "symbol": "kr"
   },
   {
-    "currencyId": 10,
+    "currencyId": 9,
     "shortName": "NZD",
     "fullName": "New Zealand Dollar",
     "symbol": "$"

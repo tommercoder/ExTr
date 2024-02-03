@@ -5,6 +5,8 @@ import app.extr.data.repositories.BalancesRepository
 import app.extr.data.repositories.BalancesRepositoryImpl
 import app.extr.data.repositories.CurrenciesRepository
 import app.extr.data.repositories.CurrenciesRepositoryImpl
+import app.extr.data.repositories.ExpenseIncomeRepository
+import app.extr.data.repositories.ExpenseIncomeRepositoryImpl
 import app.extr.data.repositories.ExpenseIncomeTypesRepository
 import app.extr.data.repositories.ExpenseIncomeTypesRepositoryImpl
 import app.extr.data.repositories.MoneyTypesRepository
@@ -24,6 +26,7 @@ interface AppContainer {
     val balancesRepository: BalancesRepository
     val usedCurrenciesRepository: UsedCurrenciesRepository
     val expenseIncomeTypesRepository: ExpenseIncomeTypesRepository
+    val expenseIncomeRepository: ExpenseIncomeRepository
 }
 
 class AppContainerImpl(private val context: Context) : AppContainer {
@@ -54,5 +57,13 @@ class AppContainerImpl(private val context: Context) : AppContainer {
 
     override val expenseIncomeTypesRepository: ExpenseIncomeTypesRepository by lazy {
         ExpenseIncomeTypesRepositoryImpl(ExTrDatabase.getDatabase(context).expenseIncomeTypesDao())
+    }
+
+    override val expenseIncomeRepository: ExpenseIncomeRepository by lazy {
+        val database = ExTrDatabase.getDatabase(context)
+        ExpenseIncomeRepositoryImpl(
+            database.balanceDao(),
+            database.expenseIncomeDao()
+        )
     }
 }

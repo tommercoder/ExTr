@@ -18,10 +18,10 @@ import app.extr.utils.helpers.Constants
 @Entity(tableName = "money_types")
 data class MoneyType(
     @PrimaryKey
-    val moneyTypeId: Int = Constants.DefaultMoneyTypeId,
-    val name: String = "",
-    val iconId: Int = Constants.DefaultIconId,
-    val colorId: Int = Constants.DefaultColorId
+    val moneyTypeId: Int,
+    val name: String,
+    val iconId: Int,
+    val colorId: Int
 )
 
 

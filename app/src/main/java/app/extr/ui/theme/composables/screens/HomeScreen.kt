@@ -90,6 +90,7 @@ fun HomeScreen(
             val moneyTypesRes = remember { MoneyTypesRes(currentPalette) }
 
             Column(
+                modifier = modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(40.dp))
@@ -169,7 +170,7 @@ fun HomeScreen(
 
         is UiState.Error -> {
             ErrorScreen(
-                onRefresh = { /*TODO*/ },
+                onRefresh = { onRefresh() },
                 resourceId = uiState.resourceId
             )
         }

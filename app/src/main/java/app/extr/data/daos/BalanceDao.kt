@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import app.extr.data.types.Balance
 import app.extr.data.types.BalanceWithDetails
 import kotlinx.coroutines.flow.Flow
@@ -19,17 +20,24 @@ interface BalanceDao {
     @Delete
     suspend fun delete(balance: Balance)
 
+    @Update
+    suspend fun update(balance: Balance)
+
+    @Query("SELECT * FROM balances WHERE balanceId = :balanceId")
+    suspend fun getBalanceById(balanceId: Int): Balance
+
     @Transaction //do I need it here?
-    @Query("""
-        SELECT * FROM balances 
-        WHERE currencyId IN (
+    @Query(
+        """
+    SELECT * FROM balances 
+        WHERE currencyId = (
             SELECT currencyId FROM used_currencies 
-            WHERE selectionIndex = (
-                SELECT MAX(selectionIndex) FROM used_currencies
-            )
-        )
-    """)
-    fun getBalancesForCurrentCurrency() : Flow<List<BalanceWithDetails>>
+            ORDER BY selectionIndex DESC
+            LIMIT 1
+    )
+    """
+    )
+    fun getBalancesForCurrentCurrency(): Flow<List<BalanceWithDetails>>
 
     @Query("SELECT COUNT(*) FROM balances WHERE currencyId = :currencyId")
     suspend fun getBalanceCountForCurrentCurrency(currencyId: Int): Int

@@ -35,4 +35,8 @@
     <!--CHART SCREENS-->
     <string name="button_expenses">Expenses</string>
     <string name="button_income">Income</string>
+    <string name="error_expenses_couldnt_load">Couldn\'t load expenses from the database</string>
+    <string name="error_income_couldnt_load">Couldn\'t load income from the database</string>
+    <string name="label_expense">Expense</string>
+    <string name="label_income">Income</string>
 </resources>

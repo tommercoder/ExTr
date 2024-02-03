@@ -7,13 +7,16 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.extr.data.daos.BalanceDao
 import app.extr.data.daos.CurrencyDao
+import app.extr.data.daos.ExpenseIncomeDao
 import app.extr.data.daos.ExpenseIncomeTypesDao
 import app.extr.data.daos.MoneyTypeDao
 import app.extr.data.daos.UsedCurrencyDao
 import app.extr.data.daos.UserDao
 import app.extr.data.types.Balance
 import app.extr.data.types.Currency
+import app.extr.data.types.Expense
 import app.extr.data.types.ExpenseType
+import app.extr.data.types.Income
 import app.extr.data.types.IncomeType
 import app.extr.utils.helpers.json.JsonParsers
 import app.extr.data.types.MoneyType
@@ -24,8 +27,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [MoneyType::class, Currency::class, User::class, Balance::class, UsedCurrency::class, ExpenseType::class, IncomeType::class],
-    version = 10,
+    entities = [MoneyType::class, Currency::class, User::class, Balance::class,
+        UsedCurrency::class, ExpenseType::class, IncomeType::class, Expense::class, Income::class],
+    version = 21,
     exportSchema = true
 )
 //@TypeConverters(Converters::class)
@@ -37,6 +41,7 @@ abstract class ExTrDatabase : RoomDatabase() {
     abstract fun balanceDao(): BalanceDao
     abstract fun usedCurrencyDao(): UsedCurrencyDao
     abstract fun expenseIncomeTypesDao(): ExpenseIncomeTypesDao
+    abstract fun expenseIncomeDao(): ExpenseIncomeDao
 
     companion object {
         @Volatile //thread safety
