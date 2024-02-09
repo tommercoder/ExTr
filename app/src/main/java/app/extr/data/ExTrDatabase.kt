@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 @Database(
     entities = [MoneyType::class, Currency::class, User::class, Balance::class,
         UsedCurrency::class, ExpenseType::class, IncomeType::class, Expense::class, Income::class],
-    version = 21,
+    version = 27,
     exportSchema = true
 )
 //@TypeConverters(Converters::class)

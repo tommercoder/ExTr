@@ -5,10 +5,10 @@ import app.extr.data.repositories.BalancesRepository
 import app.extr.data.repositories.BalancesRepositoryImpl
 import app.extr.data.repositories.CurrenciesRepository
 import app.extr.data.repositories.CurrenciesRepositoryImpl
-import app.extr.data.repositories.ExpenseIncomeRepository
-import app.extr.data.repositories.ExpenseIncomeRepositoryImpl
-import app.extr.data.repositories.ExpenseIncomeTypesRepository
-import app.extr.data.repositories.ExpenseIncomeTypesRepositoryImpl
+import app.extr.data.repositories.ExpensesIncomeRepository
+import app.extr.data.repositories.ExpensesIncomeRepositoryImpl
+import app.extr.data.repositories.ExpensesIncomeTypesRepository
+import app.extr.data.repositories.ExpensesIncomeTypesRepositoryImpl
 import app.extr.data.repositories.MoneyTypesRepository
 import app.extr.data.repositories.MoneyTypesRepositoryImpl
 import app.extr.data.repositories.UsedCurrenciesRepository
@@ -25,8 +25,8 @@ interface AppContainer {
     val userRepository: UserRepository
     val balancesRepository: BalancesRepository
     val usedCurrenciesRepository: UsedCurrenciesRepository
-    val expenseIncomeTypesRepository: ExpenseIncomeTypesRepository
-    val expenseIncomeRepository: ExpenseIncomeRepository
+    val ExpensesIncomeTypesRepository: ExpensesIncomeTypesRepository
+    val ExpensesIncomeRepository: ExpensesIncomeRepository
 }
 
 class AppContainerImpl(private val context: Context) : AppContainer {
@@ -55,13 +55,13 @@ class AppContainerImpl(private val context: Context) : AppContainer {
         UsedCurrenciesRepositoryImpl(ExTrDatabase.getDatabase(context).usedCurrencyDao())
     }
 
-    override val expenseIncomeTypesRepository: ExpenseIncomeTypesRepository by lazy {
-        ExpenseIncomeTypesRepositoryImpl(ExTrDatabase.getDatabase(context).expenseIncomeTypesDao())
+    override val ExpensesIncomeTypesRepository: ExpensesIncomeTypesRepository by lazy {
+        ExpensesIncomeTypesRepositoryImpl(ExTrDatabase.getDatabase(context).expenseIncomeTypesDao())
     }
 
-    override val expenseIncomeRepository: ExpenseIncomeRepository by lazy {
+    override val ExpensesIncomeRepository: ExpensesIncomeRepository by lazy {
         val database = ExTrDatabase.getDatabase(context)
-        ExpenseIncomeRepositoryImpl(
+        ExpensesIncomeRepositoryImpl(
             database.balanceDao(),
             database.expenseIncomeDao()
         )

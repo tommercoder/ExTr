@@ -2,7 +2,7 @@ package app.extr.ui.theme.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.extr.data.repositories.ExpenseIncomeTypesRepository
+import app.extr.data.repositories.ExpensesIncomeTypesRepository
 import app.extr.data.types.TransactionType
 import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ExpensesIncomeTypesViewModel(
-    private val expenseIncomeTypesRepository: ExpenseIncomeTypesRepository
+    private val ExpensesIncomeTypesRepository: ExpensesIncomeTypesRepository
 ) : ViewModel() {
     private val _expenseTypes = MutableStateFlow<UiState<List<TransactionType>>>(UiState.Loading)
     val expenseTypes: StateFlow<UiState<List<TransactionType>>> = _expenseTypes.asStateFlow()
@@ -20,19 +20,28 @@ class ExpensesIncomeTypesViewModel(
     val incomeTypes: StateFlow<UiState<List<TransactionType>>> = _incomeTypes.asStateFlow()
 
     init {
-        loadTypes()
+        loadExpenseTypes()
+        loadIncomeTypes()
     }
 
-    private fun loadTypes() {
+    private fun loadExpenseTypes() {
         viewModelScope.launch {
             _expenseTypes.value = UiState.Loading
-            _incomeTypes.value = UiState.Loading
             try {
-                expenseIncomeTypesRepository.getAllExpenseTypes().collect {
+                ExpensesIncomeTypesRepository.getAllExpenseTypes().collect {
                     _expenseTypes.value = UiState.Success(it)
                 }
+            } catch (e: Exception) {
 
-                expenseIncomeTypesRepository.getAllIncomeTypes().collect {
+            }
+        }
+    }
+
+    private fun loadIncomeTypes() {
+        viewModelScope.launch {
+            _incomeTypes.value = UiState.Loading
+            try {
+                ExpensesIncomeTypesRepository.getAllIncomeTypes().collect {
                     _incomeTypes.value = UiState.Success(it)
                 }
             } catch (e: Exception) {

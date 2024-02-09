@@ -59,6 +59,7 @@ fun CustomKeyboard(
     showCalendar: Boolean,
     onEraseClick: () -> Unit,
     onAcceptClick: () -> Unit,
+    isNameRequired: Boolean = false,
     onCalendarClick: () -> Unit = {}, // Optional calendar click handler
     textFieldDefaultText: String = stringResource(id = R.string.label_add_custom_name),
     maxTextFieldCharacters: Int = 8
@@ -117,10 +118,12 @@ fun CustomKeyboard(
                             text = textFieldDefaultText,
                             style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Center)
                         )
-                        Text(
-                            text = stringResource(id = R.string.label_required),
-                            style = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Center)
-                        )
+                        if(isNameRequired) {
+                            Text(
+                                text = stringResource(id = R.string.label_required),
+                                style = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.Center)
+                            )
+                        }
                     }
                 }
             },
@@ -201,7 +204,7 @@ fun CustomKeyboard(
                         .padding(AppPadding.ExtraSmall),
                     icon = Icons.Rounded.Check,
                     onClicked = { onAcceptClick() },
-                    isEnabled = inputValue.isNotBlank() && nameValue.isNotBlank()
+                    isEnabled = if(isNameRequired) inputValue.isNotBlank() && nameValue.isNotBlank() else inputValue.isNotBlank()
                 )
             }
         }

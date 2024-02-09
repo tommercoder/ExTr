@@ -99,7 +99,8 @@ fun ExTrTheme(
         MaterialTheme(
             colorScheme = colors,
             content = content,
-            shapes = shapes
+            shapes = shapes,
+            typography = ExTrTypography
         )
     }
 }

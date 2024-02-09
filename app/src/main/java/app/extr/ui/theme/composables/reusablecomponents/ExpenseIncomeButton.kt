@@ -44,17 +44,17 @@ import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.ExTrTheme
 import app.extr.ui.theme.shapeScheme
 
-enum class SelectedButton {
+enum class SelectedTransactionType {
     EXPENSES, INCOME
 }
 
 @Composable
 fun ExpenseIncomeDateRow(
     modifier: Modifier = Modifier,
-    onSelected: (SelectedButton) -> Unit,
+    onSelected: (SelectedTransactionType) -> Unit,
     onDateClicked: () -> Unit
 ) {
-    var selectedButton by remember { mutableStateOf(SelectedButton.EXPENSES) }
+    var selectedTransactionType by remember { mutableStateOf(SelectedTransactionType.EXPENSES) }
 
     Row(
         modifier = modifier,
@@ -72,40 +72,40 @@ fun ExpenseIncomeDateRow(
             Row {
                 Button(
                     onClick = {
-                        selectedButton = SelectedButton.EXPENSES
-                        onSelected(SelectedButton.EXPENSES)
+                        selectedTransactionType = SelectedTransactionType.EXPENSES
+                        onSelected(SelectedTransactionType.EXPENSES)
                     },
                     modifier = Modifier
                         .weight(1f)
                         //.height(48.dp)
-                        .zIndex(if (selectedButton == SelectedButton.EXPENSES) 1f else 0f),
+                        .zIndex(if (selectedTransactionType == SelectedTransactionType.EXPENSES) 1f else 0f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor =  if (selectedButton == SelectedButton.EXPENSES) MaterialTheme.colorScheme.primary else Color.Transparent
+                        containerColor =  if (selectedTransactionType == SelectedTransactionType.EXPENSES) MaterialTheme.colorScheme.primary else Color.Transparent
                     )
                 ) {
                     Text(
                         text = stringResource(id = R.string.button_expenses),
-                        color = if (selectedButton == SelectedButton.EXPENSES) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                        color = if (selectedTransactionType == SelectedTransactionType.EXPENSES) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                     )
                 }
 
                 Button(
                     onClick = {
-                        selectedButton = SelectedButton.INCOME
-                        onSelected(SelectedButton.INCOME)
+                        selectedTransactionType = SelectedTransactionType.INCOME
+                        onSelected(SelectedTransactionType.INCOME)
                     },
                     modifier = Modifier
                         .weight(1f)
                         //.offset(x = offset)
                         //.height(48.dp)
-                        .zIndex(if (selectedButton == SelectedButton.EXPENSES) 1f else 0f),
+                        .zIndex(if (selectedTransactionType == SelectedTransactionType.EXPENSES) 1f else 0f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedButton == SelectedButton.INCOME) MaterialTheme.colorScheme.primary else Color.Transparent
+                        containerColor = if (selectedTransactionType == SelectedTransactionType.INCOME) MaterialTheme.colorScheme.primary else Color.Transparent
                     )
                 ) {
                     Text(
                         text = stringResource(id = R.string.button_income),
-                        color = if (selectedButton == SelectedButton.INCOME) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                        color = if (selectedTransactionType == SelectedTransactionType.INCOME) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }

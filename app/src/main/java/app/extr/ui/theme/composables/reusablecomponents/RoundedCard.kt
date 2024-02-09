@@ -61,11 +61,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun RoundedCard(
     @DrawableRes icon: Int,
-    text: String,
     @ColorRes color: Color,
     currencySymbol: Char,
     number: Float,
     modifier: Modifier = Modifier,
+    text: String = "",
     secondaryText: String = "",
     onClick: (() -> Unit)? = null,
     onLongPress: (() -> Unit)? = null
@@ -73,7 +73,6 @@ fun RoundedCard(
     var padding by remember { mutableStateOf(0.dp) }
     var numberSize by remember { mutableStateOf(0.sp) }
     var isLongPressed by remember { mutableStateOf(false) }
-    var isLongPressDetected by remember { mutableStateOf(false) }
     val coroutineScope =  rememberCoroutineScope()
 
     val backgroundColor by animateColorAsState(
@@ -143,32 +142,27 @@ fun RoundedCard(
                     )
                 }
 
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    //horizontalAlignment = Alignment.CenterHorizontally
-                ) {
                     Text(
                         text = text,
                         modifier = Modifier
-                            //.align(Alignment.CenterVertically)
                             .padding(start = padding * 2)
                     )
 
-                    Text(
-                        text = secondaryText,
-                        modifier = Modifier
-                            //.align(Alignment.CenterVertically)
-                            .padding(start = padding * 2)
-                    )
-                }
             }
+
+            Text(
+                text = secondaryText,
+                modifier = Modifier
+                    .padding(top = padding * 2)
+                    .align(Alignment.CenterHorizontally)
+            )
 
             Row(
                 modifier = Modifier
                     .weight(2f)
                     .fillMaxWidth()
                     .onSizeChanged { size ->
-                        numberSize = (size.height * 0.11f).sp
+                        numberSize = (size.height * 0.2f).sp
                     },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
@@ -177,14 +171,14 @@ fun RoundedCard(
                     modifier = Modifier.padding(end = AppPadding.ExtraSmall),
                     text = currencySymbol.toString(),
                     style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = numberSize / 2,
+                        fontSize = numberSize / 1.7,
                         color = MaterialTheme.colorScheme.secondary
                     ),
                 )
                 Text(
-                    text = number.toString(),
+                    text = "%.2f".format(number),
                     style = MaterialTheme.typography.titleLarge
-                        .copy(fontSize = numberSize, fontWeight = FontWeight.Medium)
+                        .copy(fontSize = numberSize, fontWeight = FontWeight.Bold)
                 )
             }
         }

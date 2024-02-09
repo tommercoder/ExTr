@@ -70,13 +70,14 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     uiState: UiState<List<BalanceWithDetails>>,
     totalBalance: Float,
+    isAddBalanceEnabled: Boolean,
+    moneyTypesRes: MoneyTypesRes,
     onAddBalanceClicked: () -> Unit,
     onDeleteBalanceClicked: (Balance) -> Unit,
     onRefresh: () -> Unit
 ) {
     when (uiState) {
         is UiState.Loading -> {
-            //LoadingAnimation(modifier = Modifier.fillMaxSize())
             Box(modifier = Modifier.fillMaxSize()) {
                 CustomCircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
@@ -86,8 +87,6 @@ fun HomeScreen(
             var showDeleteDialog by remember { mutableStateOf(false) }
             var longPressedBalance by remember { mutableStateOf<Balance?>(null) }
             val data by rememberUpdatedState(uiState.data)
-            val currentPalette = LocalCustomColorsPalette.current
-            val moneyTypesRes = remember { MoneyTypesRes(currentPalette) }
 
             Column(
                 modifier = modifier,
@@ -95,7 +94,7 @@ fun HomeScreen(
             ) {
                 Spacer(modifier = Modifier.height(40.dp))
 
-                if (totalBalance == 0.0f) {
+                if (data.isEmpty()) {
                     NoBalancesYet()
                 } else {
                     TotalBalance(
@@ -105,11 +104,6 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(50.dp))
                 }
 
-//                AnimatedVisibility(
-//                    visible = true,
-//                    enter = fadeIn() + expandVertically(),
-//                    exit = fadeOut() + shrinkVertically()
-//                ) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(13.dp),
@@ -121,40 +115,35 @@ fun HomeScreen(
                         count = data.size,
                         key = { it }
                     ) { i ->
-                        // Initial scale set to 0 to grow from nothing
-//                        var scale by remember { mutableStateOf(0f) }
-//
-//                        // Coroutine to delay the animation slightly for each item
-//                        LaunchedEffect(Unit) {
-//                            delay(i * 100L) // Delay based on item index to stagger the animations
-//                            scale = 1f // Animate to full scale
-//                        }
-                            RoundedCard(
-                                icon = moneyTypesRes.getRes(data[i].moneyType.iconId).icon,
-                                text = data[i].moneyType.name,
-                                secondaryText = data[i].balance.customName,
-                                color = moneyTypesRes.getRes(data[i].moneyType.iconId).color,
-                                currencySymbol = data[i].currency.symbol,
-                                number = data[i].balance.amount,
-                                modifier = Modifier
-                                    .size(elementSize)
-                                    .animateItemPlacement(
+                        RoundedCard(
+                            icon = moneyTypesRes.getRes(data[i].moneyType.iconId).icon,
+                            text = data[i].moneyType.name,
+                            secondaryText = data[i].balance.customName,
+                            color = moneyTypesRes.getRes(data[i].moneyType.iconId).color,
+                            currencySymbol = data[i].currency.symbol,
+                            number = data[i].balance.amount,
+                            modifier = Modifier
+                                .size(elementSize)
+                                .animateItemPlacement(
 
-                                    ),
-                                onLongPress = {
-                                    longPressedBalance = data[i].balance
-                                    showDeleteDialog = true
-                                },
-                                onClick = {
-                                    Log.d("TAG", "Clicked " + data[i].balance.amount)
-                                }
-                            )
-                        }
+                                ),
+                            onLongPress = {
+                                longPressedBalance = data[i].balance
+                                showDeleteDialog = true
+                            },
+                            onClick = {
+                                Log.d("TAG", "Clicked " + data[i].balance.amount)
+                            }
+                        )
+                    }
                     item {
-                        PlusButton(onClick = { onAddBalanceClicked() }, size = elementSize)
+                        PlusButton(
+                            onClick = { onAddBalanceClicked() },
+                            size = elementSize,
+                            isEnabled = isAddBalanceEnabled
+                        )
                     }
                 }
-                // }
 
                 if (showDeleteDialog) {
                     DeleteBalanceDialog(

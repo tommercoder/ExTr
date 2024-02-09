@@ -11,6 +11,7 @@ interface BalancesRepository {
     suspend fun insert(balance: Balance)
     suspend fun delete(balance: Balance)
     fun getBalancesForCurrentCurrency(): Flow<List<BalanceWithDetails>>
+    suspend fun getBalancesForIds(ids: List<Int>): List<BalanceWithDetails>
 }
 
 class BalancesRepositoryImpl(
@@ -44,5 +45,9 @@ class BalancesRepositoryImpl(
 
     override fun getBalancesForCurrentCurrency(): Flow<List<BalanceWithDetails>> {
         return balanceDao.getBalancesForCurrentCurrency()
+    }
+
+    override suspend fun getBalancesForIds(ids: List<Int>): List<BalanceWithDetails> {
+        return balanceDao.getBalancesForIds(ids)
     }
 }

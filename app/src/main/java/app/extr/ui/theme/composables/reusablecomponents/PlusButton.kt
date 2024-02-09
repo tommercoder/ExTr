@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 fun PlusButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
+    isEnabled: Boolean,
     size: Dp
 ) {
     val circleSize = size * 0.4f
@@ -33,6 +35,9 @@ fun PlusButton(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(size)
+            .graphicsLayer {
+                alpha = if(isEnabled) 1f else 0.5f
+            }
     ) {
         Box(
             Modifier
@@ -45,8 +50,7 @@ fun PlusButton(
             Icon(
                 Icons.Filled.Add,
                 contentDescription = "Add",
-                modifier = Modifier.size(iconSize),
-                //tint = MaterialTheme.colorScheme.background
+                modifier = Modifier.size(iconSize)
             )
         }
 
@@ -57,6 +61,6 @@ fun PlusButton(
 @Composable
 fun PlusButtonPreview() {
     PlusButton(
-        Modifier, {}, 180.dp
+        Modifier, {}, true, 180.dp
     )
 }

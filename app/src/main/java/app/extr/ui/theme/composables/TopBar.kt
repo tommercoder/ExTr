@@ -48,6 +48,7 @@ import app.extr.utils.helpers.UiState
 @Composable
 fun TopBar(
     uiState: UiState<List<UsedCurrencyDetails>>,
+    onAddClicked: () -> Unit,
     onItemSelected: (Currency) -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
     isAddButtonVisible: Boolean,
@@ -59,13 +60,12 @@ fun TopBar(
         }
 
         is UiState.Success -> {
-           // LargeTopAppBar(
-            TopAppBar (
+            TopAppBar(
                 title = {},
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     if (isAddButtonVisible) {
-                        IconButton(onClick = { }) {
+                        IconButton(onClick = { onAddClicked() }) {
                             Icon(
                                 imageVector = Icons.Filled.Add,
                                 contentDescription = "Navigation icon"
@@ -80,7 +80,6 @@ fun TopBar(
                     val data by rememberUpdatedState(uiState.data)
 
                     Row(
-                        //modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
                     ) {
                         CurrenciesDropDownMenu(

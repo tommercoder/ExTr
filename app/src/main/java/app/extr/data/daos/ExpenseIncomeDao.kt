@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import app.extr.data.types.Expense
 import app.extr.data.types.ExpenseWithDetails
@@ -20,10 +21,22 @@ interface ExpenseIncomeDao {
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun insertIncome(income: Income)
 
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
-    @Query(" SELECT * FROM expenses WHERE month = :month and year=:year")
+    @Query(
+        """
+    SELECT * FROM expenses
+        JOIN balances ON expenses.balanceId = balances.balanceId
+    WHERE balances.currencyId = (
+        SELECT currencyId FROM used_currencies 
+        ORDER BY selectionIndex DESC
+        LIMIT 1
+    ) AND expenses.month = :month AND expenses.year = :year
+    """
+    )
     fun getExpensesForCurrentCurrency(month: Int, year: Int): Flow<List<ExpenseWithDetails>>
 
+    @RewriteQueriesToDropUnusedColumns
     @Transaction
     @Query(
         """

@@ -36,62 +36,74 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.currentBackStackEntryAsState
+import app.extr.data.types.BalanceWithDetails
+import app.extr.data.types.Currency
 import app.extr.data.types.Expense
+import app.extr.data.types.MoneyType
+import app.extr.data.types.TransactionType
 import app.extr.ui.theme.AppPadding
+import app.extr.ui.theme.LocalCustomColorsPalette
 import app.extr.ui.theme.composables.BalanceBottomSheet
+import app.extr.ui.theme.composables.ExpenseIncomeBottomSheetCaller
+import app.extr.ui.theme.composables.ExpensesIncomeBottomSheet
 import app.extr.ui.theme.composables.reusablecomponents.ExpenseIncomeDateRow
-import app.extr.ui.theme.composables.reusablecomponents.SelectedButton
+import app.extr.ui.theme.composables.reusablecomponents.SelectedTransactionType
+import app.extr.ui.theme.mappers.DropdownItemUi
+import app.extr.ui.theme.mappers.toDropdownItem
 import app.extr.ui.theme.viewmodels.BalancesViewModel
 import app.extr.ui.theme.viewmodels.CurrenciesViewModel
+import app.extr.ui.theme.viewmodels.ExpensesIncomeBottomSheetViewModel
 import app.extr.ui.theme.viewmodels.ExpensesIncomeTypesViewModel
 import app.extr.ui.theme.viewmodels.ExpensesIncomeViewModel
 import app.extr.ui.theme.viewmodels.MoneyTypesViewModel
 import app.extr.ui.theme.viewmodels.UsedCurrenciesViewModel
 import app.extr.ui.theme.viewmodels.UserViewModel
+import app.extr.utils.helpers.UiState
+import app.extr.utils.helpers.resproviders.ExpenseTypesRes
+import app.extr.utils.helpers.resproviders.IncomeTypesRes
+import app.extr.utils.helpers.resproviders.MoneyTypesRes
+import app.extr.utils.helpers.resproviders.ResProvider
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExTrApp(
-    navController: NavHostController = rememberNavController(),
-    currenciesViewModel: CurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory),
-    moneyTypesViewModel: MoneyTypesViewModel = viewModel(factory = ViewModelsProvider.Factory),
-    expensesIncomeTypesViewModel: ExpensesIncomeTypesViewModel = viewModel(factory = ViewModelsProvider.Factory),
-    expenseIncomeViewModel: ExpensesIncomeViewModel = viewModel(factory = ViewModelsProvider.Factory)
+    navController: NavHostController = rememberNavController()
 ) {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
-    val snackBarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
     val navBackStackEntry =
         navController.currentBackStackEntryAsState().value?.destination?.route
 
-    val currenciesUiState by currenciesViewModel.currencies.collectAsStateWithLifecycle()
-    val moneyTypesUiState by moneyTypesViewModel.moneyTypes.collectAsStateWithLifecycle()
+    var selectedType by remember { mutableStateOf(SelectedTransactionType.EXPENSES) }
+    val expensesIncomeBottomSheetViewModel: ExpensesIncomeBottomSheetViewModel = viewModel(factory = ViewModelsProvider.Factory)
 
-    val expenseTypesUiState by expensesIncomeTypesViewModel.expenseTypes.collectAsStateWithLifecycle()
-    val incomeTypesUiState by expensesIncomeTypesViewModel.incomeTypes.collectAsStateWithLifecycle()
-
-    val expensesUiState by expenseIncomeViewModel.uiStateExpenses.collectAsStateWithLifecycle()
-    val incomeUiState by expenseIncomeViewModel.uiStateIncome.collectAsStateWithLifecycle()
-
-    var selectedButton by remember { mutableStateOf(SelectedButton.EXPENSES) }
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }, //todo: remove
         topBar = {
             val viewModel: UsedCurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory)
+
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val currentlySelectedCurrency by viewModel.currentlySelectedCurrency.collectAsStateWithLifecycle()
+
+
             val chartButtonsShown = navBackStackEntry == Screens.RoundChart.route
                     || navBackStackEntry == Screens.Chart.route
+            val context = LocalContext.current
             Column {
                 TopBar(
                     uiState = uiState,
                     onItemSelected = { currency ->
                         viewModel.selectCurrency(currencyId = currency.currencyId)
+                    },
+                    onAddClicked = {
+                        val opened = expensesIncomeBottomSheetViewModel.toggleBottomSheet(true)
+
+                        if(!opened){
+                            Toast.makeText(context, "Balances are empty", Toast.LENGTH_SHORT).show()
+                        }
                     },
                     scrollBehavior = scrollBehavior,
                     isAddButtonVisible = navBackStackEntry == Screens.RoundChart.route
@@ -103,22 +115,63 @@ fun ExTrApp(
                         modifier = Modifier
                             .fillMaxWidth(),
                         onSelected = {
-                            selectedButton = it
+                            selectedType = it
                         },
                         onDateClicked = {
-                            val expense = Expense(
-                                typeId = 0,
-                                balanceId = 1,
-                                description = "blabla",
-                                amount = 0.3f,
-                                month = 2,
-                                year = 2024
-                            )
-                            expenseIncomeViewModel.insertExpense(expense)
+
                         }
                     )
                 }
             }
+
+//            val expensesIncomeTypesViewModel: ExpensesIncomeTypesViewModel =
+//                viewModel(factory = ViewModelsProvider.Factory)
+//            val balancesViewModel: BalancesViewModel = viewModel(factory = ViewModelsProvider.Factory)
+//
+//            val balancesUiState by balancesViewModel.uiState.collectAsStateWithLifecycle()
+//            val expenseTypesUiState by expensesIncomeTypesViewModel.expenseTypes.collectAsStateWithLifecycle()
+//            val incomeTypesUiState by expensesIncomeTypesViewModel.incomeTypes.collectAsStateWithLifecycle()
+//
+//
+//            val isTransactionDropDownDataValid = remember(expenseTypesUiState, incomeTypesUiState) {
+//                balancesUiState is UiState.Success && (balancesUiState as UiState.Success<List<BalanceWithDetails>>).data.isNotEmpty() &&
+//                expenseTypesUiState is UiState.Success && (expenseTypesUiState as UiState.Success<List<TransactionType>>).data.isNotEmpty()
+//                        && incomeTypesUiState is UiState.Success && (incomeTypesUiState as UiState.Success<List<TransactionType>>).data.isNotEmpty()
+//            }
+//
+//            val palette = LocalCustomColorsPalette.current
+//
+//            val expenseTypesRes = remember { ExpenseTypesRes(palette) }
+//            val incomeTypesRes = remember { IncomeTypesRes(palette) }
+//            val moneyTypeRes = remember { MoneyTypesRes(palette) }
+//            if (isTransactionDropDownShown && isTransactionDropDownDataValid) {
+//
+//                val transactionTypes =
+//                    if (selectedType == SelectedTransactionType.EXPENSES) {
+//                        val expenseTypes = (expenseTypesUiState as UiState.Success).data
+//                        expenseTypes.map { it.toDropdownItem(expenseTypesRes) }
+//                    } else {
+//                        val incomeTypes = (incomeTypesUiState as UiState.Success).data
+//                        incomeTypes.map { it.toDropdownItem(incomeTypesRes) }
+//                    }
+//
+//                val balances = (balancesUiState as UiState.Success<List<BalanceWithDetails>>).data
+//                val uiBalances = balances.map{ it.toDropdownItem(moneyTypeRes)}
+//
+//                ExpensesIncomeBottomSheet(
+//                    balances = uiBalances,
+//                    transactionTypes = transactionTypes,
+//                    initialBalance = uiBalances.first(),
+//                    initialTransactionType = transactionTypes.first(),
+//                    currencySymbol = currentlySelectedCurrency?.currency?.symbol ?: ' ',
+//                    onSaveClicked = {},
+//                    onDismissed = { isTransactionDropDownShown = false}
+//                )
+//            }
+//            else{
+//                //todo: show toast???
+//            }
+
         },
         bottomBar = {
             BottomBar(navController)
@@ -130,54 +183,14 @@ fun ExTrApp(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screens.Home.route) {
-                val viewModel: BalancesViewModel = viewModel(factory = ViewModelsProvider.Factory)
-                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-                val totalBalance by viewModel.totalBalance.collectAsStateWithLifecycle()
-                var isAddBalanceSheetShown by remember { mutableStateOf(false) }
-
-                HomeScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    uiState = uiState,
-                    totalBalance = totalBalance,
-                    onAddBalanceClicked = {
-                        isAddBalanceSheetShown = true
-                    },
-                    onDeleteBalanceClicked = { balanceId ->
-                        viewModel.deleteBalance(balanceId)
-                    },
-                    onRefresh = {
-                        viewModel.refreshData()
-                    }
-                )
-
-                val toastText = stringResource(id = R.string.label_snackbar_couldnt_create_balance)
-                var showToast by remember { mutableStateOf(false) }
-                if (showToast) {
-                    Toast.makeText(LocalContext.current, toastText, Toast.LENGTH_SHORT).show()
-                    showToast = false
-                }
-                if (isAddBalanceSheetShown) {
-                    BalanceBottomSheet(
-                        currenciesUiState = currenciesUiState,
-                        moneyTypeUiState = moneyTypesUiState,
-                        onSaveClicked = { balance ->
-                            if (viewModel.doesBalanceExist(balance)) {
-                                showToast = true //todo: move showing to a separate composable
-                            } else {
-                                viewModel.addBalance(balance)
-                                isAddBalanceSheetShown = false
-                            }
-                        },
-                        onDismissed = { isAddBalanceSheetShown = false }
-                    )
-                }
+                HomeScreenRoute()
             }
             composable(Screens.RoundChart.route) {
-                RoundChartScreen(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = AppPadding.Small),
-                    uiState = if (selectedButton == SelectedButton.EXPENSES) expensesUiState else incomeUiState
+                RoundChartScreenRoute(
+                    selectedType = selectedType,
+                    onCardClicked = {
+                        expensesIncomeBottomSheetViewModel.toggleBottomSheet(true, it)
+                    }
                 )
             }
             composable(Screens.Chart.route) {
@@ -193,6 +206,121 @@ fun ExTrApp(
                 )
             }
         }
+    }
+
+    ExpenseIncomeBottomSheetCaller(
+        expensesIncomeBottomSheetViewModel = expensesIncomeBottomSheetViewModel,
+        expensesIncomeViewModel = viewModel(factory = ViewModelsProvider.Factory),
+        selectedTransactionType = selectedType
+    )
+}
+
+@Composable
+fun RoundChartScreenRoute(
+    selectedType: SelectedTransactionType,
+    onCardClicked: (TransactionType) -> Unit
+) {
+    val expenseIncomeViewModel: ExpensesIncomeViewModel =
+        viewModel(factory = ViewModelsProvider.Factory)
+    val expensesUiState by expenseIncomeViewModel.uiStateExpenses.collectAsStateWithLifecycle()
+    val incomeUiState by expenseIncomeViewModel.uiStateIncome.collectAsStateWithLifecycle()
+    val expensesByTypes by expenseIncomeViewModel.expensesByCategories.collectAsStateWithLifecycle()
+    val incomeByTypes by expenseIncomeViewModel.incomeByCategories.collectAsStateWithLifecycle()
+
+    val expenseTypesRes = ExpenseTypesRes(LocalCustomColorsPalette.current)
+    val incomeTypesRes = IncomeTypesRes(LocalCustomColorsPalette.current)
+    RoundChartScreen(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = AppPadding.ExtraSmall),
+        uiState = if (selectedType == SelectedTransactionType.EXPENSES) expensesUiState else incomeUiState,
+        transactionsByTypes = if (selectedType == SelectedTransactionType.EXPENSES) expensesByTypes else incomeByTypes,
+        resProvider =  if (selectedType == SelectedTransactionType.EXPENSES) expenseTypesRes else incomeTypesRes,
+        onCardClicked = {
+            onCardClicked(it)
+        },
+        onRefresh = {
+
+        }
+    )
+}
+
+//todo: pass only ui states and callback here
+@Composable
+fun HomeScreenRoute() {
+    val viewModel: BalancesViewModel = viewModel(factory = ViewModelsProvider.Factory)
+    val currenciesViewModel: CurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory)
+    val moneyTypesViewModel: MoneyTypesViewModel = viewModel(factory = ViewModelsProvider.Factory)
+    val palette = LocalCustomColorsPalette.current
+    val moneyTypesRes = remember { MoneyTypesRes(palette) }
+
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val currenciesUiState by currenciesViewModel.currencies.collectAsStateWithLifecycle()
+    val moneyTypesUiState by moneyTypesViewModel.moneyTypes.collectAsStateWithLifecycle()
+    val totalBalance by viewModel.totalBalance.collectAsStateWithLifecycle()
+    val isBottomSheetDataValid = remember(currenciesUiState, moneyTypesUiState) {
+        currenciesUiState is UiState.Success && (currenciesUiState as UiState.Success<List<Currency>>).data.isNotEmpty()
+                && moneyTypesUiState is UiState.Success && (moneyTypesUiState as UiState.Success<List<MoneyType>>).data.isNotEmpty()
+    }
+
+    val context = LocalContext.current
+    val toastTextBalanceExists = stringResource(id = R.string.label_toast_couldnt_create_balance)
+    val toastTextCantAddBalance =
+        stringResource(id = R.string.label_toast_cant_add_balance_due_to_empty_data)
+    var isAddBalanceSheetShown by remember { mutableStateOf(false) }
+
+    HomeScreen(
+        modifier = Modifier.fillMaxSize(),
+        uiState = uiState,
+        totalBalance = totalBalance,
+        moneyTypesRes = moneyTypesRes,
+        isAddBalanceEnabled = isBottomSheetDataValid,
+        onAddBalanceClicked = {
+            if (isBottomSheetDataValid) {
+                isAddBalanceSheetShown = true
+            } else {
+                Toast.makeText(context, toastTextCantAddBalance, Toast.LENGTH_SHORT).show()
+            }
+        },
+        onDeleteBalanceClicked = { balanceId ->
+            viewModel.deleteBalance(balanceId)
+        },
+        onRefresh = {
+            viewModel.refreshData()
+        },
+
+    )
+
+    if (isAddBalanceSheetShown && isBottomSheetDataValid) {
+        //todo: remember seems to be not needed
+        val currencies = remember(currenciesUiState) {
+            (currenciesUiState as UiState.Success<List<Currency>>).data
+        }
+        val dropdownItems = remember(moneyTypesUiState) {
+            (moneyTypesUiState as UiState.Success<List<MoneyType>>).data.map {
+                it.toDropdownItem(
+                    moneyTypesRes
+                )
+            }
+        }
+
+        BalanceBottomSheet(
+            currencies = currencies,
+            moneyTypes = dropdownItems,
+            initialCurrency = currencies.first(),
+            initialMoneyType = dropdownItems.first(),
+            onSaveClicked = { balance ->
+                if (viewModel.doesBalanceExist(balance)) {
+                    Toast.makeText(context, toastTextBalanceExists, Toast.LENGTH_SHORT).show()
+                } else {
+                    viewModel.addBalance(balance)
+                    isAddBalanceSheetShown = false
+                }
+            },
+            onDismissed = { isAddBalanceSheetShown = false },
+
+        )
     }
 }
 

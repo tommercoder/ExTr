@@ -3,6 +3,7 @@ package app.extr.data.types
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 
@@ -10,8 +11,10 @@ abstract class Transaction {
     abstract val id: Int
     abstract val typeId: Int
     abstract val balanceId: Int
+    abstract val currencyId: Int
+    abstract val moneyTypeId: Int
     abstract val description: String
-    abstract val amount: Float
+    abstract val transactionAmount: Float
     abstract val month: Int
     abstract val year: Int
 }
@@ -31,6 +34,9 @@ abstract class Transaction {
             childColumns = ["typeId"],
             onDelete = ForeignKey.CASCADE
         )
+    ],
+    indices = [
+        Index(value = ["balanceId"]) // This line adds an index for balanceId
     ]
 )
 data class Expense(
@@ -38,8 +44,10 @@ data class Expense(
     override val id: Int = 0,
     override val typeId: Int,
     override val balanceId: Int,
+    override val currencyId: Int,
+    override val moneyTypeId: Int,
     override val description: String,
-    override val amount: Float,
+    override val transactionAmount: Float,
     override val month: Int,
     override val year: Int
 ) : Transaction()
@@ -59,14 +67,19 @@ data class Expense(
             childColumns = ["typeId"],
             onDelete = ForeignKey.CASCADE
         )
+    ],
+    indices = [
+        Index(value = ["balanceId"]) // This line adds an index for balanceId
     ])
 data class Income(
     @PrimaryKey(autoGenerate = true)
     override val id: Int = 0,
     override val typeId: Int,
     override val balanceId: Int,
+    override val currencyId: Int,
+    override val moneyTypeId: Int,
     override val description: String,
-    override val amount: Float,
+    override val transactionAmount: Float,
     override val month: Int,
     override val year: Int
 ) : Transaction()
@@ -76,27 +89,40 @@ interface TransactionWithDetails {
     val transaction: Transaction
     val transactionType: TransactionType
     val balance: Balance
+    val currency: Currency
+    val moneyType: MoneyType
 }
 
 data class ExpenseWithDetails(
     @Embedded val expense: Expense,
+    @Relation(
+        parentColumn = "typeId",
+        entityColumn = "id"
+    )
+    val expenseType: ExpenseType,
     @Relation(
         parentColumn = "balanceId",
         entityColumn = "balanceId"
     )
     val balance_: Balance,
     @Relation(
-        parentColumn = "typeId",
-        entityColumn = "id"
+        parentColumn = "currencyId",
+        entityColumn = "currencyId"
     )
-    val expenseType: ExpenseType,
+    val currency_: Currency,
+    @Relation(
+        parentColumn = "moneyTypeId",
+        entityColumn = "moneyTypeId"
+    )
+    val moneyType_: MoneyType
 
 ) : TransactionWithDetails {
     override val transaction: Transaction get() = expense
     override val transactionType: TransactionType get() = expenseType
     override val balance: Balance get() = balance_
+    override val currency: Currency get() = currency_
+    override val moneyType: MoneyType get() = moneyType_
 }
-
 
 data class IncomeWithDetails(
     @Embedded val income: Income,
@@ -109,9 +135,22 @@ data class IncomeWithDetails(
         parentColumn = "balanceId",
         entityColumn = "balanceId"
     )
-    val balance_: Balance
+    val balance_: Balance,
+    @Relation(
+        parentColumn = "currencyId",
+        entityColumn = "currencyId"
+    )
+    val currency_: Currency,
+    @Relation(
+        parentColumn = "moneyTypeId",
+        entityColumn = "moneyTypeId"
+    )
+    val moneyType_: MoneyType
+
 ) : TransactionWithDetails {
     override val transaction: Transaction get() = income
     override val transactionType: TransactionType get() = incomeType
     override val balance: Balance get() = balance_
+    override val currency: Currency get() = currency_
+    override val moneyType: MoneyType get() = moneyType_
 }

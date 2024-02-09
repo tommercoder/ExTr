@@ -9,17 +9,17 @@ import app.extr.data.types.Income
 import app.extr.data.types.IncomeWithDetails
 import kotlinx.coroutines.flow.Flow
 
-interface ExpenseIncomeRepository {
+interface ExpensesIncomeRepository {
     suspend fun insertExpense(expense: Expense)
     suspend fun insertIncome(income: Income)
     fun getExpensesForCurrentCurrency(month: Int, year: Int): Flow<List<ExpenseWithDetails>>
     fun getIncomesForCurrentCurrency(month: Int, year: Int): Flow<List<IncomeWithDetails>>
 }
 
-class ExpenseIncomeRepositoryImpl(
+class ExpensesIncomeRepositoryImpl(
     private val balanceDao: BalanceDao,
     private val expenseIncomeDao: ExpenseIncomeDao
-) : ExpenseIncomeRepository {
+) : ExpensesIncomeRepository {
 
     private suspend fun getBalanceById(balanceId: Int): Balance {
         return balanceDao.getBalanceById(balanceId)
@@ -30,7 +30,7 @@ class ExpenseIncomeRepositoryImpl(
 
         var balance = getBalanceById(expense.balanceId)
         if(balance != null) {
-            val newAmount = balance.amount - expense.amount
+            val newAmount = balance.amount - expense.transactionAmount
             balance = balance.copy(
                 amount = newAmount
             )
@@ -43,7 +43,7 @@ class ExpenseIncomeRepositoryImpl(
 
         var balance = getBalanceById(income.balanceId)
         if(balance != null) {
-            val newAmount = balance.amount + income.amount
+            val newAmount = balance.amount + income.transactionAmount
             balance = balance.copy(
                 amount = newAmount
             )

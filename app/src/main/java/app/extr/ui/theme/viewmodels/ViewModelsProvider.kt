@@ -22,10 +22,18 @@ object ViewModelsProvider {
             UsedCurrenciesViewModel(ExTrApplication.container.usedCurrenciesRepository)
         }
         initializer {
-            ExpensesIncomeTypesViewModel(ExTrApplication.container.expenseIncomeTypesRepository)
+            ExpensesIncomeTypesViewModel(ExTrApplication.container.ExpensesIncomeTypesRepository) //todo: probably not needed, remove if so
         }
         initializer {
-            ExpensesIncomeViewModel(ExTrApplication.container.expenseIncomeRepository)
+            ExpensesIncomeViewModel(
+                ExTrApplication.container.ExpensesIncomeRepository,
+                ExTrApplication.container.balancesRepository)
+        }
+        initializer {
+            ExpensesIncomeBottomSheetViewModel(
+                ExTrApplication.container.balancesRepository,
+                ExTrApplication.container.ExpensesIncomeTypesRepository
+            )
         }
     }
 }
