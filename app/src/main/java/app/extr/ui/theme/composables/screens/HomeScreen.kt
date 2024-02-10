@@ -57,9 +57,11 @@ import app.extr.ui.theme.animations.CustomCircularProgressIndicator
 import app.extr.ui.theme.animations.LoadingAnimation
 import app.extr.ui.theme.composables.BalanceBottomSheet
 import app.extr.ui.theme.composables.reusablecomponents.ErrorScreen
+import app.extr.ui.theme.composables.reusablecomponents.NoDataYet
 import app.extr.ui.theme.composables.reusablecomponents.PlusButton
 import app.extr.ui.theme.composables.reusablecomponents.RoundedCard
 import app.extr.utils.helpers.AnimatedText
+import app.extr.utils.helpers.AnimatedTextWithSign
 import app.extr.utils.helpers.UiState
 import app.extr.utils.helpers.resproviders.MoneyTypesRes
 import kotlinx.coroutines.delay
@@ -95,7 +97,11 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(40.dp))
 
                 if (data.isEmpty()) {
-                    NoBalancesYet()
+                    NoDataYet(
+                        modifier = Modifier,
+                        headerId = R.string.label_no_balances,
+                        labelId = R.string.label_create_balance_hint
+                    )
                 } else {
                     TotalBalance(
                         totalBalance = totalBalance,
@@ -180,82 +186,14 @@ fun TotalBalance(
             text = stringResource(R.string.header_total_balance),
             style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.secondary)
         )
-        Row(
-            modifier = Modifier
-                .padding(top = AppPadding.Medium)
-                .align(
-                    Alignment.CenterHorizontally
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                modifier = Modifier.padding(end = AppPadding.Small),
-                text = currencySign.toString(),
-                style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.secondary)
-            )
-            AnimatedText(
-                targetValue = totalBalance,
-                textStyle = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.ExtraBold),
-                durationMillis = 700
-            )
-        }
-    }
-}
 
-@Composable
-fun NoBalancesYet(
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val iconSize = 60.dp
-            Icon(
-                modifier = Modifier.size(iconSize),
-                painter = painterResource(id = R.drawable.card_icon),
-                contentDescription = null,
-                tint = LocalCustomColorsPalette.current.balanceCardColor
-            )
-            Icon(
-                modifier = Modifier.size(iconSize),
-                painter = painterResource(id = R.drawable.ewallet_icon),
-                contentDescription = null,
-                tint = LocalCustomColorsPalette.current.balanceCashColor
-            )
-            Icon(
-                modifier = Modifier.size(iconSize),
-                painter = painterResource(id = R.drawable.savings_icon),
-                contentDescription = null,
-                tint = LocalCustomColorsPalette.current.balanceSavingsColor
-            )
-            Icon(
-                modifier = Modifier.size(iconSize),
-                painter = painterResource(id = R.drawable.cash_icon),
-                contentDescription = null,
-                tint = LocalCustomColorsPalette.current.balanceEWalletColor
-            )
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-            text = stringResource(id = R.string.label_no_balances),
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(15.dp))
-        Text(
-            text = stringResource(id = R.string.label_create_balance_hint),
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center
+        AnimatedTextWithSign(
+            totalValue = totalBalance,
+            currencySign = currencySign
         )
     }
 }
+
 
 @Composable
 fun DeleteBalanceDialog(

@@ -53,6 +53,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.extr.ui.theme.AppPadding
+import app.extr.ui.theme.shapeScheme
+import app.extr.utils.helpers.Constants
 import com.example.compose.md_theme_light_primary
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -64,6 +66,7 @@ fun RoundedCard(
     @ColorRes color: Color,
     currencySymbol: Char,
     number: Float,
+    precision: String = Constants.precisionTwo,
     modifier: Modifier = Modifier,
     text: String = "",
     secondaryText: String = "",
@@ -81,6 +84,7 @@ fun RoundedCard(
     )
 
     val combinedModifier = modifier
+        .clip(MaterialTheme.shapes.extraLarge)
         .onSizeChanged { size ->
             padding = (size.width * 0.01f).dp
         }
@@ -111,12 +115,10 @@ fun RoundedCard(
                 }
             } else it
         }
-    //.background(backgroundColor)
 
     Card(
         colors = CardDefaults.cardColors(backgroundColor),
-        shape = MaterialTheme.shapes.extraLarge,
-        modifier = combinedModifier,
+        modifier = combinedModifier
     ) {
         Column(
             modifier = modifier.padding(padding)
@@ -129,7 +131,7 @@ fun RoundedCard(
             ) {
                 Box(
                     modifier = Modifier
-                        .clip(CircleShape)
+                        .clip(MaterialTheme.shapeScheme.extraRoundedCorners)
                         .background(color = MaterialTheme.colorScheme.onPrimary)
                         .aspectRatio(1f)
                         .padding(padding),
@@ -176,7 +178,7 @@ fun RoundedCard(
                     ),
                 )
                 Text(
-                    text = "%.2f".format(number),
+                    text = precision.format(number),
                     style = MaterialTheme.typography.titleLarge
                         .copy(fontSize = numberSize, fontWeight = FontWeight.Bold)
                 )

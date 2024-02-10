@@ -159,9 +159,6 @@ fun CurrenciesDropDownPreview() {
         borderShown = true
     )
 }
-
-//todo: display icon in an item, and cleanup
-//todo: can I make sure the items are not null?
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReusableDropdownMenu(
@@ -209,9 +206,7 @@ fun ReusableDropdownMenu(
                     imageVector = if (expanded)
                         ImageVector.vectorResource(id = R.drawable.expand_less_icon)
                     else
-                        ImageVector.vectorResource(
-                            id = R.drawable.expand_more_icon
-                        ),
+                        ImageVector.vectorResource(id = R.drawable.expand_more_icon),
                     contentDescription = null
                 )
             }

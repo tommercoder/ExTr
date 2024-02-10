@@ -11,6 +11,9 @@ import app.extr.data.types.TransactionType
 object Constants {
     //val BalanceUiState = UiState<List<BalanceWithDetails>>
     //todo: Move all ui states here
+
+    const val precisionTwo = "%.2f"
+    const val precisionZero = "%.0f"
 //
 //
 //    val EmptyCurrency: Currency = Currency(

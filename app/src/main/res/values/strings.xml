@@ -28,6 +28,7 @@
     <string name="label_create_balance_hint">Create a new balance by pressing the "plus" button below</string>
     <string name="label_toast_couldnt_create_balance">The same balance already exists.</string>
     <string name="label_toast_cant_add_balance_due_to_empty_data">Currencies/MoneyTypes couldn\'t load.\nTry reopening/reinstalling the app.</string>
+    <string name="label_balances_are_empty">Balances are empty</string>
 
     <!--ERROR SCREEN-->
     <string name="header_error_occured">ERROR OCCURED</string>
@@ -42,4 +43,8 @@
     <string name="label_expense">Expense</string>
     <string name="label_income">Income</string>
     <string name="label_add_description">Add description...</string>
+    <string name="label_no_expenses">No expenses yet</string>
+    <string name="label_create_expense_hint">Create a new expense by pressing the "plus" button on the top bar</string>
+    <string name="label_no_income">No income yet</string>
+    <string name="label_create_income_hint">Create a new income by pressing the "plus" button on the top bar</string>
 </resources>

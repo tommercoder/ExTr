@@ -15,37 +15,58 @@
   },
   {
     "id": 2,
-    "name": "Transportation",
+    "name": "Transport",
     "iconId": 2,
     "colorId": 2,
     "isCustom": false
   },
   {
     "id": 3,
-    "name": "Rent/Mortgage",
+    "name": "Rent",
     "iconId": 3,
     "colorId": 3,
     "isCustom": false
   },
   {
     "id": 4,
-    "name": "Dining Out",
+    "name": "Shopping",
     "iconId": 4,
     "colorId": 4,
     "isCustom": false
   },
   {
     "id": 5,
-    "name": "Entertainment",
+    "name": "Fun",
     "iconId": 5,
     "colorId": 5,
     "isCustom": false
   },
   {
     "id": 6,
-    "name": "Healthcare",
+    "name": "Health",
     "iconId": 6,
     "colorId": 6,
+    "isCustom": false
+  },
+  {
+    "id": 7,
+    "name": "Gifts",
+    "iconId": 7,
+    "colorId": 7,
+    "isCustom": false
+  },
+  {
+    "id": 8,
+    "name": "Cinema",
+    "iconId": 8,
+    "colorId": 8,
+    "isCustom": false
+  },
+  {
+    "id": 9,
+    "name": "Restaurants",
+    "iconId": 9,
+    "colorId": 9,
     "isCustom": false
   }
 ]

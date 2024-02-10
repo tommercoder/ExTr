@@ -77,7 +77,8 @@ fun ExTrApp(
         navController.currentBackStackEntryAsState().value?.destination?.route
 
     var selectedType by remember { mutableStateOf(SelectedTransactionType.EXPENSES) }
-    val expensesIncomeBottomSheetViewModel: ExpensesIncomeBottomSheetViewModel = viewModel(factory = ViewModelsProvider.Factory)
+    val expensesIncomeBottomSheetViewModel: ExpensesIncomeBottomSheetViewModel =
+        viewModel(factory = ViewModelsProvider.Factory)
 
     Scaffold(
         modifier = Modifier
@@ -92,6 +93,7 @@ fun ExTrApp(
             val chartButtonsShown = navBackStackEntry == Screens.RoundChart.route
                     || navBackStackEntry == Screens.Chart.route
             val context = LocalContext.current
+            val toastText = stringResource(id = R.string.label_balances_are_empty)
             Column {
                 TopBar(
                     uiState = uiState,
@@ -101,8 +103,9 @@ fun ExTrApp(
                     onAddClicked = {
                         val opened = expensesIncomeBottomSheetViewModel.toggleBottomSheet(true)
 
-                        if(!opened){
-                            Toast.makeText(context, "Balances are empty", Toast.LENGTH_SHORT).show()
+
+                        if (!opened) {
+                            Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
                         }
                     },
                     scrollBehavior = scrollBehavior,
@@ -179,7 +182,7 @@ fun ExTrApp(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screens.Home.route,
+            startDestination = Screens.RoundChart.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screens.Home.route) {
@@ -189,7 +192,7 @@ fun ExTrApp(
                 RoundChartScreenRoute(
                     selectedType = selectedType,
                     onCardClicked = {
-                        expensesIncomeBottomSheetViewModel.toggleBottomSheet(true, it)
+                        expensesIncomeBottomSheetViewModel.toggleBottomSheet(true, it.id)
                     }
                 )
             }
@@ -235,7 +238,8 @@ fun RoundChartScreenRoute(
             .padding(horizontal = AppPadding.ExtraSmall),
         uiState = if (selectedType == SelectedTransactionType.EXPENSES) expensesUiState else incomeUiState,
         transactionsByTypes = if (selectedType == SelectedTransactionType.EXPENSES) expensesByTypes else incomeByTypes,
-        resProvider =  if (selectedType == SelectedTransactionType.EXPENSES) expenseTypesRes else incomeTypesRes,
+        resProvider = if (selectedType == SelectedTransactionType.EXPENSES) expenseTypesRes else incomeTypesRes,
+        selectedType = selectedType,
         onCardClicked = {
             onCardClicked(it)
         },
@@ -290,7 +294,7 @@ fun HomeScreenRoute() {
             viewModel.refreshData()
         },
 
-    )
+        )
 
     if (isAddBalanceSheetShown && isBottomSheetDataValid) {
         //todo: remember seems to be not needed
@@ -320,7 +324,7 @@ fun HomeScreenRoute() {
             },
             onDismissed = { isAddBalanceSheetShown = false },
 
-        )
+            )
     }
 }
 

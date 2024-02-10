@@ -15,6 +15,7 @@ import app.extr.data.types.Transaction
 import app.extr.data.types.TransactionType
 import app.extr.ui.theme.LocalCustomColorsPalette
 import app.extr.ui.theme.composables.reusablecomponents.SelectedTransactionType
+import app.extr.ui.theme.mappers.DropdownItemUi
 import app.extr.ui.theme.mappers.toDropdownItem
 import app.extr.ui.theme.viewmodels.ExpensesIncomeBottomSheetViewModel
 import app.extr.ui.theme.viewmodels.ExpensesIncomeViewModel
@@ -67,13 +68,7 @@ fun ExpenseIncomeBottomSheetCaller(
                     }
                 }
 
-                val preselectedTypeUi =
-                    if (selectedTransactionType == SelectedTransactionType.EXPENSES) {
-                        combinedUiState.preSelectedTransactionType?.toDropdownItem(expenseTypesRes)
-                    } else {
-                        combinedUiState.preSelectedTransactionType?.toDropdownItem(incomeTypesRes)
-                    }
-
+                val preselectedTypeUi= transactionTypesDropdownItems.firstOrNull { it.id == combinedUiState.preSelectedTransactionTypeId }
                 ExpensesIncomeBottomSheet(
                     balances = balancesDropdownItems,
                     transactionTypes = transactionTypesDropdownItems,

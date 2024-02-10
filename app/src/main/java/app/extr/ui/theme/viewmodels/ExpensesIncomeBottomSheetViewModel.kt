@@ -22,7 +22,7 @@ data class CombinedUiState(
     val balancesState: UiState<List<BalanceWithDetails>>,
     val expenseTypesState: UiState<List<TransactionType>>,
     val incomeTypesState: UiState<List<TransactionType>>,
-    val preSelectedTransactionType: TransactionType?
+    val preSelectedTransactionTypeId: Int? = null
 )
 
 class ExpensesIncomeBottomSheetViewModel(
@@ -34,23 +34,23 @@ class ExpensesIncomeBottomSheetViewModel(
     private val _balancesData = MutableStateFlow<UiState<List<BalanceWithDetails>>>(UiState.Loading)
     private val _expenseTypes = MutableStateFlow<UiState<List<TransactionType>>>(UiState.Loading)
     private val _incomeTypes = MutableStateFlow<UiState<List<TransactionType>>>(UiState.Loading)
-    private val _preSelectedTransactionType = MutableStateFlow<TransactionType?>(null)
+    private val _preSelectedTransactionTypeId = MutableStateFlow<Int?>(null)
 
     val combinedUiState: StateFlow<CombinedUiState> = combine(
         _bottomSheetVisible,
         _balancesData,
         _expenseTypes,
         _incomeTypes,
-        _preSelectedTransactionType
-    ) { bottomSheetVisible, balancesData, expenseTypes, incomeTypes, preSelectedTransactionType ->
+        _preSelectedTransactionTypeId
+    ) { bottomSheetVisible, balancesData, expenseTypes, incomeTypes, preSelectedTransactionTypeId ->
         CombinedUiState(
             bottomSheetVisible = bottomSheetVisible,
             balancesState = balancesData,
             expenseTypesState = expenseTypes,
             incomeTypesState = incomeTypes,
-            preSelectedTransactionType = preSelectedTransactionType
+            preSelectedTransactionTypeId = preSelectedTransactionTypeId
         )
-    }.stateIn(viewModelScope, SharingStarted.Lazily, CombinedUiState(false, UiState.Loading, UiState.Loading, UiState.Loading, null))
+    }.stateIn(viewModelScope, SharingStarted.Lazily, CombinedUiState(false, UiState.Loading, UiState.Loading, UiState.Loading, 0))
 
     init {
         loadBalances()
@@ -58,7 +58,7 @@ class ExpensesIncomeBottomSheetViewModel(
         loadIncomeTypes()
     }
 
-    fun toggleBottomSheet(show: Boolean, preSelectedType: TransactionType? = null): Boolean {
+    fun toggleBottomSheet(show: Boolean, preSelectedTypeId: Int? = null): Boolean {
         val balances = _balancesData.value
         if (balances is UiState.Loading || balances is UiState.Error) {
             return false
@@ -68,7 +68,7 @@ class ExpensesIncomeBottomSheetViewModel(
             return false
         }
 
-        _preSelectedTransactionType.value = preSelectedType
+        _preSelectedTransactionTypeId.value = preSelectedTypeId
         _bottomSheetVisible.value = show
         return true
     }

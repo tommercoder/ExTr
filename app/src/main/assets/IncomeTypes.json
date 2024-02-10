@@ -15,7 +15,7 @@
   },
   {
     "id": 2,
-    "name": "Freelancing",
+    "name": "Freelance",
     "iconId": 2,
     "colorId": 2,
     "isCustom": false
@@ -29,7 +29,7 @@
   },
   {
     "id": 4,
-    "name": "Rental Income",
+    "name": "Rent Income",
     "iconId": 4,
     "colorId": 4,
     "isCustom": false
