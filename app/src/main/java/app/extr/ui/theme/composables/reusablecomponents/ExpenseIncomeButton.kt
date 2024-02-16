@@ -1,26 +1,14 @@
 package app.extr.ui.theme.composables.reusablecomponents
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.TweenSpec
-import androidx.compose.animation.core.snap
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,6 +30,8 @@ import app.extr.R
 import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.ExTrTheme
 import app.extr.ui.theme.shapeScheme
+import app.extr.ui.theme.viewmodels.Date
+import app.extr.utils.helpers.Constants
 
 enum class SelectedTransactionType {
     EXPENSES, INCOME
@@ -52,7 +41,8 @@ enum class SelectedTransactionType {
 fun ExpenseIncomeDateRow(
     modifier: Modifier = Modifier,
     onSelected: (SelectedTransactionType) -> Unit,
-    onDateClicked: () -> Unit
+    onDateClicked: () -> Unit,
+    date: Date
 ) {
     var selectedTransactionType by remember { mutableStateOf(SelectedTransactionType.EXPENSES) }
 
@@ -96,8 +86,6 @@ fun ExpenseIncomeDateRow(
                     },
                     modifier = Modifier
                         .weight(1f)
-                        //.offset(x = offset)
-                        //.height(48.dp)
                         .zIndex(if (selectedTransactionType == SelectedTransactionType.EXPENSES) 1f else 0f),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (selectedTransactionType == SelectedTransactionType.INCOME) MaterialTheme.colorScheme.primary else Color.Transparent
@@ -114,11 +102,14 @@ fun ExpenseIncomeDateRow(
         Button(
             modifier = Modifier
                 .height(IntrinsicSize.Min)
-                //.padding(horizontal = 4.dp)
                 .weight(0.4f),
-            onClick = { onDateClicked() }
+            onClick = {
+                onDateClicked()
+            }
         ) {
-            Text("01 Feb 24")
+            Text(
+                text = stringResource(Constants.months[date.month]) + " " + date.year.toString()
+            )
         }
     }
 }
@@ -130,7 +121,8 @@ fun OverlappingSegmentedControlPreview() {
             ExpenseIncomeDateRow(
                 modifier = Modifier,
                 onSelected = {},
-                onDateClicked = {}
+                onDateClicked = {},
+                date = Date(2, 2024)
             )
     }
 }

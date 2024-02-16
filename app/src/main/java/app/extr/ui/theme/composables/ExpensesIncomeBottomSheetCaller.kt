@@ -17,6 +17,7 @@ import app.extr.ui.theme.LocalCustomColorsPalette
 import app.extr.ui.theme.composables.reusablecomponents.SelectedTransactionType
 import app.extr.ui.theme.mappers.DropdownItemUi
 import app.extr.ui.theme.mappers.toDropdownItem
+import app.extr.ui.theme.viewmodels.DatePickerViewModel
 import app.extr.ui.theme.viewmodels.ExpensesIncomeBottomSheetViewModel
 import app.extr.ui.theme.viewmodels.ExpensesIncomeViewModel
 import app.extr.utils.helpers.UiState
@@ -28,9 +29,11 @@ import app.extr.utils.helpers.resproviders.MoneyTypesRes
 fun ExpenseIncomeBottomSheetCaller(
     expensesIncomeBottomSheetViewModel: ExpensesIncomeBottomSheetViewModel,
     expensesIncomeViewModel: ExpensesIncomeViewModel,
+    datePickerViewModel: DatePickerViewModel,
     selectedTransactionType: SelectedTransactionType
 ) {
     val combinedUiState by expensesIncomeBottomSheetViewModel.combinedUiState.collectAsStateWithLifecycle()
+    val dateState by datePickerViewModel.dateState.collectAsStateWithLifecycle()
 
     val palette = LocalCustomColorsPalette.current
     val expenseTypesRes = remember { ExpenseTypesRes(palette) }
@@ -104,13 +107,17 @@ fun ExpenseIncomeBottomSheetCaller(
                         expensesIncomeViewModel.insertTransaction(transaction)
                         expensesIncomeBottomSheetViewModel.toggleBottomSheet(false)
                     },
+                    onCalendarClick = {
+                        datePickerViewModel.toggleDatePicker(true)
+                    },
                     onDismissed = { expensesIncomeBottomSheetViewModel.toggleBottomSheet(false) },
                     currencySymbol = (combinedUiState.balancesState as UiState.Success<List<BalanceWithDetails>>).data[0].currency.symbol,
                     initialBalance = balancesDropdownItems.first(),
                     initialTransactionType = transactionTypesDropdownItems.first(),
                     label = stringResource(
                         id = if (selectedTransactionType == SelectedTransactionType.EXPENSES) R.string.label_expense else R.string.label_income
-                    )
+                    ),
+                    date = dateState.date
                 )
             }
         }

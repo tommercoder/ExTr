@@ -62,7 +62,7 @@ fun RoundChartScreen(
         }
 
         is UiState.Success -> {
-            val transactions = remember(uiState) { uiState.data }
+            val transactions = uiState.data
 
             if (transactions.isEmpty()) {
                 NoDataYet(
@@ -71,6 +71,7 @@ fun RoundChartScreen(
                     labelId = if (selectedType == SelectedTransactionType.EXPENSES) R.string.label_create_expense_hint else R.string.label_create_income_hint
                 )
             } else {
+                val currencySymbol = remember(transactions) { transactions[0].currency.symbol }
                 Column(
                     modifier = modifier
                 ) {
@@ -78,6 +79,7 @@ fun RoundChartScreen(
                     PercentageCircleChart(
                         modifier = Modifier.padding(top = AppPadding.Medium, bottom = AppPadding.Medium),
                         data = transactionsByTypes,
+                        currencySymbol = currencySymbol,
                         total = transactionsByTypes.entries.sumOf { it.value },
                         resProvider = resProvider
                     )
@@ -101,7 +103,7 @@ fun RoundChartScreen(
                                 icon = resProvider.getRes(type.id).icon,
                                 secondaryText = type.name,
                                 color = resProvider.getRes(type.id).color,
-                                currencySymbol = transactions[0].currency.symbol,
+                                currencySymbol = currencySymbol,
                                 precision = Constants.precisionZero,
                                 number = sum.toFloat(),
                                 modifier = Modifier
@@ -127,6 +129,7 @@ fun RoundChartScreen(
 fun PercentageCircleChart(
     data: Map<TransactionType, Double>,
     total: Double,
+    currencySymbol: Char,
     modifier: Modifier = Modifier,
     resProvider: ResProvider
 ) {
@@ -164,7 +167,7 @@ fun PercentageCircleChart(
         val targetTotal = Constants.precisionTwo.format(total).toFloat()
         AnimatedTextWithSign(
             totalValue = targetTotal,
-            currencySign = '$',
+            currencySign = currencySymbol,
             signStyle = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.secondary),
             valueStyle = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.ExtraBold)
         )

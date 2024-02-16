@@ -44,6 +44,7 @@ import app.extr.data.types.TransactionType
 import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.LocalCustomColorsPalette
 import app.extr.ui.theme.composables.BalanceBottomSheet
+import app.extr.ui.theme.composables.DatePickerDialogCaller
 import app.extr.ui.theme.composables.ExpenseIncomeBottomSheetCaller
 import app.extr.ui.theme.composables.ExpensesIncomeBottomSheet
 import app.extr.ui.theme.composables.reusablecomponents.ExpenseIncomeDateRow
@@ -52,6 +53,7 @@ import app.extr.ui.theme.mappers.DropdownItemUi
 import app.extr.ui.theme.mappers.toDropdownItem
 import app.extr.ui.theme.viewmodels.BalancesViewModel
 import app.extr.ui.theme.viewmodels.CurrenciesViewModel
+import app.extr.ui.theme.viewmodels.DatePickerViewModel
 import app.extr.ui.theme.viewmodels.ExpensesIncomeBottomSheetViewModel
 import app.extr.ui.theme.viewmodels.ExpensesIncomeTypesViewModel
 import app.extr.ui.theme.viewmodels.ExpensesIncomeViewModel
@@ -79,13 +81,15 @@ fun ExTrApp(
     var selectedType by remember { mutableStateOf(SelectedTransactionType.EXPENSES) }
     val expensesIncomeBottomSheetViewModel: ExpensesIncomeBottomSheetViewModel =
         viewModel(factory = ViewModelsProvider.Factory)
+    val datePickerViewModel: DatePickerViewModel = viewModel(factory = ViewModelsProvider.Factory)
+    val expenseIncomeViewModel: ExpensesIncomeViewModel = viewModel(factory = ViewModelsProvider.Factory)
 
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         topBar = {
             val viewModel: UsedCurrenciesViewModel = viewModel(factory = ViewModelsProvider.Factory)
-
+            val dateState by datePickerViewModel.dateState.collectAsStateWithLifecycle()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val currentlySelectedCurrency by viewModel.currentlySelectedCurrency.collectAsStateWithLifecycle()
 
@@ -102,8 +106,6 @@ fun ExTrApp(
                     },
                     onAddClicked = {
                         val opened = expensesIncomeBottomSheetViewModel.toggleBottomSheet(true)
-
-
                         if (!opened) {
                             Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
                         }
@@ -121,60 +123,12 @@ fun ExTrApp(
                             selectedType = it
                         },
                         onDateClicked = {
-
-                        }
+                            datePickerViewModel.toggleDatePicker(true)
+                        },
+                        date = dateState.date
                     )
                 }
             }
-
-//            val expensesIncomeTypesViewModel: ExpensesIncomeTypesViewModel =
-//                viewModel(factory = ViewModelsProvider.Factory)
-//            val balancesViewModel: BalancesViewModel = viewModel(factory = ViewModelsProvider.Factory)
-//
-//            val balancesUiState by balancesViewModel.uiState.collectAsStateWithLifecycle()
-//            val expenseTypesUiState by expensesIncomeTypesViewModel.expenseTypes.collectAsStateWithLifecycle()
-//            val incomeTypesUiState by expensesIncomeTypesViewModel.incomeTypes.collectAsStateWithLifecycle()
-//
-//
-//            val isTransactionDropDownDataValid = remember(expenseTypesUiState, incomeTypesUiState) {
-//                balancesUiState is UiState.Success && (balancesUiState as UiState.Success<List<BalanceWithDetails>>).data.isNotEmpty() &&
-//                expenseTypesUiState is UiState.Success && (expenseTypesUiState as UiState.Success<List<TransactionType>>).data.isNotEmpty()
-//                        && incomeTypesUiState is UiState.Success && (incomeTypesUiState as UiState.Success<List<TransactionType>>).data.isNotEmpty()
-//            }
-//
-//            val palette = LocalCustomColorsPalette.current
-//
-//            val expenseTypesRes = remember { ExpenseTypesRes(palette) }
-//            val incomeTypesRes = remember { IncomeTypesRes(palette) }
-//            val moneyTypeRes = remember { MoneyTypesRes(palette) }
-//            if (isTransactionDropDownShown && isTransactionDropDownDataValid) {
-//
-//                val transactionTypes =
-//                    if (selectedType == SelectedTransactionType.EXPENSES) {
-//                        val expenseTypes = (expenseTypesUiState as UiState.Success).data
-//                        expenseTypes.map { it.toDropdownItem(expenseTypesRes) }
-//                    } else {
-//                        val incomeTypes = (incomeTypesUiState as UiState.Success).data
-//                        incomeTypes.map { it.toDropdownItem(incomeTypesRes) }
-//                    }
-//
-//                val balances = (balancesUiState as UiState.Success<List<BalanceWithDetails>>).data
-//                val uiBalances = balances.map{ it.toDropdownItem(moneyTypeRes)}
-//
-//                ExpensesIncomeBottomSheet(
-//                    balances = uiBalances,
-//                    transactionTypes = transactionTypes,
-//                    initialBalance = uiBalances.first(),
-//                    initialTransactionType = transactionTypes.first(),
-//                    currencySymbol = currentlySelectedCurrency?.currency?.symbol ?: ' ',
-//                    onSaveClicked = {},
-//                    onDismissed = { isTransactionDropDownShown = false}
-//                )
-//            }
-//            else{
-//                //todo: show toast???
-//            }
-
         },
         bottomBar = {
             BottomBar(navController)
@@ -193,7 +147,8 @@ fun ExTrApp(
                     selectedType = selectedType,
                     onCardClicked = {
                         expensesIncomeBottomSheetViewModel.toggleBottomSheet(true, it.id)
-                    }
+                    },
+                    expenseIncomeViewModel = expenseIncomeViewModel
                 )
             }
             composable(Screens.Chart.route) {
@@ -211,9 +166,11 @@ fun ExTrApp(
         }
     }
 
+    DatePickerDialogCaller(datePickerViewModel = datePickerViewModel, expensesIncomeViewModel = expenseIncomeViewModel)
     ExpenseIncomeBottomSheetCaller(
         expensesIncomeBottomSheetViewModel = expensesIncomeBottomSheetViewModel,
-        expensesIncomeViewModel = viewModel(factory = ViewModelsProvider.Factory),
+        expensesIncomeViewModel = expenseIncomeViewModel,
+        datePickerViewModel = datePickerViewModel,
         selectedTransactionType = selectedType
     )
 }
@@ -221,14 +178,10 @@ fun ExTrApp(
 @Composable
 fun RoundChartScreenRoute(
     selectedType: SelectedTransactionType,
-    onCardClicked: (TransactionType) -> Unit
+    onCardClicked: (TransactionType) -> Unit,
+    expenseIncomeViewModel: ExpensesIncomeViewModel
 ) {
-    val expenseIncomeViewModel: ExpensesIncomeViewModel =
-        viewModel(factory = ViewModelsProvider.Factory)
-    val expensesUiState by expenseIncomeViewModel.uiStateExpenses.collectAsStateWithLifecycle()
-    val incomeUiState by expenseIncomeViewModel.uiStateIncome.collectAsStateWithLifecycle()
-    val expensesByTypes by expenseIncomeViewModel.expensesByCategories.collectAsStateWithLifecycle()
-    val incomeByTypes by expenseIncomeViewModel.incomeByCategories.collectAsStateWithLifecycle()
+    val uiState by expenseIncomeViewModel.combinedUiState.collectAsStateWithLifecycle()
 
     val expenseTypesRes = ExpenseTypesRes(LocalCustomColorsPalette.current)
     val incomeTypesRes = IncomeTypesRes(LocalCustomColorsPalette.current)
@@ -236,8 +189,8 @@ fun RoundChartScreenRoute(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = AppPadding.ExtraSmall),
-        uiState = if (selectedType == SelectedTransactionType.EXPENSES) expensesUiState else incomeUiState,
-        transactionsByTypes = if (selectedType == SelectedTransactionType.EXPENSES) expensesByTypes else incomeByTypes,
+        uiState = if (selectedType == SelectedTransactionType.EXPENSES) uiState.expensesState else uiState.incomeState,
+        transactionsByTypes = if (selectedType == SelectedTransactionType.EXPENSES) uiState.expensesByCategoriesState else uiState.incomeByCategoriesState,
         resProvider = if (selectedType == SelectedTransactionType.EXPENSES) expenseTypesRes else incomeTypesRes,
         selectedType = selectedType,
         onCardClicked = {

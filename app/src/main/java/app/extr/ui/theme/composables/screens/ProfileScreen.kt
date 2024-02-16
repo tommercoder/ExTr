@@ -1,5 +1,6 @@
 package app.extr.ui.theme.composables.screens
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,10 +22,12 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -42,6 +45,7 @@ import app.extr.utils.helpers.UiState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.extr.ui.theme.AppPadding
 import app.extr.utils.helpers.resproviders.MoneyTypesRes
@@ -85,12 +89,9 @@ fun ProfileScreen(
                         )
                     }
                 }
-                Divider(thickness = 1.dp)
+                HorizontalDivider(thickness = 1.dp)
                 Spacer(modifier = Modifier.size(25.dp))
-                Text(
-                    text = stringResource(id = R.string.label_settings),
-                    style = MaterialTheme.typography.titleLarge
-                )
+                SettingsSection()
 
             }
 
@@ -112,6 +113,44 @@ fun ProfileScreen(
         }
     }
 
+}
+object ThemePreference {
+    private const val THEME_PREF = "theme_preferences"
+    private const val THEME_KEY = "theme_dark"
+
+    fun isDarkTheme(context: Context): Boolean {
+        val sharedPreferences = context.getSharedPreferences(THEME_PREF, Context.MODE_PRIVATE)
+        return sharedPreferences.getBoolean(THEME_KEY, false)
+    }
+
+    fun setDarkTheme(context: Context, isDark: Boolean) {
+        val sharedPreferences = context.getSharedPreferences(THEME_PREF, Context.MODE_PRIVATE)
+        sharedPreferences.edit().putBoolean(THEME_KEY, isDark).apply()
+    }
+}
+@Composable
+fun SettingsSection() {
+    val context = LocalContext.current
+    val isDarkTheme = remember { mutableStateOf(ThemePreference.isDarkTheme(context)) }
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.label_settings),
+            style = MaterialTheme.typography.titleLarge
+        )
+
+        Switch(
+            checked = isDarkTheme.value,
+            onCheckedChange = { isChecked ->
+                isDarkTheme.value = isChecked
+                ThemePreference.setDarkTheme(context, isChecked)
+                // Trigger UI/theme refresh if necessary
+            }
+        )
+    }
 }
 
 @Composable

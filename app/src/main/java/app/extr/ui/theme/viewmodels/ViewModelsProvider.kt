@@ -35,5 +35,8 @@ object ViewModelsProvider {
                 ExTrApplication.container.ExpensesIncomeTypesRepository
             )
         }
+        initializer {
+            DatePickerViewModel()
+        }
     }
 }

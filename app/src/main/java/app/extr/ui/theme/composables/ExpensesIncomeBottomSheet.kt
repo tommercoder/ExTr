@@ -2,7 +2,6 @@ package app.extr.ui.theme.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,7 +11,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -25,10 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import app.extr.R
 import app.extr.ui.theme.mappers.DropdownItemUi
-import app.extr.utils.helpers.BottomSheetAcceptType
+import app.extr.ui.theme.viewmodels.Date
 import app.extr.utils.helpers.BottomSheetAcceptTypeTransaction
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpensesIncomeBottomSheet(
     modifier: Modifier = Modifier,
@@ -36,6 +34,8 @@ fun ExpensesIncomeBottomSheet(
     transactionTypes: List<DropdownItemUi>,
     initialBalance: DropdownItemUi,
     initialTransactionType: DropdownItemUi,
+    date: Date,
+    onCalendarClick: () -> Unit,
     preselectedTransactionType: DropdownItemUi? = null,
     currencySymbol: Char,
     onSaveClicked: (BottomSheetAcceptTypeTransaction) -> Unit,
@@ -98,15 +98,15 @@ fun ExpensesIncomeBottomSheet(
                 nameValue = nameValue,
                 showCalendar = true,
                 onEraseClick = { inputValue = inputValue.dropLast(1) },
-                onCalendarClick = { },
+                onCalendarClick = { onCalendarClick() },
                 onAcceptClick = {
                     val bottomSheetAcceptType = BottomSheetAcceptTypeTransaction(
                         balanceId = selectedBalance.id,
                         transactionTypeId = selectedTransactionType.id,
                         amount = inputValue,
                         name = nameValue,
-                        month = 2, //todo: change
-                        year = 2024 //todo: change
+                        month = date.month,
+                        year = date.year
 
                     )
 
