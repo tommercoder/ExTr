@@ -89,7 +89,7 @@ fun ExpenseIncomeBottomSheetCaller(
                                     currencyId = balance.balanceId,
                                     moneyTypeId = balance.moneyTypeId,
                                     description = it.name,
-                                    transactionAmount = it.amount.toFloat(),
+                                    transactionAmount = it.amount.toDouble(),
                                     month = it.month,
                                     year = it.year
                                 )
@@ -99,7 +99,7 @@ fun ExpenseIncomeBottomSheetCaller(
                                 currencyId = balance.balanceId,
                                 moneyTypeId = balance.moneyTypeId,
                                 description = it.name,
-                                transactionAmount = it.amount.toFloat(),
+                                transactionAmount = it.amount.toDouble(),
                                 month = it.month,
                                 year = it.year
                             )

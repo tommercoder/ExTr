@@ -29,8 +29,8 @@ import kotlinx.coroutines.launch
 @Database(
     entities = [MoneyType::class, Currency::class, User::class, Balance::class,
         UsedCurrency::class, ExpenseType::class, IncomeType::class, Expense::class, Income::class],
-    version = 27,
-    exportSchema = true
+    version = 2,
+    exportSchema = false
 )
 //@TypeConverters(Converters::class)
 abstract class ExTrDatabase : RoomDatabase() {

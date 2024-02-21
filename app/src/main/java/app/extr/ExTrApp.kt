@@ -96,6 +96,7 @@ fun ExTrApp(
 
             val chartButtonsShown = navBackStackEntry == Screens.RoundChart.route
                     || navBackStackEntry == Screens.Chart.route
+            val isDropdownVisible = navBackStackEntry != Screens.Profile.route
             val context = LocalContext.current
             val toastText = stringResource(id = R.string.label_balances_are_empty)
             Column {
@@ -113,6 +114,7 @@ fun ExTrApp(
                     scrollBehavior = scrollBehavior,
                     isAddButtonVisible = navBackStackEntry == Screens.RoundChart.route
                             || navBackStackEntry == Screens.Chart.route,
+                    isDropdownVisible = isDropdownVisible,
                     selectedCurrency = currentlySelectedCurrency?.currency
                 )
                 if (chartButtonsShown) {
@@ -152,7 +154,10 @@ fun ExTrApp(
                 )
             }
             composable(Screens.Chart.route) {
-                ChartScreen()
+                ChartScreenRoute(
+                    selectedType = selectedType,
+                    expenseIncomeViewModel = expenseIncomeViewModel
+                )
             }
             composable(Screens.Profile.route) {
                 val viewModel: UserViewModel = viewModel(factory = ViewModelsProvider.Factory)
@@ -172,6 +177,22 @@ fun ExTrApp(
         expensesIncomeViewModel = expenseIncomeViewModel,
         datePickerViewModel = datePickerViewModel,
         selectedTransactionType = selectedType
+    )
+}
+
+@Composable
+fun ChartScreenRoute(
+    selectedType: SelectedTransactionType,
+    expenseIncomeViewModel: ExpensesIncomeViewModel
+){
+    val uiState by expenseIncomeViewModel.combinedUiState.collectAsStateWithLifecycle()
+
+    val expenseTypesRes = ExpenseTypesRes(LocalCustomColorsPalette.current)
+    val incomeTypesRes = IncomeTypesRes(LocalCustomColorsPalette.current)
+    
+    ChartScreen(
+        transactionsByType =  if (selectedType == SelectedTransactionType.EXPENSES) uiState.expensesByCategoriesState else uiState.incomeByCategoriesState,
+        resProvider = if (selectedType == SelectedTransactionType.EXPENSES) expenseTypesRes else incomeTypesRes
     )
 }
 

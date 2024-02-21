@@ -20,8 +20,7 @@ sealed class Screens(val route : String) {
 
 data class BottomNavItem(
     val route: String,
-    val iconId: Int,
-    val text: String = ""
+    val iconId: Int
 )
 
 val bottomNavItems = listOf(
@@ -39,8 +38,7 @@ val bottomNavItems = listOf(
     ),
     BottomNavItem(
         route = Screens.Profile.route,
-        iconId = R.drawable.profile_icon,
-        //text = stringResource(id = R.string.label_topbar)
+        iconId = R.drawable.profile_icon
     ),
 )
 

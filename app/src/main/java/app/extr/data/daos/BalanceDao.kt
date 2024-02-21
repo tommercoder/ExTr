@@ -41,7 +41,7 @@ interface BalanceDao {
 
     @Query("SELECT COUNT(*) FROM balances WHERE currencyId = :currencyId")
     suspend fun getBalanceCountForCurrentCurrency(currencyId: Int): Int
-
+    @Transaction
     @Query("SELECT * FROM balances WHERE balanceId IN (:ids)")
     suspend fun getBalancesForIds(ids: List<Int>): List<BalanceWithDetails>
 }

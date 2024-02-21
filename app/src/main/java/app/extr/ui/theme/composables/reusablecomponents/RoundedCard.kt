@@ -65,9 +65,9 @@ fun RoundedCard(
     @DrawableRes icon: Int,
     @ColorRes color: Color,
     currencySymbol: Char,
-    number: Float,
-    precision: String = Constants.precisionTwo,
+    number: Double,
     modifier: Modifier = Modifier,
+    precision: String = Constants.precisionTwo,
     text: String = "",
     secondaryText: String = "",
     onClick: (() -> Unit)? = null,
@@ -80,7 +80,7 @@ fun RoundedCard(
 
     val backgroundColor by animateColorAsState(
         targetValue = if (isLongPressed) Color.LightGray else color, //todo: works for dark mode?
-        animationSpec = tween(durationMillis = 100)
+        animationSpec = tween(durationMillis = 100), label = ""
     )
 
     val combinedModifier = modifier
@@ -196,7 +196,7 @@ fun RoundedCardPreview() {
         secondaryText = "blabla",
         color = md_theme_light_primary,
         currencySymbol = '$',
-        number = 25.123f,
+        number = 25.123,
         modifier = Modifier.size(180.dp, 180.dp)
     )
 }

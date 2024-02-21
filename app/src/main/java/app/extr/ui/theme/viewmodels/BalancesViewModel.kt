@@ -24,8 +24,8 @@ class BalancesViewModel(
     private var _balances = MutableStateFlow<UiState<List<BalanceWithDetails>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<BalanceWithDetails>>> = _balances.asStateFlow()
 
-    private var _totalBalance = MutableStateFlow(0.0f)
-    val totalBalance: StateFlow<Float> = _totalBalance.asStateFlow()
+    private var _totalBalance = MutableStateFlow(0.0)
+    val totalBalance: StateFlow<Double> = _totalBalance.asStateFlow()
 
     init {
         loadData()
@@ -76,7 +76,7 @@ class BalancesViewModel(
     }
 
     private fun updateTotalBalance(balances: List<BalanceWithDetails>) {
-        var total = 0.0f
+        var total = 0.0
         for (balance in balances) {
             total += balance.balance.amount
         }

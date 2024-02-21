@@ -14,7 +14,7 @@ abstract class Transaction {
     abstract val currencyId: Int
     abstract val moneyTypeId: Int
     abstract val description: String
-    abstract val transactionAmount: Float
+    abstract val transactionAmount: Double
     abstract val month: Int
     abstract val year: Int
 }
@@ -47,7 +47,7 @@ data class Expense(
     override val currencyId: Int,
     override val moneyTypeId: Int,
     override val description: String,
-    override val transactionAmount: Float,
+    override val transactionAmount: Double,
     override val month: Int,
     override val year: Int
 ) : Transaction()
@@ -79,7 +79,7 @@ data class Income(
     override val currencyId: Int,
     override val moneyTypeId: Int,
     override val description: String,
-    override val transactionAmount: Float,
+    override val transactionAmount: Double,
     override val month: Int,
     override val year: Int
 ) : Transaction()

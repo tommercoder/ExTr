@@ -21,8 +21,8 @@ interface ExpenseIncomeDao {
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun insertIncome(income: Income)
 
-    @RewriteQueriesToDropUnusedColumns
     @Transaction
+    @RewriteQueriesToDropUnusedColumns
     @Query(
         """
     SELECT * FROM expenses
@@ -36,8 +36,8 @@ interface ExpenseIncomeDao {
     )
     fun getExpensesForCurrentCurrency(month: Int, year: Int): Flow<List<ExpenseWithDetails>>
 
-    @RewriteQueriesToDropUnusedColumns
     @Transaction
+    @RewriteQueriesToDropUnusedColumns
     @Query(
         """
     SELECT * FROM income

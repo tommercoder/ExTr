@@ -52,6 +52,7 @@ fun TopBar(
     onItemSelected: (Currency) -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
     isAddButtonVisible: Boolean,
+    isDropdownVisible: Boolean,
     selectedCurrency: Currency? = null
 ) {
     when (uiState) {
@@ -77,20 +78,22 @@ fun TopBar(
                     if (uiState.data.isEmpty()) {
                         return@TopAppBar
                     }
-                    val data by rememberUpdatedState(uiState.data)
+                    if(isDropdownVisible) {
+                        val data by rememberUpdatedState(uiState.data)
 
-                    Row(
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        CurrenciesDropDownMenu(
-                            modifier = Modifier.fillMaxWidth(0.5f),
-                            items = data.map { it.currency }, // extract a list of currencies only // todo: move to viewmodel
-                            onItemSelected = { currency ->
-                                onItemSelected(currency)
-                            },
-                            borderShown = false,
-                            selectedPassed = selectedCurrency
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            CurrenciesDropDownMenu(
+                                modifier = Modifier.fillMaxWidth(0.5f),
+                                items = data.map { it.currency }, // extract a list of currencies only // todo: move to viewmodel
+                                onItemSelected = { currency ->
+                                    onItemSelected(currency)
+                                },
+                                borderShown = false,
+                                selectedPassed = selectedCurrency
+                            )
+                        }
                     }
                 }
             )

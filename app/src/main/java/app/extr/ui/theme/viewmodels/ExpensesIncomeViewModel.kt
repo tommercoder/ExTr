@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import app.extr.R
 import app.extr.data.repositories.BalancesRepository
 import app.extr.data.repositories.ExpensesIncomeRepository
-import app.extr.data.types.BalanceWithDetails
+import app.extr.data.types.Balance
+import app.extr.data.types.Currency
 import app.extr.data.types.Expense
 import app.extr.data.types.Income
+import app.extr.data.types.MoneyType
 import app.extr.data.types.Transaction
 import app.extr.data.types.TransactionType
 import app.extr.data.types.TransactionWithDetails
@@ -16,7 +18,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
@@ -26,18 +27,25 @@ import java.util.Calendar
 data class CombinedExpensesIncomeState(
     val expensesState: UiState<List<TransactionWithDetails>>,
     val incomeState: UiState<List<TransactionWithDetails>>,
-    val expensesByCategoriesState: Map<TransactionType, Double>,
-    val incomeByCategoriesState: Map<TransactionType, Double>
+    val expensesByCategoriesState: List<TransactionByType>,
+    val incomeByCategoriesState: List<TransactionByType>
+)
+data class TransactionByType(
+    val transactionType: TransactionType,
+    val totalAmount: Double,
+    val currency: Currency,
+    val moneyType: MoneyType,
+    val balances: List<Balance>
 )
 
 class ExpensesIncomeViewModel(
-    private val ExpensesIncomeRepository: ExpensesIncomeRepository,
+    private val expensesIncomeRepository: ExpensesIncomeRepository,
     private val balancesRepository: BalancesRepository
 ) : ViewModel() {
     private val _expenses = MutableStateFlow<UiState<List<TransactionWithDetails>>>(UiState.Loading)
     private val _income = MutableStateFlow<UiState<List<TransactionWithDetails>>>(UiState.Loading)
-    private val _expensesByCategories = MutableStateFlow<Map<TransactionType, Double>>(emptyMap())
-    private val _incomeByCategories = MutableStateFlow<Map<TransactionType, Double>>(emptyMap())
+    private val _expensesByCategories = MutableStateFlow<List<TransactionByType>>(emptyList())
+    private val _incomeByCategories = MutableStateFlow<List<TransactionByType>>(emptyList())
 
     val combinedUiState: StateFlow<CombinedExpensesIncomeState> = combine(
         _expenses,
@@ -51,7 +59,7 @@ class ExpensesIncomeViewModel(
             expensesByCategoriesState = expensesByCategories,
             incomeByCategoriesState = incomeByCategories
         )
-    }.stateIn(viewModelScope, SharingStarted.Lazily, CombinedExpensesIncomeState(UiState.Loading, UiState.Loading, emptyMap(), emptyMap()))
+    }.stateIn(viewModelScope, SharingStarted.Lazily, CombinedExpensesIncomeState(UiState.Loading, UiState.Loading, emptyList(), emptyList()))
 
     init {
         val calendar = Calendar.getInstance()
@@ -72,7 +80,7 @@ class ExpensesIncomeViewModel(
             viewModelScope.launch {
                 _expenses.value = UiState.Loading
                 delay(200)
-                ExpensesIncomeRepository.getExpensesForCurrentCurrency(month, year).distinctUntilChanged().collect {
+                expensesIncomeRepository.getExpensesForCurrentCurrency(month, year).distinctUntilChanged().collect {
                     val newIt = UiState.Success(it)
                     _expenses.value = newIt
 
@@ -88,7 +96,7 @@ class ExpensesIncomeViewModel(
         try {
             viewModelScope.launch {
                 _income.value = UiState.Loading
-                ExpensesIncomeRepository.getIncomesForCurrentCurrency(month, year).distinctUntilChanged().collect {
+                expensesIncomeRepository.getIncomesForCurrentCurrency(month, year).distinctUntilChanged().collect {
                     val newIt = UiState.Success(it)
                     _income.value = newIt
 
@@ -100,24 +108,29 @@ class ExpensesIncomeViewModel(
         }
     }
 
-    private fun sortTransactionsByTypes(list: List<TransactionWithDetails>): Map<TransactionType, Double> {
-        val sumByType = list.groupBy { it.transactionType }
-            .mapValues { (_, transactions) ->
-                transactions.sumOf { it.transaction.transactionAmount.toDouble() }
+    private fun sortTransactionsByTypes(transactions: List<TransactionWithDetails>): List<TransactionByType> {
+        return transactions
+            .groupBy { it.transactionType } // Group by transaction type ID
+            .map { (type, groupedTransactions) ->
+                TransactionByType(
+                    transactionType = groupedTransactions.first().transactionType,
+                    totalAmount = groupedTransactions.sumOf { it.transaction.transactionAmount.toDouble() },
+                    currency = groupedTransactions.first().currency,
+                    moneyType = groupedTransactions.first().moneyType,
+                    balances = groupedTransactions.map { it.balance }.distinctBy { it.balanceId }
+                )
             }
-
-        return sumByType
     }
 
     fun insertTransaction(transaction: Transaction) {
         viewModelScope.launch {
             when (transaction) {
                 is Expense -> {
-                    ExpensesIncomeRepository.insertExpense(transaction)
+                    expensesIncomeRepository.insertExpense(transaction)
                 }
 
                 is Income -> {
-                    ExpensesIncomeRepository.insertIncome(transaction)
+                    expensesIncomeRepository.insertIncome(transaction)
                 }
             }
         }

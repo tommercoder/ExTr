@@ -110,7 +110,7 @@ fun BalanceBottomSheet(
                     val balance = Balance( //todo: change to the special type
                         currencyId = selectedCurrency.currencyId,
                         moneyTypeId = selectedMoneyType.id, //todo: check if work without a mapper
-                        amount = inputValue.toFloat(),
+                        amount = inputValue.toDouble(),
                         customName = nameValue
                     )
 

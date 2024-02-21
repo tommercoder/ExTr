@@ -16,7 +16,7 @@ import app.extr.ui.theme.AppPadding
 
 @Composable
 fun AnimatedText(
-    targetValue: Float,
+    targetValue: Double,
     textStyle: TextStyle,
     durationMillis: Int = 500
 ) {
@@ -26,7 +26,7 @@ fun AnimatedText(
     // Launching a coroutine to animate the value
     LaunchedEffect(targetValue) {
         animatedValue.animateTo(
-            targetValue,
+            targetValue.toFloat(),
             animationSpec = TweenSpec(
                 durationMillis = durationMillis,
                 easing = FastOutSlowInEasing // Using an easing function for a smoother animation
@@ -43,7 +43,7 @@ fun AnimatedText(
 
 @Composable
 fun AnimatedTextWithSign(
-    totalValue: Float,
+    totalValue: Double,
     currencySign: Char,
     signStyle: TextStyle = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.secondary),
     valueStyle: TextStyle = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.ExtraBold)

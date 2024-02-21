@@ -134,8 +134,7 @@ fun SettingsSection() {
     val isDarkTheme = remember { mutableStateOf(ThemePreference.isDarkTheme(context)) }
     Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.Start
     ) {
         Text(
             text = stringResource(id = R.string.label_settings),

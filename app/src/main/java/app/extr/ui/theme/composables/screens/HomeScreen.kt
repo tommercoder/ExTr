@@ -71,7 +71,7 @@ import kotlinx.coroutines.delay
 fun HomeScreen(
     modifier: Modifier = Modifier,
     uiState: UiState<List<BalanceWithDetails>>,
-    totalBalance: Float,
+    totalBalance: Double,
     isAddBalanceEnabled: Boolean,
     moneyTypesRes: MoneyTypesRes,
     onAddBalanceClicked: () -> Unit,
@@ -175,7 +175,7 @@ fun HomeScreen(
 @Composable
 fun TotalBalance(
     modifier: Modifier = Modifier,
-    totalBalance: Float,
+    totalBalance: Double,
     currencySign: Char
 ) {
     Column(

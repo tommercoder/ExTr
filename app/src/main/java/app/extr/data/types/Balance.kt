@@ -28,7 +28,7 @@ data class Balance(
     val balanceId: Int = 0,
     val currencyId: Int,
     val moneyTypeId: Int,
-    val amount: Float,
+    val amount: Double,
     val customName: String
 )
 
