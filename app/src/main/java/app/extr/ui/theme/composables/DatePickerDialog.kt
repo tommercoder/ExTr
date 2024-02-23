@@ -60,7 +60,8 @@ fun DatePickerDialog(
     var month by remember { mutableStateOf(selectedMonth) }
     var year by remember { mutableStateOf(selectedYear) }
     val interactionSource = remember { MutableInteractionSource() }
-
+    val calendar = Calendar.getInstance()
+    val currentMonth = calendar.get(Calendar.MONTH)
     AlertDialog(
         onDismissRequest = { },
         //title = { Text(stringResource(id = R.string.label_delete_balance)) },
@@ -119,7 +120,7 @@ fun DatePickerDialog(
                             animationSpec = tween(
                                 durationMillis = 500,
                                 easing = FastOutSlowInEasing
-                            )
+                            ), label = ""
                         )
                         Box(
                             modifier = Modifier

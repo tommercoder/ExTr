@@ -10,60 +10,63 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import app.extr.ui.theme.AppPadding
 
-@Composable
-fun AnimatedText(
-    targetValue: Double,
-    textStyle: TextStyle,
-    durationMillis: Int = 500
-) {
-    // State to hold the current animated value
-    val animatedValue = remember { Animatable(0f) }
-
-    // Launching a coroutine to animate the value
-    LaunchedEffect(targetValue) {
-        animatedValue.animateTo(
-            targetValue.toFloat(),
-            animationSpec = TweenSpec(
-                durationMillis = durationMillis,
-                easing = FastOutSlowInEasing // Using an easing function for a smoother animation
-            )
-        )
-    }
-
-    // Displaying the animated value in a Text composable with the given textStyle
-    Text(
-        text = "%.2f".format(animatedValue.value),
-        style = textStyle
-    )
-}
 
 @Composable
 fun AnimatedTextWithSign(
     totalValue: Double,
     currencySign: Char,
-    signStyle: TextStyle = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.secondary),
+    format: String = Constants.precisionTwo,
     valueStyle: TextStyle = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.ExtraBold)
 ) {
     Row(
-        modifier = Modifier
-            .padding(top = AppPadding.Medium),
-            //.align(Alignment.CenterHorizontally),
+        modifier = Modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            modifier = Modifier.padding(end = AppPadding.Small),
+            modifier = Modifier.padding(end = AppPadding.ExtraSmall),
             text = currencySign.toString(),
-            style = signStyle
+            style = TextStyle(
+                color = MaterialTheme.colorScheme.secondary,
+                fontSize = valueStyle.fontSize / 1.7
+            )
         )
         AnimatedText(
             targetValue = totalValue,
             textStyle = valueStyle,
+            format = format,
             durationMillis = 700
         )
     }
+}
+
+@Composable
+fun AnimatedText(
+    targetValue: Double,
+    textStyle: TextStyle,
+    format: String = Constants.precisionTwo,
+    durationMillis: Int = 500
+) {
+    val animatedValue = remember { Animatable(0f) }
+    LaunchedEffect(targetValue) {
+        animatedValue.animateTo(
+            targetValue.toFloat(),
+            animationSpec = TweenSpec(
+                durationMillis = durationMillis,
+                easing = FastOutSlowInEasing
+            )
+        )
+    }
+
+    Text(
+        text = format.format(animatedValue.value),
+        style = textStyle
+    )
 }

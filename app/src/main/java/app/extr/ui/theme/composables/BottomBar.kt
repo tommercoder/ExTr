@@ -21,10 +21,7 @@ import app.extr.utils.helpers.navigateSingleTopTo
 
 @Composable
 fun BottomBar(navController: NavHostController) {
-    NavigationBar(
-        //containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp) // fix color to match back
-
-    ) {
+    NavigationBar {
         val navBackStackEntry =
             navController.currentBackStackEntryAsState().value?.destination?.route
 

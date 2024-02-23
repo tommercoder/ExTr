@@ -51,7 +51,7 @@ fun ExpenseIncomeDateRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 //.height(IntrinsicSize.Min)
                 .clip(MaterialTheme.shapeScheme.extraRoundedCorners)
                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
@@ -75,6 +75,7 @@ fun ExpenseIncomeDateRow(
                 ) {
                     Text(
                         text = stringResource(id = R.string.button_expenses),
+                        style = MaterialTheme.typography.bodySmall,
                         color = if (selectedTransactionType == SelectedTransactionType.EXPENSES) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -93,6 +94,7 @@ fun ExpenseIncomeDateRow(
                 ) {
                     Text(
                         text = stringResource(id = R.string.button_income),
+                        style = MaterialTheme.typography.bodySmall,
                         color = if (selectedTransactionType == SelectedTransactionType.INCOME) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                     )
                 }

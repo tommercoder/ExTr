@@ -50,7 +50,7 @@ fun TopBar(
     uiState: UiState<List<UsedCurrencyDetails>>,
     onAddClicked: () -> Unit,
     onItemSelected: (Currency) -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior,
+   // scrollBehavior: TopAppBarScrollBehavior,
     isAddButtonVisible: Boolean,
     isDropdownVisible: Boolean,
     selectedCurrency: Currency? = null
@@ -63,7 +63,7 @@ fun TopBar(
         is UiState.Success -> {
             TopAppBar(
                 title = {},
-                scrollBehavior = scrollBehavior,
+               // scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     if (isAddButtonVisible) {
                         IconButton(onClick = { onAddClicked() }) {

@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.shapeScheme
+import app.extr.utils.helpers.AnimatedTextWithSign
 import app.extr.utils.helpers.Constants
 import com.example.compose.md_theme_light_primary
 import kotlinx.coroutines.delay
@@ -169,18 +170,11 @@ fun RoundedCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    modifier = Modifier.padding(end = AppPadding.ExtraSmall),
-                    text = currencySymbol.toString(),
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = numberSize / 1.7,
-                        color = MaterialTheme.colorScheme.secondary
-                    ),
-                )
-                Text(
-                    text = precision.format(number),
-                    style = MaterialTheme.typography.titleLarge
-                        .copy(fontSize = numberSize, fontWeight = FontWeight.Bold)
+                AnimatedTextWithSign(
+                    format = Constants.precisionZero,
+                    totalValue = number,
+                    currencySign = currencySymbol,
+                    valueStyle = MaterialTheme.typography.titleLarge.copy(fontSize = numberSize, fontWeight = FontWeight.Bold)
                 )
             }
         }

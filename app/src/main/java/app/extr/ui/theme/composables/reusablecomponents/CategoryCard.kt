@@ -32,6 +32,9 @@ import app.extr.data.types.Balance
 import app.extr.data.types.TransactionType
 import app.extr.ui.theme.shapeScheme
 import app.extr.ui.theme.viewmodels.TransactionByType
+import app.extr.utils.helpers.AnimatedText
+import app.extr.utils.helpers.AnimatedTextWithSign
+import app.extr.utils.helpers.Constants
 import app.extr.utils.helpers.resproviders.ResProvider
 
 @Composable
@@ -89,10 +92,10 @@ fun CategoryCard(
             horizontalAlignment = Alignment.End,
             modifier = Modifier.align(Alignment.CenterVertically)
         ) {
-            CurrencyRow(
-                amount = transactionByType.totalAmount,
-                currencySymbol = currency.symbol,
-                numberStyle = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+            AnimatedTextWithSign(
+                totalValue = transactionByType.totalAmount,
+                currencySign = currency.symbol,
+                valueStyle = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
             )
         }
     }

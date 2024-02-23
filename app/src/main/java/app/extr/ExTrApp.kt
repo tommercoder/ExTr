@@ -1,6 +1,10 @@
 package app.extr
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -72,8 +76,8 @@ import app.extr.utils.helpers.resproviders.ResProvider
 fun ExTrApp(
     navController: NavHostController = rememberNavController()
 ) {
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    //val scrollBehavior =
+      //  TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     val navBackStackEntry =
         navController.currentBackStackEntryAsState().value?.destination?.route
@@ -111,7 +115,7 @@ fun ExTrApp(
                             Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
                         }
                     },
-                    scrollBehavior = scrollBehavior,
+                    //scrollBehavior = scrollBehavior,
                     isAddButtonVisible = navBackStackEntry == Screens.RoundChart.route
                             || navBackStackEntry == Screens.Chart.route,
                     isDropdownVisible = isDropdownVisible,
@@ -120,7 +124,7 @@ fun ExTrApp(
                 if (chartButtonsShown) {
                     ExpenseIncomeDateRow(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth().padding(start = AppPadding.Small, end = AppPadding.Small),
                         onSelected = {
                             selectedType = it
                         },
@@ -139,7 +143,19 @@ fun ExTrApp(
         NavHost(
             navController = navController,
             startDestination = Screens.RoundChart.route,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(700)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(700)
+                )
+            }
         ) {
             composable(Screens.Home.route) {
                 HomeScreenRoute()
@@ -189,8 +205,9 @@ fun ChartScreenRoute(
 
     val expenseTypesRes = ExpenseTypesRes(LocalCustomColorsPalette.current)
     val incomeTypesRes = IncomeTypesRes(LocalCustomColorsPalette.current)
-    
+
     ChartScreen(
+        selectedType = selectedType,
         transactionsByType =  if (selectedType == SelectedTransactionType.EXPENSES) uiState.expensesByCategoriesState else uiState.incomeByCategoriesState,
         resProvider = if (selectedType == SelectedTransactionType.EXPENSES) expenseTypesRes else incomeTypesRes
     )

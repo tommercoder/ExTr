@@ -79,7 +79,7 @@ class ExpensesIncomeViewModel(
         try {
             viewModelScope.launch {
                 _expenses.value = UiState.Loading
-                delay(200)
+                //delay(200)
                 expensesIncomeRepository.getExpensesForCurrentCurrency(month, year).distinctUntilChanged().collect {
                     val newIt = UiState.Success(it)
                     _expenses.value = newIt
