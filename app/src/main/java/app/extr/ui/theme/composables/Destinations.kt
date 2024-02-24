@@ -1,5 +1,6 @@
 package app.extr.ui.theme.composables
 
+import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Call
@@ -42,4 +43,11 @@ val bottomNavItems = listOf(
     ),
 )
 
+fun getTitleByRoute(context: Context, route:String): String {
+    return when (route) {
+        Screens.Home.route -> context.getString(R.string.title_balances)
+        Screens.Profile.route -> context.getString(R.string.title_profile)
+        else -> ""
+    }
+}
 //add new screens

@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -57,16 +58,16 @@ fun DatePickerDialog(
     onCancelClicked: () -> Unit
 ) {
     val months = Constants.months
-    var month by remember { mutableStateOf(selectedMonth) }
-    var year by remember { mutableStateOf(selectedYear) }
-    val interactionSource = remember { MutableInteractionSource() }
+    var month by remember { mutableIntStateOf(selectedMonth) }
+    var year by remember { mutableIntStateOf(selectedYear) }
+    //val interactionSource = remember { MutableInteractionSource() }
     val calendar = Calendar.getInstance()
     val currentMonth = calendar.get(Calendar.MONTH)
+    val currentYear = calendar.get(Calendar.YEAR)
     AlertDialog(
-        onDismissRequest = { },
+        onDismissRequest = { onCancelClicked() },
         //title = { Text(stringResource(id = R.string.label_delete_balance)) },
         text = {
-
             Column {
                 //year picker row
                 Row(
@@ -76,9 +77,10 @@ fun DatePickerDialog(
                 ) {
                     Icon(
                         modifier = Modifier
+                            .clip(MaterialTheme.shapeScheme.extraLarge)
                             .clickable(
-                                indication = null,
-                                interactionSource = interactionSource,
+                                //indication = null,
+                                //interactionSource = interactionSource,
                                 onClick = {
                                     year--
                                 }
@@ -93,11 +95,14 @@ fun DatePickerDialog(
                     )
                     Icon(
                         modifier = Modifier
+                            .clip(MaterialTheme.shapeScheme.extraLarge)
                             .clickable(
-                                indication = null,
-                                interactionSource = interactionSource,
+                                enabled = year != currentYear,
+                               // indication = null,
+                               // interactionSource = interactionSource,
                                 onClick = {
                                     year++
+                                    if(year == currentYear && month > currentMonth) month = currentMonth //reset to the actual month for the current year
                                 }
                             ),
                         painter = painterResource(id = R.drawable.right_icon),
@@ -113,30 +118,35 @@ fun DatePickerDialog(
                     horizontalArrangement = Arrangement.Center,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    months.forEachIndexed { index, it ->
-                        val isSelected = index == month
-                        val backgroundColor by animateColorAsState(
-                            targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                easing = FastOutSlowInEasing
-                            ), label = ""
-                        )
-                        Box(
-                            modifier = Modifier
-                                .padding(5.dp)
-                                .size(60.dp)
-                                .clip(MaterialTheme.shapeScheme.large)
-                                .clickable { month = index }
-                                .background(backgroundColor),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = stringResource(it),
-                                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                    months.take(if (year == currentYear) currentMonth+1/*current month is zero indexed*/ else months.size)
+                        .forEachIndexed { index, it ->
+
+                            val isSelected = index == month
+                            val backgroundColor by animateColorAsState(
+                                targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                animationSpec = tween(
+                                    durationMillis = 500,
+                                    easing = FastOutSlowInEasing
+                                ), label = ""
                             )
+                            Box(
+                                modifier = Modifier
+                                    .padding(5.dp)
+                                    .size(60.dp)
+                                    .clip(MaterialTheme.shapeScheme.large)
+                                    .clickable(
+                                        //enabled = if (year == currentYear) index <= currentMonth else true,
+                                        onClick = { month = index })
+                                    .background(backgroundColor),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = stringResource(it),
+                                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
-                    }
+
                 }
             }
         },
@@ -187,9 +197,11 @@ fun DatePickerDialogCaller(
             selectedMonth = state.date.month,
             selectedYear = state.date.year,
             onOkClicked = {
-                datePickerViewModel.setDate(it)
-                datePickerViewModel.toggleDatePicker(false)
-                expensesIncomeViewModel.loadTransactions(it) // .copy(month = it.month + 1)
+                if(state.date != it) { // only update when something changed
+                    datePickerViewModel.setDate(it)
+                    datePickerViewModel.toggleDatePicker(false)
+                    expensesIncomeViewModel.loadTransactions(it)
+                }
             },
             onCancelClicked = { datePickerViewModel.toggleDatePicker(false) }
         )

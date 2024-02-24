@@ -42,10 +42,9 @@ fun ExpenseIncomeDateRow(
     modifier: Modifier = Modifier,
     onSelected: (SelectedTransactionType) -> Unit,
     onDateClicked: () -> Unit,
-    date: Date
+    date: Date,
+    selectedType: SelectedTransactionType
 ) {
-    var selectedTransactionType by remember { mutableStateOf(SelectedTransactionType.EXPENSES) }
-
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -62,40 +61,38 @@ fun ExpenseIncomeDateRow(
             Row {
                 Button(
                     onClick = {
-                        selectedTransactionType = SelectedTransactionType.EXPENSES
                         onSelected(SelectedTransactionType.EXPENSES)
                     },
                     modifier = Modifier
                         .weight(1f)
                         //.height(48.dp)
-                        .zIndex(if (selectedTransactionType == SelectedTransactionType.EXPENSES) 1f else 0f),
+                        .zIndex(if (selectedType == SelectedTransactionType.EXPENSES) 1f else 0f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor =  if (selectedTransactionType == SelectedTransactionType.EXPENSES) MaterialTheme.colorScheme.primary else Color.Transparent
+                        containerColor =  if (selectedType == SelectedTransactionType.EXPENSES) MaterialTheme.colorScheme.primary else Color.Transparent
                     )
                 ) {
                     Text(
                         text = stringResource(id = R.string.button_expenses),
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (selectedTransactionType == SelectedTransactionType.EXPENSES) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                        color = if (selectedType == SelectedTransactionType.EXPENSES) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                     )
                 }
 
                 Button(
                     onClick = {
-                        selectedTransactionType = SelectedTransactionType.INCOME
                         onSelected(SelectedTransactionType.INCOME)
                     },
                     modifier = Modifier
                         .weight(1f)
-                        .zIndex(if (selectedTransactionType == SelectedTransactionType.EXPENSES) 1f else 0f),
+                        .zIndex(if (selectedType == SelectedTransactionType.EXPENSES) 1f else 0f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedTransactionType == SelectedTransactionType.INCOME) MaterialTheme.colorScheme.primary else Color.Transparent
+                        containerColor = if (selectedType == SelectedTransactionType.INCOME) MaterialTheme.colorScheme.primary else Color.Transparent
                     )
                 ) {
                     Text(
                         text = stringResource(id = R.string.button_income),
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (selectedTransactionType == SelectedTransactionType.INCOME) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                        color = if (selectedType == SelectedTransactionType.INCOME) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -121,6 +118,7 @@ fun ExpenseIncomeDateRow(
 fun OverlappingSegmentedControlPreview() {
     ExTrTheme {
             ExpenseIncomeDateRow(
+                selectedType = SelectedTransactionType.EXPENSES,
                 modifier = Modifier,
                 onSelected = {},
                 onDateClicked = {},

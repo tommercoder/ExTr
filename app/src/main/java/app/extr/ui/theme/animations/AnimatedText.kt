@@ -14,6 +14,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import app.extr.ui.theme.AppPadding
 
@@ -35,7 +36,8 @@ fun AnimatedTextWithSign(
             text = currencySign.toString(),
             style = TextStyle(
                 color = MaterialTheme.colorScheme.secondary,
-                fontSize = valueStyle.fontSize / 1.7
+                fontSize = valueStyle.fontSize / 1.7,
+                baselineShift = BaselineShift.Subscript // bottom alignment
             )
         )
         AnimatedText(

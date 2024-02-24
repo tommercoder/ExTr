@@ -48,90 +48,107 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.extr.ui.theme.AppPadding
+import app.extr.ui.theme.animations.CustomCircularProgressIndicator
+import app.extr.ui.theme.composables.reusablecomponents.ErrorScreen
+import app.extr.ui.theme.composables.reusablecomponents.NoDataYet
+import app.extr.ui.theme.composables.reusablecomponents.ReusableButton
 import app.extr.utils.helpers.resproviders.MoneyTypesRes
 
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
-    uiState: UiState<User>,
+    uiState: UiState<User?>,
     onEvent: (UserUiEvent) -> Unit
 ) {
     when (uiState) {
         is UiState.Success -> {
-            var showChangeUserNameDialog by remember { mutableStateOf(false) }
-            val data = uiState.data
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(AppPadding.Small),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Row(
+            val user = uiState.data
+
+            if (user == null) {
+                var showAddUserDialog by remember { mutableStateOf(false) }
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxSize()
+                        .padding(AppPadding.Small),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.label_user, data.name),
-                        style = MaterialTheme.typography.titleMedium
+                    NoDataYet(
+                        headerId = R.string.label_no_profile,
+                        labelId = R.string.label_create_profile
                     )
-                    IconButton(onClick = {
-                        showChangeUserNameDialog = true
-                    }) {
-                        Icon(Icons.Filled.Edit, contentDescription = null)
-                    }
-                    if (showChangeUserNameDialog) {
-                        ChangeNameDialog(
-                            currentName = data.name,
-                            onNameChange = { onEvent(UserUiEvent.UserNameChanged(it)) },
-                            onDismiss = { showChangeUserNameDialog = false }
-                        )
-                    }
+                    ReusableButton(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        onClick = {
+                            showAddUserDialog = true
+                        },
+                        textId = R.string.btn_add_user
+                    )
                 }
-                HorizontalDivider(thickness = 1.dp)
-                Spacer(modifier = Modifier.size(25.dp))
-                SettingsSection()
 
+                if (showAddUserDialog) {
+                    CreateProfileDialog(
+                        onConfirm = {
+                            onEvent(UserUiEvent.UserCreated(it))
+                        },
+                        onDismiss = { showAddUserDialog = false }
+                    )
+                }
+            } else {
+                var showChangeUserNameDialog by remember { mutableStateOf(false) }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(AppPadding.Small),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.label_user, user.name),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        IconButton(onClick = {
+                            showChangeUserNameDialog = true
+                        }) {
+                            Icon(Icons.Filled.Edit, contentDescription = null)
+                        }
+                        if (showChangeUserNameDialog) {
+                            ChangeNameDialog(
+                                currentName = user.name,
+                                onNameChange = { onEvent(UserUiEvent.UserNameChanged(it)) },
+                                onDismiss = { showChangeUserNameDialog = false }
+                            )
+                        }
+                    }
+                    HorizontalDivider(thickness = 1.dp)
+                    Spacer(modifier = Modifier.size(25.dp))
+                    SettingsSection()
+
+                }
             }
-
         }
 
         is UiState.Loading -> {
-            Column(
-                modifier = modifier,
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-//                CircularProgressIndicator()
+            Box(modifier = Modifier.fillMaxSize()) {
+                CustomCircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
-
         }
 
         is UiState.Error -> {
-
+            ErrorScreen(onRefresh = { /*TODO*/ }, resourceId = R.string.error_profile_couldnt_load)
         }
     }
 
 }
-object ThemePreference {
-    private const val THEME_PREF = "theme_preferences"
-    private const val THEME_KEY = "theme_dark"
 
-    fun isDarkTheme(context: Context): Boolean {
-        val sharedPreferences = context.getSharedPreferences(THEME_PREF, Context.MODE_PRIVATE)
-        return sharedPreferences.getBoolean(THEME_KEY, false)
-    }
-
-    fun setDarkTheme(context: Context, isDark: Boolean) {
-        val sharedPreferences = context.getSharedPreferences(THEME_PREF, Context.MODE_PRIVATE)
-        sharedPreferences.edit().putBoolean(THEME_KEY, isDark).apply()
-    }
-}
 @Composable
 fun SettingsSection() {
     val context = LocalContext.current
-    val isDarkTheme = remember { mutableStateOf(ThemePreference.isDarkTheme(context)) }
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
@@ -139,15 +156,6 @@ fun SettingsSection() {
         Text(
             text = stringResource(id = R.string.label_settings),
             style = MaterialTheme.typography.titleLarge
-        )
-
-        Switch(
-            checked = isDarkTheme.value,
-            onCheckedChange = { isChecked ->
-                isDarkTheme.value = isChecked
-                ThemePreference.setDarkTheme(context, isChecked)
-                // Trigger UI/theme refresh if necessary
-            }
         )
     }
 }
@@ -161,7 +169,7 @@ fun ChangeNameDialog(
     var text by remember { mutableStateOf(currentName) }
     AlertDialog(
         onDismissRequest = {},
-        title = { Text(stringResource(id = R.string.change_username)) },
+        title = { Text(stringResource(id = R.string.label_username)) },
         text = {
             TextField(
                 value = text,
@@ -188,19 +196,45 @@ fun ChangeNameDialog(
     )
 }
 
-@Preview
 @Composable
-fun profileScreenPreview() {
-    val user = User(0, "name1")
-    val uiState = UiState.Success(user)
-
-    ExTrTheme {
-        Surface {
-//            ProfileScreen(modifier = Modifier.fillMaxSize(),
-//                uiState = uiState,
-//                onEvent = {}
-//            )
-            ChangeNameDialog("Serhii", {}, {})
+fun CreateProfileDialog(
+    onConfirm: (User) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val user by remember { mutableStateOf(User()) }
+    var name by remember { mutableStateOf(user.name) }
+    AlertDialog(
+        onDismissRequest = {},
+        title = { Text(stringResource(id = R.string.btn_add_user)) },
+        text = {
+            TextField(
+                value = name,
+                onValueChange = {
+                    name = it
+                },
+                label = { Text(stringResource(id = R.string.username)) }
+            )
+            //todo: add the checkboxes here
+        },
+        confirmButton = {
+            Button(onClick = {
+                onConfirm(
+                    User(
+                        name = name
+                    ))
+                onDismiss()
+            }
+            ) {
+                Text(stringResource(id = R.string.button_ok))
+            }
+        },
+        dismissButton = {
+            Button(onClick = {
+                onDismiss()
+            }) {
+                Text(stringResource(id = R.string.button_cancel))
+            }
         }
-    }
+    )
 }
+

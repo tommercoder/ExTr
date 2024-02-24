@@ -110,7 +110,7 @@ fun RoundChartScreen(
                                 number = transactionByType.totalAmount,
                                 modifier = Modifier
                                     .size(width = elementWidth, height = elementHeight),
-                                onClick = { onCardClicked(transactions[index].transactionType) }
+                                onClick = { onCardClicked(transactionsByTypes[index].transactionType) }
                             )
                         }
                     }
@@ -188,9 +188,11 @@ fun PercentageCircleChart(
             }
         }
 
-        val targetTotal = Constants.precisionTwo.format(total).toDouble()
+        //val targetTotalStr = Constants.precisionTwo.format(total)
+            //val targetTotal = targetTotalStr.toDouble()
         AnimatedTextWithSign(
-            totalValue = targetTotal,
+            totalValue = total,
+            format = Constants.precisionTwo,
             currencySign = currencySymbol,
             valueStyle = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.ExtraBold)
         )

@@ -1,5 +1,6 @@
 package app.extr.ui.theme.composables.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,51 +30,81 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.extr.R
+import app.extr.data.types.TransactionWithDetails
 import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.ExTrTheme
+import app.extr.ui.theme.animations.CustomCircularProgressIndicator
 import app.extr.ui.theme.composables.reusablecomponents.CategoryCard
+import app.extr.ui.theme.composables.reusablecomponents.NoDataYet
 import app.extr.ui.theme.composables.reusablecomponents.SelectedTransactionType
 import app.extr.ui.theme.viewmodels.TransactionByType
+import app.extr.utils.helpers.UiState
 import app.extr.utils.helpers.resproviders.ResProvider
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChartScreen(
-    selectedType: SelectedTransactionType,
+    uiState: UiState<List<TransactionWithDetails>>,
     transactionsByType: List<TransactionByType>,
-    resProvider: ResProvider
+    selectedType: SelectedTransactionType,
+    resProvider: ResProvider,
+    modifier: Modifier = Modifier,
 ) {
-    var itemCount by remember(selectedType) { mutableIntStateOf(4) }
-    val showMore = itemCount < transactionsByType.size
-    val showLess = itemCount > 4
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = AppPadding.Small, end = AppPadding.Small)
-    ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(bottom = AppPadding.ExtraSmall)
-        ) {
-            items(
-                items = transactionsByType.take(itemCount),
-                key = { it -> it.transactionType.id }
-            ) {
-                CategoryCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    transactionByType = it,
-                    resProvider = resProvider
-                )
+    when (uiState) {
+        is UiState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CustomCircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center))
             }
-            item {
-                // Show more or less buttons as needed
-                when {
-                    showMore -> MoreButton(modifier = Modifier.fillMaxWidth()) { itemCount += 4 }
-                    showLess -> LessButton(modifier = Modifier.fillMaxWidth()) { itemCount = 4 }
+        }
+        is UiState.Success -> {
+            val transactions = uiState.data
+            if (transactions.isEmpty()) {
+                NoDataYet(
+                    modifier = Modifier.fillMaxSize(),
+                    headerId = if (selectedType == SelectedTransactionType.EXPENSES) R.string.label_no_expenses else R.string.label_no_income,
+                    labelId = if (selectedType == SelectedTransactionType.EXPENSES) R.string.label_create_expense_hint else R.string.label_create_income_hint
+                )
+            } else {
+                var itemCount by remember(selectedType) { mutableIntStateOf(4) }
+                val showMore = itemCount < transactionsByType.size
+                val showLess = itemCount > 4
+                Column(
+                    modifier = modifier
+                ) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(bottom = AppPadding.ExtraSmall)
+                    ) {
+                        items(
+                            items = transactionsByType.take(itemCount),
+                            key = { it -> it.transactionType.id }
+                        ) {
+                            CategoryCard(
+                                modifier = Modifier.fillMaxWidth(),
+                                transactionByType = it,
+                                resProvider = resProvider
+                            )
+                        }
+                        item {
+                            // Show more or less buttons as needed
+                            when {
+                                showMore -> MoreButton(modifier = Modifier.fillMaxWidth()) { itemCount += 4 }
+                                showLess -> LessButton(modifier = Modifier.fillMaxWidth()) {
+                                    itemCount = 4
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
         }
 
+        is UiState.Error -> {
+
+        }
     }
 }
 
@@ -87,7 +118,10 @@ fun MoreButton(
         contentAlignment = Alignment.Center
     ) {
         Row {
-            Icon(painter = painterResource(id = R.drawable.expand_more_icon), contentDescription = null)
+            Icon(
+                painter = painterResource(id = R.drawable.expand_more_icon),
+                contentDescription = null
+            )
             Text(text = stringResource(id = R.string.btn_show_more), fontWeight = FontWeight.Bold)
 
         }
@@ -112,7 +146,10 @@ fun LessButton(
         contentAlignment = Alignment.Center
     ) {
         Row {
-            Icon(painter = painterResource(id = R.drawable.expand_less_icon), contentDescription = null)
+            Icon(
+                painter = painterResource(id = R.drawable.expand_less_icon),
+                contentDescription = null
+            )
             Text(text = stringResource(id = R.string.btn_show_less), fontWeight = FontWeight.Bold)
 
         }

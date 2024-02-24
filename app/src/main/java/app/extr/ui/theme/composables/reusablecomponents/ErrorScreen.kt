@@ -49,16 +49,20 @@ fun ErrorScreen(
             )
 
             Spacer(Modifier.height(30.dp))
-            Button(
-                modifier = Modifier,
-                shape = MaterialTheme.shapeScheme.large,
+//            Button(
+//                modifier = Modifier,
+//                shape = MaterialTheme.shapeScheme.large,
+//                onClick = { onRefresh() },
+//                colors = ButtonDefaults.buttonColors(
+//                    containerColor = LocalCustomColorsPalette.current.balanceCardColor
+//                )
+//            ) {
+//                Text(text = stringResource(R.string.button_refresh))
+//            }
+            ReusableButton(
                 onClick = { onRefresh() },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = LocalCustomColorsPalette.current.balanceCardColor
-                )
-            ) {
-                Text(text = stringResource(R.string.button_refresh))
-            }
+                textId = R.string.button_refresh
+            )
         }
     }
 }

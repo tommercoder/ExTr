@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,12 +35,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.extr.data.types.Currency
 import app.extr.data.types.CurrencyLastSelected
 import app.extr.data.types.MoneyType
 import app.extr.data.types.UsedCurrency
 import app.extr.data.types.UsedCurrencyDetails
+import app.extr.ui.theme.animations.CustomCircularProgressIndicator
 import app.extr.ui.theme.animations.LoadingAnimation
 import app.extr.ui.theme.composables.reusablecomponents.CurrenciesDropDownMenu
 import app.extr.utils.helpers.UiState
@@ -50,35 +53,38 @@ fun TopBar(
     uiState: UiState<List<UsedCurrencyDetails>>,
     onAddClicked: () -> Unit,
     onItemSelected: (Currency) -> Unit,
-   // scrollBehavior: TopAppBarScrollBehavior,
     isAddButtonVisible: Boolean,
     isDropdownVisible: Boolean,
+    titleText: String,
     selectedCurrency: Currency? = null
 ) {
-    when (uiState) {
-        is UiState.Loading -> {
-
-        }
-
-        is UiState.Success -> {
-            TopAppBar(
-                title = {},
-               // scrollBehavior = scrollBehavior,
-                navigationIcon = {
-                    if (isAddButtonVisible) {
-                        IconButton(onClick = { onAddClicked() }) {
-                            Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = "Navigation icon"
-                            )
-                        }
+    TopAppBar(
+        title = {
+            Text(text = titleText, textAlign = TextAlign.Start)
+        },
+        navigationIcon = {
+            if (isAddButtonVisible) {
+                IconButton(onClick = { onAddClicked() }) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = "Navigation icon"
+                    )
+                }
+            }
+        },
+        actions = {
+            when (uiState) {
+                is UiState.Loading -> {
+                    Box(modifier = Modifier) {
+                        CustomCircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center),
+                            iconSize = 20.dp
+                        )
                     }
-                },
-                actions = {
-                    if (uiState.data.isEmpty()) {
-                        return@TopAppBar
-                    }
-                    if(isDropdownVisible) {
+                }
+
+                is UiState.Success -> {
+                    if (isDropdownVisible && uiState.data.isNotEmpty()) {
                         val data by rememberUpdatedState(uiState.data)
 
                         Row(
@@ -96,7 +102,18 @@ fun TopBar(
                         }
                     }
                 }
-            )
+
+                is UiState.Error -> {}
+            }
+        }
+    )
+    when (uiState) {
+        is UiState.Loading -> {
+
+        }
+
+        is UiState.Success -> {
+
         }
 
         is UiState.Error -> {}

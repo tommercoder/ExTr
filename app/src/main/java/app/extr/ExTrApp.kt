@@ -51,6 +51,7 @@ import app.extr.ui.theme.composables.BalanceBottomSheet
 import app.extr.ui.theme.composables.DatePickerDialogCaller
 import app.extr.ui.theme.composables.ExpenseIncomeBottomSheetCaller
 import app.extr.ui.theme.composables.ExpensesIncomeBottomSheet
+import app.extr.ui.theme.composables.getTitleByRoute
 import app.extr.ui.theme.composables.reusablecomponents.ExpenseIncomeDateRow
 import app.extr.ui.theme.composables.reusablecomponents.SelectedTransactionType
 import app.extr.ui.theme.mappers.DropdownItemUi
@@ -76,9 +77,6 @@ import app.extr.utils.helpers.resproviders.ResProvider
 fun ExTrApp(
     navController: NavHostController = rememberNavController()
 ) {
-    //val scrollBehavior =
-      //  TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-
     val navBackStackEntry =
         navController.currentBackStackEntryAsState().value?.destination?.route
 
@@ -86,7 +84,8 @@ fun ExTrApp(
     val expensesIncomeBottomSheetViewModel: ExpensesIncomeBottomSheetViewModel =
         viewModel(factory = ViewModelsProvider.Factory)
     val datePickerViewModel: DatePickerViewModel = viewModel(factory = ViewModelsProvider.Factory)
-    val expenseIncomeViewModel: ExpensesIncomeViewModel = viewModel(factory = ViewModelsProvider.Factory)
+    val expenseIncomeViewModel: ExpensesIncomeViewModel =
+        viewModel(factory = ViewModelsProvider.Factory)
 
     Scaffold(
         modifier = Modifier
@@ -97,7 +96,6 @@ fun ExTrApp(
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val currentlySelectedCurrency by viewModel.currentlySelectedCurrency.collectAsStateWithLifecycle()
 
-
             val chartButtonsShown = navBackStackEntry == Screens.RoundChart.route
                     || navBackStackEntry == Screens.Chart.route
             val isDropdownVisible = navBackStackEntry != Screens.Profile.route
@@ -105,6 +103,7 @@ fun ExTrApp(
             val toastText = stringResource(id = R.string.label_balances_are_empty)
             Column {
                 TopBar(
+                    titleText = getTitleByRoute(LocalContext.current, navBackStackEntry ?: ""),
                     uiState = uiState,
                     onItemSelected = { currency ->
                         viewModel.selectCurrency(currencyId = currency.currencyId)
@@ -115,7 +114,6 @@ fun ExTrApp(
                             Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
                         }
                     },
-                    //scrollBehavior = scrollBehavior,
                     isAddButtonVisible = navBackStackEntry == Screens.RoundChart.route
                             || navBackStackEntry == Screens.Chart.route,
                     isDropdownVisible = isDropdownVisible,
@@ -124,7 +122,9 @@ fun ExTrApp(
                 if (chartButtonsShown) {
                     ExpenseIncomeDateRow(
                         modifier = Modifier
-                            .fillMaxWidth().padding(start = AppPadding.Small, end = AppPadding.Small),
+                            .fillMaxWidth()
+                            .padding(start = AppPadding.Small, end = AppPadding.Small),
+                        selectedType = selectedType,
                         onSelected = {
                             selectedType = it
                         },
@@ -142,7 +142,7 @@ fun ExTrApp(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screens.RoundChart.route,
+            startDestination = Screens.Chart.route,
             modifier = Modifier.padding(innerPadding),
             enterTransition = {
                 slideIntoContainer(
@@ -187,7 +187,10 @@ fun ExTrApp(
         }
     }
 
-    DatePickerDialogCaller(datePickerViewModel = datePickerViewModel, expensesIncomeViewModel = expenseIncomeViewModel)
+    DatePickerDialogCaller(
+        datePickerViewModel = datePickerViewModel,
+        expensesIncomeViewModel = expenseIncomeViewModel
+    )
     ExpenseIncomeBottomSheetCaller(
         expensesIncomeBottomSheetViewModel = expensesIncomeBottomSheetViewModel,
         expensesIncomeViewModel = expenseIncomeViewModel,
@@ -200,16 +203,20 @@ fun ExTrApp(
 fun ChartScreenRoute(
     selectedType: SelectedTransactionType,
     expenseIncomeViewModel: ExpensesIncomeViewModel
-){
+) {
     val uiState by expenseIncomeViewModel.combinedUiState.collectAsStateWithLifecycle()
 
     val expenseTypesRes = ExpenseTypesRes(LocalCustomColorsPalette.current)
     val incomeTypesRes = IncomeTypesRes(LocalCustomColorsPalette.current)
 
     ChartScreen(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = AppPadding.Small, end = AppPadding.Small),
+        uiState = if (selectedType == SelectedTransactionType.EXPENSES) uiState.expensesState else uiState.incomeState,
+        transactionsByType = if (selectedType == SelectedTransactionType.EXPENSES) uiState.expensesByCategoriesState else uiState.incomeByCategoriesState,
+        resProvider = if (selectedType == SelectedTransactionType.EXPENSES) expenseTypesRes else incomeTypesRes,
         selectedType = selectedType,
-        transactionsByType =  if (selectedType == SelectedTransactionType.EXPENSES) uiState.expensesByCategoriesState else uiState.incomeByCategoriesState,
-        resProvider = if (selectedType == SelectedTransactionType.EXPENSES) expenseTypesRes else incomeTypesRes
     )
 }
 

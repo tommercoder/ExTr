@@ -8,12 +8,20 @@
     <string name="button_refresh">REFRESH</string>
     <string name="label_please_refresh">Please refresh</string>
 
+    <!--TITLE-->
+    <string name="title_balances">Balances</string>
+    <string name="title_profile">Profile</string>
+
     <!--PROFILE-->
     <string name="label_user">Hello, %1$s</string>
-    <string name="change_username">Change your username</string>
+    <string name="btn_change_username">Change your username</string>
+    <string name="label_username">Username</string>
     <string name="username">USERNAME</string>
     <string name="label_topbar">PROFILE</string>
     <string name="label_settings">SETTINGS</string>
+    <string name="label_no_profile">No profile yet</string>
+    <string name="label_create_profile">Create a new profile by pressing the button below</string>
+    <string name="btn_add_user">Add profile</string>
 
     <!--CURRENCIES-->
     <string name="label_selected_currency">selected currency:</string>
@@ -34,6 +42,7 @@
     <string name="header_error_occured">ERROR OCCURED</string>
     <string name="error_balances_couldnt_load">Couldn\'t load balances from the database.</string>
     <string name="error_transaction_types_couldnt_load">Couldn\'t load transaction types from the database.</string>
+    <string name="error_profile_couldnt_load">Couldn\'t load profile info from the database.</string>
 
     <!--CHART SCREENS-->
     <string name="button_expenses">Expenses</string>

@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import app.extr.data.types.User
 import kotlinx.coroutines.flow.Flow
 
@@ -14,7 +15,7 @@ interface UserDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(user: User)
 
-    @Update
+    @Upsert
     suspend fun update(user: User)
 
     @Query("SELECT * FROM user")

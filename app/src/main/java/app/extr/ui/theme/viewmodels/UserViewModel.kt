@@ -22,13 +22,10 @@ sealed class UserUiEvent {
 class UserViewModel(
     private val userRepository: UserRepository
 ) : ViewModel() {
-    private val _user = MutableStateFlow<UiState<User>>(UiState.Loading)
-    val uiState: StateFlow<UiState<User>> = _user.asStateFlow()
+    private val _user = MutableStateFlow<UiState<User?>>(UiState.Loading)
+    val uiState: StateFlow<UiState<User?>> = _user.asStateFlow()
 
     init {
-        //todo: remove later
-        val user = User(name = "Serhii")
-        addUser(user)
         loadData()
     }
 
@@ -66,7 +63,7 @@ class UserViewModel(
     private fun updateUser(newName: String) {
         viewModelScope.launch {
             val currentState = _user.value
-            if (currentState is UiState.Success) {
+            if (currentState is UiState.Success && currentState.data != null) {
                 val updatedUser = currentState.data.copy(name = newName)
                 userRepository.update(updatedUser)
             }
