@@ -57,7 +57,10 @@
     <string name="label_no_income">No income yet</string>
     <string name="label_create_income_hint">Create a new income by pressing the "plus" button on the top bar</string>
     <string name="btn_show_more">More</string>
-    <string name="btn_show_less">Less</string>
+    <string name="btn_show_collapse">Collapse</string>
+    <string name="label_day">Day</string>
+    <string name="label_week">Week</string>
+    <string name="label_month">Month</string>
 
     <!--MONTHS-->
     <string name="month_jan">Jan</string>

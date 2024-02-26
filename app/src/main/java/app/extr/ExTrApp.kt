@@ -179,7 +179,9 @@ fun ExTrApp(
                 val viewModel: UserViewModel = viewModel(factory = ViewModelsProvider.Factory)
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
                 ProfileScreen(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(AppPadding.Small),
                     uiState = uiState,
                     onEvent = viewModel::onEvent
                 )
@@ -212,9 +214,10 @@ fun ChartScreenRoute(
     ChartScreen(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = AppPadding.Small, end = AppPadding.Small),
+            .padding(horizontal = AppPadding.ExtraSmall),
         uiState = if (selectedType == SelectedTransactionType.EXPENSES) uiState.expensesState else uiState.incomeState,
         transactionsByType = if (selectedType == SelectedTransactionType.EXPENSES) uiState.expensesByCategoriesState else uiState.incomeByCategoriesState,
+        timePeriodAmount = if (selectedType == SelectedTransactionType.EXPENSES) uiState.timePeriodAmountExpensesState else uiState.timePeriodAmountIncomeState,
         resProvider = if (selectedType == SelectedTransactionType.EXPENSES) expenseTypesRes else incomeTypesRes,
         selectedType = selectedType,
     )

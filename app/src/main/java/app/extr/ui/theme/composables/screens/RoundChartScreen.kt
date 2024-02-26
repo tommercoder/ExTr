@@ -128,7 +128,7 @@ fun RoundChartScreen(
 }
 
 @Composable
-fun PercentageCircleChart(
+fun PercentageCircleChart( // chat gpt
     data: List<TransactionByType>,
     total: Double,
     currencySymbol: Char,

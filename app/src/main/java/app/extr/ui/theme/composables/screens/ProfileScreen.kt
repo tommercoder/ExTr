@@ -67,9 +67,7 @@ fun ProfileScreen(
             if (user == null) {
                 var showAddUserDialog by remember { mutableStateOf(false) }
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(AppPadding.Small),
+                    modifier = modifier,
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Center
                 ) {

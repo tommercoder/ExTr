@@ -7,13 +7,14 @@ import app.extr.data.types.Expense
 import app.extr.data.types.ExpenseWithDetails
 import app.extr.data.types.Income
 import app.extr.data.types.IncomeWithDetails
+import app.extr.ui.theme.viewmodels.Date
 import kotlinx.coroutines.flow.Flow
 
 interface ExpensesIncomeRepository {
     suspend fun insertExpense(expense: Expense)
     suspend fun insertIncome(income: Income)
-    fun getExpensesForCurrentCurrency(month: Int, year: Int): Flow<List<ExpenseWithDetails>>
-    fun getIncomesForCurrentCurrency(month: Int, year: Int): Flow<List<IncomeWithDetails>>
+    fun getExpensesForCurrentCurrency(date: Date): Flow<List<ExpenseWithDetails>>
+    fun getIncomesForCurrentCurrency(date: Date): Flow<List<IncomeWithDetails>>
 }
 
 class ExpensesIncomeRepositoryImpl(
@@ -51,12 +52,12 @@ class ExpensesIncomeRepositoryImpl(
         }
     }
 
-    override fun getExpensesForCurrentCurrency(month: Int, year: Int): Flow<List<ExpenseWithDetails>> {
-        return expenseIncomeDao.getExpensesForCurrentCurrency(month, year)
+    override fun getExpensesForCurrentCurrency(date: Date): Flow<List<ExpenseWithDetails>> {
+        return expenseIncomeDao.getExpensesForCurrentCurrency(date.month, date.year)
     }
 
-    override fun getIncomesForCurrentCurrency(month: Int, year: Int): Flow<List<IncomeWithDetails>> {
-        return expenseIncomeDao.getIncomesForCurrentCurrency(month, year)
+    override fun getIncomesForCurrentCurrency(date: Date): Flow<List<IncomeWithDetails>> {
+        return expenseIncomeDao.getIncomesForCurrentCurrency(date.month, date.year)
     }
 
 }

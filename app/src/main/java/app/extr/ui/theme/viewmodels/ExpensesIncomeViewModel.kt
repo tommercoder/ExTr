@@ -22,20 +22,31 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.YearMonth
 import java.util.Calendar
+import kotlin.time.Duration.Companion.days
 
 data class CombinedExpensesIncomeState(
     val expensesState: UiState<List<TransactionWithDetails>>,
     val incomeState: UiState<List<TransactionWithDetails>>,
     val expensesByCategoriesState: List<TransactionByType>,
-    val incomeByCategoriesState: List<TransactionByType>
+    val incomeByCategoriesState: List<TransactionByType>,
+    val timePeriodAmountExpensesState: TimePeriodAmount,
+    val timePeriodAmountIncomeState: TimePeriodAmount,
 )
+
 data class TransactionByType(
     val transactionType: TransactionType,
     val totalAmount: Double,
     val currency: Currency,
     val moneyType: MoneyType,
     val balances: List<Balance>
+)
+
+data class TimePeriodAmount(
+    val byDay: Int = 0,
+    val byWeek: Int = 0,
+    val byMonth: Int = 0
 )
 
 class ExpensesIncomeViewModel(
@@ -46,45 +57,59 @@ class ExpensesIncomeViewModel(
     private val _income = MutableStateFlow<UiState<List<TransactionWithDetails>>>(UiState.Loading)
     private val _expensesByCategories = MutableStateFlow<List<TransactionByType>>(emptyList())
     private val _incomeByCategories = MutableStateFlow<List<TransactionByType>>(emptyList())
+    private val _timePeriodAmountExpenses = MutableStateFlow<TimePeriodAmount>(TimePeriodAmount())
+    private val _timePeriodAmountIncome = MutableStateFlow<TimePeriodAmount>(TimePeriodAmount())
 
     val combinedUiState: StateFlow<CombinedExpensesIncomeState> = combine(
         _expenses,
         _income,
         _expensesByCategories,
-        _incomeByCategories
-    ) { expenses, income, expensesByCategories, incomeByCategories ->
+        _incomeByCategories,
+        _timePeriodAmountExpenses,
+        _timePeriodAmountIncome
+    ) { array: Array<Any> ->
         CombinedExpensesIncomeState(
-            expensesState = expenses,
-            incomeState = income,
-            expensesByCategoriesState = expensesByCategories,
-            incomeByCategoriesState = incomeByCategories
+            expensesState = array[0] as UiState<List<TransactionWithDetails>>,
+            incomeState = array[1] as UiState<List<TransactionWithDetails>>,
+            expensesByCategoriesState = array[2] as List<TransactionByType>,
+            incomeByCategoriesState = array[3] as List<TransactionByType>,
+            timePeriodAmountExpensesState = array[4] as TimePeriodAmount,
+            timePeriodAmountIncomeState = array[5] as TimePeriodAmount
         )
-    }.stateIn(viewModelScope, SharingStarted.Lazily, CombinedExpensesIncomeState(UiState.Loading, UiState.Loading, emptyList(), emptyList()))
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        CombinedExpensesIncomeState(
+            UiState.Loading,
+            UiState.Loading,
+            emptyList(),
+            emptyList(),
+            TimePeriodAmount(),
+            TimePeriodAmount()
+        )
+    )
 
     init {
         val calendar = Calendar.getInstance()
-        val month =
-            calendar.get(Calendar.MONTH)// + 1 // Calendar.MONTH is zero-based; January is 0.
+        val month = calendar.get(Calendar.MONTH)
         val year = calendar.get(Calendar.YEAR)
 
         loadTransactions(Date(month, year))
     }
 
-    fun loadTransactions(date: Date) {
-        loadExpenses(date.month, date.year)
-        loadIncome(date.month, date.year)
-    }
-
-    private fun loadExpenses(month: Int, year: Int) {
+    private fun loadExpenses(date: Date) {
         try {
             viewModelScope.launch {
                 _expenses.value = UiState.Loading
                 //delay(200)
-                expensesIncomeRepository.getExpensesForCurrentCurrency(month, year).distinctUntilChanged().collect {
+                expensesIncomeRepository.getExpensesForCurrentCurrency(date)
+                    .distinctUntilChanged().collect {
                     val newIt = UiState.Success(it)
                     _expenses.value = newIt
 
-                    _expensesByCategories.value = sortTransactionsByTypes(newIt.data)
+                    val transactionsByType = sortTransactionsByTypes(newIt.data)
+                    _expensesByCategories.value = transactionsByType
+                    _timePeriodAmountExpenses.value = getTimePeriodAmount(transactionsByType, date)
                 }
             }
         } catch (e: Exception) {
@@ -92,15 +117,18 @@ class ExpensesIncomeViewModel(
         }
     }
 
-    private fun loadIncome(month: Int, year: Int) {
+    private fun loadIncome(date: Date) {
         try {
             viewModelScope.launch {
                 _income.value = UiState.Loading
-                expensesIncomeRepository.getIncomesForCurrentCurrency(month, year).distinctUntilChanged().collect {
+                expensesIncomeRepository.getIncomesForCurrentCurrency(date)
+                    .distinctUntilChanged().collect {
                     val newIt = UiState.Success(it)
                     _income.value = newIt
 
-                    _incomeByCategories.value = sortTransactionsByTypes(newIt.data)
+                    val transactionsByType = sortTransactionsByTypes(newIt.data)
+                    _incomeByCategories.value = transactionsByType
+                    _timePeriodAmountIncome.value = getTimePeriodAmount(transactionsByType, date)
                 }
             }
         } catch (e: Exception) {
@@ -122,6 +150,19 @@ class ExpensesIncomeViewModel(
             }
     }
 
+    private fun getTimePeriodAmount(
+        byType: List<TransactionByType>,
+        date: Date
+    ): TimePeriodAmount {
+        val byMonth = byType.sumOf { it.totalAmount }.toInt()
+        val byWeek = byMonth / 4
+
+        val yearMonth = YearMonth.of(date.year, date.month + 1)
+        val byDay = byMonth / yearMonth.lengthOfMonth()
+
+        return TimePeriodAmount(byDay, byWeek, byMonth)
+    }
+
     fun insertTransaction(transaction: Transaction) {
         viewModelScope.launch {
             when (transaction) {
@@ -134,5 +175,10 @@ class ExpensesIncomeViewModel(
                 }
             }
         }
+    }
+
+    fun loadTransactions(date: Date) {
+        loadExpenses(date)
+        loadIncome(date)
     }
 }
