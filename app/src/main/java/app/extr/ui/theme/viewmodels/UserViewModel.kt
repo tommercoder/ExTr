@@ -3,6 +3,7 @@ package app.extr.ui.theme.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.extr.data.repositories.UserRepository
+import app.extr.data.types.UiMode
 import app.extr.data.types.User
 import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,13 +11,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-//data class UsersUiState(
-//    val isLoading: Boolean = false,
-//    val users: List<User> = emptyList()
-//)
 sealed class UserUiEvent {
     data class UserCreated(val user: User) : UserUiEvent()
     data class UserNameChanged(val newName: String) : UserUiEvent()
+    data class UiModeChanged(val newMode: UiMode) : UserUiEvent()
 }
 
 class UserViewModel(
@@ -36,7 +34,11 @@ class UserViewModel(
             }
 
             is UserUiEvent.UserNameChanged -> {
-                updateUser(event.newName)
+                updateUsername(event.newName)
+            }
+
+            is UserUiEvent.UiModeChanged -> {
+                updateUiMode(event.newMode)
             }
         }
     }
@@ -60,11 +62,21 @@ class UserViewModel(
         }
     }
 
-    private fun updateUser(newName: String) {
+    private fun updateUsername(newName: String) {
         viewModelScope.launch {
             val currentState = _user.value
             if (currentState is UiState.Success && currentState.data != null) {
                 val updatedUser = currentState.data.copy(name = newName)
+                userRepository.update(updatedUser)
+            }
+        }
+    }
+
+    private fun updateUiMode(uiMode: UiMode) {
+        viewModelScope.launch {
+            val currentState = _user.value
+            if (currentState is UiState.Success && currentState.data != null) {
+                val updatedUser = currentState.data.copy(uiMode = uiMode)
                 userRepository.update(updatedUser)
             }
         }

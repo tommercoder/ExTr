@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import app.extr.data.converters.UiModeConverter
 import app.extr.data.daos.BalanceDao
 import app.extr.data.daos.CurrencyDao
 import app.extr.data.daos.ExpenseIncomeDao
@@ -32,7 +34,7 @@ import kotlinx.coroutines.launch
     version = 2,
     exportSchema = false
 )
-//@TypeConverters(Converters::class)
+@TypeConverters(UiModeConverter::class)
 abstract class ExTrDatabase : RoomDatabase() {
 
     abstract fun moneyTypeDao(): MoneyTypeDao

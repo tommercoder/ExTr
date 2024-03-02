@@ -7,5 +7,12 @@ import androidx.room.PrimaryKey
 data class User(
     @PrimaryKey
     val id: Int = 0,
-    val name: String = "User"
+    val name: String = "User",
+    val uiMode: UiMode = UiMode.AUTO
 )
+
+enum class UiMode {
+    AUTO,
+    LIGHT,
+    DARK
+}

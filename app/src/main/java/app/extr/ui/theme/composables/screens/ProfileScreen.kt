@@ -1,6 +1,9 @@
 package app.extr.ui.theme.composables.screens
 
 import android.content.Context
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,14 +22,13 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -47,12 +50,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import app.extr.data.types.UiMode
 import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.animations.CustomCircularProgressIndicator
 import app.extr.ui.theme.composables.reusablecomponents.ErrorScreen
 import app.extr.ui.theme.composables.reusablecomponents.NoDataYet
+import app.extr.ui.theme.composables.reusablecomponents.OnOffSwitch
 import app.extr.ui.theme.composables.reusablecomponents.ReusableButton
-import app.extr.utils.helpers.resproviders.MoneyTypesRes
+import app.extr.ui.theme.mappers.toResourceString
 
 @Composable
 fun ProfileScreen(
@@ -125,7 +131,10 @@ fun ProfileScreen(
                     }
                     HorizontalDivider(thickness = 1.dp)
                     Spacer(modifier = Modifier.size(25.dp))
-                    SettingsSection()
+                    SettingsSection(
+                        currentlySelectedMode = user.uiMode,
+                        onModeSelected = { onEvent(UserUiEvent.UiModeChanged(it)) }
+                    )
 
                 }
             }
@@ -145,8 +154,11 @@ fun ProfileScreen(
 }
 
 @Composable
-fun SettingsSection() {
-    val context = LocalContext.current
+fun SettingsSection(
+    currentlySelectedMode: UiMode,
+    onModeSelected: (UiMode) -> Unit,
+) {
+    var changeUiModeShown by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
@@ -155,6 +167,69 @@ fun SettingsSection() {
             text = stringResource(id = R.string.label_settings),
             style = MaterialTheme.typography.titleLarge
         )
+        Spacer(modifier = Modifier.height(10.dp))
+
+        ReusableButton(
+            modifier = Modifier
+                .align(Alignment.Start)
+                .fillMaxWidth(),
+            onClick = { changeUiModeShown = true },
+            textId = R.string.btn_change_ui_mode,
+            colors =  ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.onBackground,
+                contentColor = MaterialTheme.colorScheme.background)
+        )
+
+        if (changeUiModeShown) {
+            UiModeSelection(
+                currentlySelectedMode = currentlySelectedMode,
+                onModeSelected = {
+                    onModeSelected(it)
+                },
+                onDismiss = { changeUiModeShown = false }
+            )
+        }
+
+    }
+}
+
+@Composable
+fun UiModeSelection(
+    currentlySelectedMode: UiMode,
+    onModeSelected: (UiMode) -> Unit,
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = { onDismiss() }
+    ) {
+        Column(
+            modifier = Modifier.padding(8.dp)
+        ) {
+            UiMode.values().forEach { mode ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = {
+                            onModeSelected(mode)
+                            onDismiss()
+                        })
+                        //.padding(8.dp)
+                ) {
+                    RadioButton(
+                        selected = mode == currentlySelectedMode,
+                        onClick = {
+                            onModeSelected(mode)
+                            onDismiss()
+                        }
+                    )
+                    Text(
+                        text = stringResource(mode.toResourceString()),
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -219,7 +294,8 @@ fun CreateProfileDialog(
                 onConfirm(
                     User(
                         name = name
-                    ))
+                    )
+                )
                 onDismiss()
             }
             ) {

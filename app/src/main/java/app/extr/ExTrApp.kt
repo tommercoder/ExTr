@@ -324,8 +324,7 @@ fun HomeScreenRoute() {
                 }
             },
             onDismissed = { isAddBalanceSheetShown = false },
-
-            )
+        )
     }
 }
 

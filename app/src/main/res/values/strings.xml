@@ -22,6 +22,10 @@
     <string name="label_no_profile">No profile yet</string>
     <string name="label_create_profile">Create a new profile by pressing the button below</string>
     <string name="btn_add_user">Add profile</string>
+    <string name="btn_change_ui_mode">Theme mode</string>
+    <string name="ui_mode_auto">Automatic</string>
+    <string name="ui_mode_light">Light Theme</string>
+    <string name="ui_mode_dark">Dark Theme</string>
 
     <!--CURRENCIES-->
     <string name="label_selected_currency">selected currency:</string>

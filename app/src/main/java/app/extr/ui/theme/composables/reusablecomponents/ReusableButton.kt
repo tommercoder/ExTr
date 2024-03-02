@@ -1,6 +1,7 @@
 package app.extr.ui.theme.composables.reusablecomponents
 
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,15 +16,18 @@ fun ReusableButton(
     onClick: () -> Unit,
     textId: Int,
     modifier: Modifier = Modifier,
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = LocalCustomColorsPalette.current.balanceCardColor
+    )
 ) {
     Button(
         modifier = modifier,
         shape = MaterialTheme.shapeScheme.large,
         onClick = { onClick() },
-        colors = ButtonDefaults.buttonColors(
-            containerColor = LocalCustomColorsPalette.current.balanceCardColor
-        )
+        colors = colors
     ) {
-        Text(text = stringResource(textId))
+        Text(
+            text = stringResource(textId)
+        )
     }
 }

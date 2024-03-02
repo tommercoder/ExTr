@@ -72,7 +72,7 @@ fun ErrorScreen(
 @Preview
 @Composable
 fun Preview() {
-    ExTrTheme {
+
         ErrorScreen(onRefresh = { /*TODO*/ }, resourceId = R.string.app_name)
-    }
+
 }
