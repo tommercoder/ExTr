@@ -129,16 +129,10 @@ fun HomeScreen(
                             currencySymbol = data[i].currency.symbol,
                             number = data[i].balance.amount,
                             modifier = Modifier
-                                .size(elementSize)
-                                .animateItemPlacement(
-
-                                ),
+                                .size(elementSize),
                             onLongPress = {
                                 longPressedBalance = data[i].balance
                                 showDeleteDialog = true
-                            },
-                            onClick = {
-                                Log.d("TAG", "Clicked " + data[i].balance.amount)
                             }
                         )
                     }

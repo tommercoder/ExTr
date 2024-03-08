@@ -35,8 +35,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.extr.R
 import app.extr.data.types.Currency
 import app.extr.data.types.CurrencyLastSelected
 import app.extr.data.types.MoneyType
@@ -67,7 +69,7 @@ fun TopBar(
                 IconButton(onClick = { onAddClicked() }) {
                     Icon(
                         imageVector = Icons.Filled.Add,
-                        contentDescription = "Navigation icon"
+                        contentDescription = null
                     )
                 }
             }

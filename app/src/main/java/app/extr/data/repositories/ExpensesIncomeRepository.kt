@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.Flow
 interface ExpensesIncomeRepository {
     suspend fun insertExpense(expense: Expense)
     suspend fun insertIncome(income: Income)
+    suspend fun deleteExpense(expense: Expense)
+    suspend fun deleteIncome(income: Income)
     fun getExpensesForCurrentCurrency(date: Date): Flow<List<ExpenseWithDetails>>
     fun getIncomesForCurrentCurrency(date: Date): Flow<List<IncomeWithDetails>>
 }
@@ -30,7 +32,7 @@ class ExpensesIncomeRepositoryImpl(
         expenseIncomeDao.insertExpense(expense)
 
         var balance = getBalanceById(expense.balanceId)
-        if(balance != null) {
+        if (balance != null) {
             val newAmount = balance.amount - expense.transactionAmount
             balance = balance.copy(
                 amount = newAmount
@@ -43,13 +45,21 @@ class ExpensesIncomeRepositoryImpl(
         expenseIncomeDao.insertIncome(income)
 
         var balance = getBalanceById(income.balanceId)
-        if(balance != null) {
+        if (balance != null) {
             val newAmount = balance.amount + income.transactionAmount
             balance = balance.copy(
                 amount = newAmount
             )
             balanceDao.update(balance)
         }
+    }
+
+    override suspend fun deleteExpense(expense: Expense) {
+        expenseIncomeDao.deleteExpense(expense)
+    }
+
+    override suspend fun deleteIncome(income: Income) {
+        expenseIncomeDao.deleteIncome(income)
     }
 
     override fun getExpensesForCurrentCurrency(date: Date): Flow<List<ExpenseWithDetails>> {

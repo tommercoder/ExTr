@@ -1,20 +1,15 @@
 package app.extr.ui.theme.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.extr.R
 import app.extr.data.repositories.BalancesRepository
 import app.extr.data.types.Balance
 import app.extr.data.types.BalanceWithDetails
-import app.extr.data.types.Currency
-import app.extr.data.types.MoneyType
-import app.extr.data.types.User
 import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class BalancesViewModel(

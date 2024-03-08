@@ -54,7 +54,7 @@ fun CategoryCard(
     ) {
         Box(
             modifier = Modifier
-                .size(45.dp) // Set a fixed size for the circle
+                .size(45.dp)
                 .background(
                     color = resProvider.getRes(type.colorId).color,
                     shape = CircleShape

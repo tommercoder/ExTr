@@ -54,6 +54,7 @@ import app.extr.ui.theme.composables.ExpensesIncomeBottomSheet
 import app.extr.ui.theme.composables.getTitleByRoute
 import app.extr.ui.theme.composables.reusablecomponents.ExpenseIncomeDateRow
 import app.extr.ui.theme.composables.reusablecomponents.SelectedTransactionType
+import app.extr.ui.theme.composables.screens.TransactionsScreen
 import app.extr.ui.theme.mappers.DropdownItemUi
 import app.extr.ui.theme.mappers.toDropdownItem
 import app.extr.ui.theme.viewmodels.BalancesViewModel
@@ -96,8 +97,10 @@ fun ExTrApp(
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val currentlySelectedCurrency by viewModel.currentlySelectedCurrency.collectAsStateWithLifecycle()
 
-            val chartButtonsShown = navBackStackEntry == Screens.RoundChart.route
-                    || navBackStackEntry == Screens.Chart.route
+            val chartRoutes =
+                setOf(Screens.RoundChart.route, Screens.Chart.route, Screens.Transactions.route)
+            val chartButtonsShown = navBackStackEntry in chartRoutes
+
             val isDropdownVisible = navBackStackEntry != Screens.Profile.route
             val context = LocalContext.current
             val toastText = stringResource(id = R.string.label_balances_are_empty)
@@ -114,8 +117,7 @@ fun ExTrApp(
                             Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
                         }
                     },
-                    isAddButtonVisible = navBackStackEntry == Screens.RoundChart.route
-                            || navBackStackEntry == Screens.Chart.route,
+                    isAddButtonVisible = chartButtonsShown,
                     isDropdownVisible = isDropdownVisible,
                     selectedCurrency = currentlySelectedCurrency?.currency
                 )
@@ -142,7 +144,7 @@ fun ExTrApp(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screens.Chart.route,
+            startDestination = Screens.Transactions.route,
             modifier = Modifier.padding(innerPadding),
             enterTransition = {
                 slideIntoContainer(
@@ -186,6 +188,12 @@ fun ExTrApp(
                     onEvent = viewModel::onEvent
                 )
             }
+            composable(Screens.Transactions.route) {
+                TransactionsScreenRoute(
+                    selectedType = selectedType,
+                    expenseIncomeViewModel = expenseIncomeViewModel
+                )
+            }
         }
     }
 
@@ -198,6 +206,29 @@ fun ExTrApp(
         expensesIncomeViewModel = expenseIncomeViewModel,
         datePickerViewModel = datePickerViewModel,
         selectedTransactionType = selectedType
+    )
+}
+
+@Composable
+fun TransactionsScreenRoute(
+    selectedType: SelectedTransactionType,
+    expenseIncomeViewModel: ExpensesIncomeViewModel
+) {
+    val uiState by expenseIncomeViewModel.combinedUiState.collectAsStateWithLifecycle()
+
+    val expenseTypesRes = ExpenseTypesRes(LocalCustomColorsPalette.current)
+    val incomeTypesRes = IncomeTypesRes(LocalCustomColorsPalette.current)
+
+    TransactionsScreen(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = AppPadding.ExtraSmall),
+        uiState = if (selectedType == SelectedTransactionType.EXPENSES) uiState.expensesState else uiState.incomeState,
+        resProvider = if (selectedType == SelectedTransactionType.EXPENSES) expenseTypesRes else incomeTypesRes,
+        selectedType = selectedType,
+        onDelete = {
+            expenseIncomeViewModel.deleteTransaction(it)
+        }
     )
 }
 

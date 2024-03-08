@@ -113,7 +113,8 @@ fun ExpensesIncomeBottomSheet(
                     onSaveClicked(bottomSheetAcceptType)
                 },
                 isNameRequired = false,
-                textFieldDefaultText = stringResource(id = R.string.label_add_description)
+                textFieldDefaultText = stringResource(id = R.string.label_add_description),
+                maxTextFieldCharacters = 20
             )
         }
     }

@@ -53,10 +53,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.extr.ui.theme.AppPadding
+import app.extr.ui.theme.md_theme_light_primary
 import app.extr.ui.theme.shapeScheme
 import app.extr.utils.helpers.AnimatedTextWithSign
 import app.extr.utils.helpers.Constants
-import com.example.compose.md_theme_light_primary
+
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

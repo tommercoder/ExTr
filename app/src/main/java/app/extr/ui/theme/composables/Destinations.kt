@@ -14,6 +14,7 @@ import app.extr.R
 
 sealed class Screens(val route : String) {
     object Home : Screens("home_route")
+    object Transactions : Screens("transaction_route")
     object RoundChart : Screens("round_chart_route")
     object Chart : Screens("chart_route")
     object Profile : Screens("profile_route")
@@ -28,6 +29,10 @@ val bottomNavItems = listOf(
     BottomNavItem(
         route = Screens.Home.route,
         iconId = R.drawable.home_icon,
+    ),
+    BottomNavItem(
+        route = Screens.Transactions.route,
+        iconId = R.drawable.list_icon,
     ),
     BottomNavItem(
         route = Screens.RoundChart.route,

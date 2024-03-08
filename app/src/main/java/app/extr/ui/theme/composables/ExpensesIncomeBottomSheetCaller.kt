@@ -1,5 +1,6 @@
 package app.extr.ui.theme.composables
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -44,8 +45,7 @@ fun ExpenseIncomeBottomSheetCaller(
         when {
             combinedUiState.balancesState is UiState.Success
                     && combinedUiState.expenseTypesState is UiState.Success
-                    && combinedUiState.incomeTypesState is UiState.Success ->
-            {
+                    && combinedUiState.incomeTypesState is UiState.Success -> {
                 val balances =
                     (combinedUiState.balancesState as UiState.Success<List<BalanceWithDetails>>).data
                 val balancesDropdownItems = remember(combinedUiState.balancesState) {
@@ -70,8 +70,10 @@ fun ExpenseIncomeBottomSheetCaller(
                         }
                     }
                 }
-
-                val preselectedTypeUi= transactionTypesDropdownItems.firstOrNull { it.id == combinedUiState.preSelectedTransactionTypeId }
+                val context = LocalContext.current
+                val toastText = stringResource(id = R.string.label_expense_bigger_than_balance)
+                val preselectedTypeUi =
+                    transactionTypesDropdownItems.firstOrNull { it.id == combinedUiState.preSelectedTransactionTypeId }
                 ExpensesIncomeBottomSheet(
                     balances = balancesDropdownItems,
                     transactionTypes = transactionTypesDropdownItems,
@@ -104,8 +106,12 @@ fun ExpenseIncomeBottomSheetCaller(
                                 year = it.year
                             )
 
-                        expensesIncomeViewModel.insertTransaction(transaction)
-                        expensesIncomeBottomSheetViewModel.toggleBottomSheet(false)
+                        if (selectedTransactionType == SelectedTransactionType.EXPENSES && transaction.transactionAmount > balance.amount) {
+                            Toast.makeText(context, toastText, Toast.LENGTH_SHORT).show()
+                        } else {
+                            expensesIncomeViewModel.insertTransaction(transaction)
+                            expensesIncomeBottomSheetViewModel.toggleBottomSheet(false)
+                        }
                     },
                     onCalendarClick = {
                         datePickerViewModel.toggleDatePicker(true)

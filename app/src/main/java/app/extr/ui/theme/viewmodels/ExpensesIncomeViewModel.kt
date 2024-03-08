@@ -18,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
@@ -102,8 +103,7 @@ class ExpensesIncomeViewModel(
             viewModelScope.launch {
                 _expenses.value = UiState.Loading
                 //delay(200)
-                expensesIncomeRepository.getExpensesForCurrentCurrency(date)
-                    .distinctUntilChanged().collect {
+                expensesIncomeRepository.getExpensesForCurrentCurrency(date).collectLatest {
                     val newIt = UiState.Success(it)
                     _expenses.value = newIt
 
@@ -172,6 +172,20 @@ class ExpensesIncomeViewModel(
 
                 is Income -> {
                     expensesIncomeRepository.insertIncome(transaction)
+                }
+            }
+        }
+    }
+
+    fun deleteTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            when (transaction) {
+                is Expense -> {
+                    expensesIncomeRepository.deleteExpense(transaction)
+                }
+
+                is Income -> {
+                    expensesIncomeRepository.deleteIncome(transaction)
                 }
             }
         }

@@ -114,7 +114,7 @@ fun ChartScreen(
                     ) {
                         items(
                             items = transactionsByType.take(itemCount),
-                            key = { it -> it.transactionType.id }
+                            key = { it.totalAmount }
                         ) {
                             CategoryCard(
                                 modifier = Modifier.fillMaxWidth(),

@@ -1,9 +1,6 @@
-package com.example.compose
+package app.extr.ui.theme
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-//import androidx.wear.compose.material3.ContentAlpha
-
 
 val md_theme_light_primary = Color(0xFF006399)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)

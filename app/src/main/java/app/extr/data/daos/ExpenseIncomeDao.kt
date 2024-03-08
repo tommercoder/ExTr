@@ -1,6 +1,7 @@
 package app.extr.data.daos
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -20,6 +21,12 @@ interface ExpenseIncomeDao {
 
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun insertIncome(income: Income)
+
+    @Delete
+    suspend fun deleteExpense(expense: Expense)
+
+    @Delete
+    suspend fun deleteIncome(income: Income)
 
     @Transaction
     @RewriteQueriesToDropUnusedColumns

@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 import app.extr.R
 import app.extr.utils.helpers.Constants
-import com.example.compose.md_theme_light_primary
+import app.extr.ui.theme.md_theme_light_primary
 
 data class ResIconColor(
     @DrawableRes val icon: Int,

@@ -165,7 +165,6 @@ fun ReusableDropdownMenu(
     modifier: Modifier = Modifier,
     items: List<DropdownItemUi>,
     onItemSelected: (DropdownItemUi) -> Unit,
-    dropdownContentColor: Color = LocalContentColor.current,
     selectedItem: DropdownItemUi? = null
 ) {
     var selected by remember {
@@ -192,13 +191,13 @@ fun ReusableDropdownMenu(
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent
             ),
-            textStyle = MaterialTheme.typography.bodyMedium,
+            textStyle = MaterialTheme.typography.bodyMedium,//  .copy(color = MaterialTheme.colorScheme.inversePrimary),
             readOnly = true,
             leadingIcon = {
                 Icon(
                     painterResource(id = selected.icon),
                     contentDescription = null,
-                    tint = dropdownContentColor
+                    //tint = MaterialTheme.colorScheme.onPrimary
                 )
             },
             trailingIcon = {
@@ -207,7 +206,8 @@ fun ReusableDropdownMenu(
                         ImageVector.vectorResource(id = R.drawable.expand_less_icon)
                     else
                         ImageVector.vectorResource(id = R.drawable.expand_more_icon),
-                    contentDescription = null
+                    contentDescription = null,
+                    //tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         )
@@ -223,9 +223,6 @@ fun ReusableDropdownMenu(
                 DropdownMenuItem(
                     modifier = Modifier
                         .clip(MaterialTheme.shapeScheme.large),
-                    colors = MenuDefaults.itemColors(
-
-                    ),
                     onClick = {
                         onItemSelected(item)
                         selected = item

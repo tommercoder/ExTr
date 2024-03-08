@@ -65,6 +65,7 @@
     <string name="label_day">Day</string>
     <string name="label_week">Week</string>
     <string name="label_month">Month</string>
+    <string name="label_expense_bigger_than_balance">Expense with higher value than a balance can\'t be added</string>
 
     <!--MONTHS-->
     <string name="month_jan">Jan</string>
