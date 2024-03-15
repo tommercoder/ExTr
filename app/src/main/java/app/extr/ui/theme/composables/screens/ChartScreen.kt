@@ -1,13 +1,8 @@
 package app.extr.ui.theme.composables.screens
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,35 +22,31 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.extr.R
 import app.extr.data.types.TransactionWithDetails
 import app.extr.ui.theme.AppPadding
-import app.extr.ui.theme.ExTrTheme
 import app.extr.ui.theme.animations.CustomCircularProgressIndicator
 import app.extr.ui.theme.composables.reusablecomponents.CategoryCard
+import app.extr.ui.theme.composables.reusablecomponents.ErrorScreen
 import app.extr.ui.theme.composables.reusablecomponents.NoDataYet
 import app.extr.ui.theme.composables.reusablecomponents.SelectedTransactionType
 import app.extr.ui.theme.composables.reusablecomponents.TimePeriodCard
 import app.extr.ui.theme.viewmodels.TimePeriodAmount
 import app.extr.ui.theme.viewmodels.TransactionByType
+import app.extr.ui.theme.viewmodels.TransactionUiEvent
 import app.extr.utils.helpers.UiState
 import app.extr.utils.helpers.resproviders.ResProvider
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChartScreen(
     uiState: UiState<List<TransactionWithDetails>>,
@@ -64,6 +54,7 @@ fun ChartScreen(
     timePeriodAmount: TimePeriodAmount,
     selectedType: SelectedTransactionType,
     resProvider: ResProvider,
+    onEvent: (TransactionUiEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -137,7 +128,10 @@ fun ChartScreen(
         }
 
         is UiState.Error -> {
-
+            ErrorScreen(
+                onRefresh = { onEvent(TransactionUiEvent.Refresh) },
+                resourceId = uiState.resourceId
+            )
         }
     }
 }

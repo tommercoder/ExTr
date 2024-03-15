@@ -109,16 +109,4 @@ fun TopBar(
             }
         }
     )
-    when (uiState) {
-        is UiState.Loading -> {
-
-        }
-
-        is UiState.Success -> {
-
-        }
-
-        is UiState.Error -> {}
-    }
-
 }

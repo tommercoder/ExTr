@@ -56,10 +56,28 @@ class ExpensesIncomeRepositoryImpl(
 
     override suspend fun deleteExpense(expense: Expense) {
         expenseIncomeDao.deleteExpense(expense)
+
+        var balance = getBalanceById(expense.balanceId)
+        if (balance != null) {
+            val newAmount = balance.amount + expense.transactionAmount
+            balance = balance.copy(
+                amount = newAmount
+            )
+            balanceDao.update(balance)
+        }
     }
 
     override suspend fun deleteIncome(income: Income) {
         expenseIncomeDao.deleteIncome(income)
+
+        var balance = getBalanceById(income.balanceId)
+        if (balance != null) {
+            val newAmount = balance.amount - income.transactionAmount
+            balance = balance.copy(
+                amount = newAmount
+            )
+            balanceDao.update(balance)
+        }
     }
 
     override fun getExpensesForCurrentCurrency(date: Date): Flow<List<ExpenseWithDetails>> {

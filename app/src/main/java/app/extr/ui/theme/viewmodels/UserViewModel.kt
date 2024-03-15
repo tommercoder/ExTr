@@ -2,6 +2,7 @@ package app.extr.ui.theme.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.extr.R
 import app.extr.data.repositories.UserRepository
 import app.extr.data.types.UiMode
 import app.extr.data.types.User
@@ -9,6 +10,7 @@ import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 sealed class UserUiEvent {
@@ -47,11 +49,11 @@ class UserViewModel(
         viewModelScope.launch {
             _user.value = UiState.Loading
             try {
-                userRepository.getUser().collect { user ->
+                userRepository.getUser().collectLatest { user ->
                     _user.value = UiState.Success(user)
                 }
             } catch (e: Exception) {
-                //todo: handle errors
+                _user.value = UiState.Error(R.string.error_user_couldnt_load)
             }
         }
     }

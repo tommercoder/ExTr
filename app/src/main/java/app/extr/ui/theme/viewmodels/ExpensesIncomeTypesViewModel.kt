@@ -8,6 +8,7 @@ import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class ExpensesIncomeTypesViewModel(
@@ -28,10 +29,10 @@ class ExpensesIncomeTypesViewModel(
         viewModelScope.launch {
             _expenseTypes.value = UiState.Loading
             try {
-                ExpensesIncomeTypesRepository.getAllExpenseTypes().collect {
+                ExpensesIncomeTypesRepository.getAllExpenseTypes().collectLatest {
                     _expenseTypes.value = UiState.Success(it)
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
 
             }
         }
@@ -41,7 +42,7 @@ class ExpensesIncomeTypesViewModel(
         viewModelScope.launch {
             _incomeTypes.value = UiState.Loading
             try {
-                ExpensesIncomeTypesRepository.getAllIncomeTypes().collect {
+                ExpensesIncomeTypesRepository.getAllIncomeTypes().collectLatest {
                     _incomeTypes.value = UiState.Success(it)
                 }
             } catch (e: Exception) {

@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectIndexed
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class MoneyTypesViewModel(
@@ -26,10 +27,10 @@ class MoneyTypesViewModel(
         viewModelScope.launch {
             _moneyTypes.value = UiState.Loading
             try {
-                moneyTypeRepository.getAllMoneyTypes().collect {
+                moneyTypeRepository.getAllMoneyTypes().collectLatest {
                     _moneyTypes.value = UiState.Success(it)
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
 
             }
         }

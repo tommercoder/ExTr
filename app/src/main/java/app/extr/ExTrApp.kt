@@ -57,6 +57,7 @@ import app.extr.ui.theme.composables.reusablecomponents.SelectedTransactionType
 import app.extr.ui.theme.composables.screens.TransactionsScreen
 import app.extr.ui.theme.mappers.DropdownItemUi
 import app.extr.ui.theme.mappers.toDropdownItem
+import app.extr.ui.theme.viewmodels.BalanceUiEvent
 import app.extr.ui.theme.viewmodels.BalancesViewModel
 import app.extr.ui.theme.viewmodels.CurrenciesViewModel
 import app.extr.ui.theme.viewmodels.DatePickerViewModel
@@ -110,6 +111,8 @@ fun ExTrApp(
                     uiState = uiState,
                     onItemSelected = { currency ->
                         viewModel.selectCurrency(currencyId = currency.currencyId)
+
+                        //expenseIncomeViewModel.loadTransactions(datePickerViewModel.dateState.value.date) // workaround
                     },
                     onAddClicked = {
                         val opened = expensesIncomeBottomSheetViewModel.toggleBottomSheet(true)
@@ -226,9 +229,7 @@ fun TransactionsScreenRoute(
         uiState = if (selectedType == SelectedTransactionType.EXPENSES) uiState.expensesState else uiState.incomeState,
         resProvider = if (selectedType == SelectedTransactionType.EXPENSES) expenseTypesRes else incomeTypesRes,
         selectedType = selectedType,
-        onDelete = {
-            expenseIncomeViewModel.deleteTransaction(it)
-        }
+        onEvent = expenseIncomeViewModel::onEvent
     )
 }
 
@@ -251,6 +252,7 @@ fun ChartScreenRoute(
         timePeriodAmount = if (selectedType == SelectedTransactionType.EXPENSES) uiState.timePeriodAmountExpensesState else uiState.timePeriodAmountIncomeState,
         resProvider = if (selectedType == SelectedTransactionType.EXPENSES) expenseTypesRes else incomeTypesRes,
         selectedType = selectedType,
+        onEvent = expenseIncomeViewModel::onEvent
     )
 }
 
@@ -275,13 +277,10 @@ fun RoundChartScreenRoute(
         onCardClicked = {
             onCardClicked(it)
         },
-        onRefresh = {
-
-        }
+        onEvent = expenseIncomeViewModel::onEvent
     )
 }
 
-//todo: pass only ui states and callback here
 @Composable
 fun HomeScreenRoute() {
     val viewModel: BalancesViewModel = viewModel(factory = ViewModelsProvider.Factory)
@@ -319,17 +318,10 @@ fun HomeScreenRoute() {
                 Toast.makeText(context, toastTextCantAddBalance, Toast.LENGTH_SHORT).show()
             }
         },
-        onDeleteBalanceClicked = { balanceId ->
-            viewModel.deleteBalance(balanceId)
-        },
-        onRefresh = {
-            viewModel.refreshData()
-        },
-
-        )
+        onEvent = viewModel::onEvent
+    )
 
     if (isAddBalanceSheetShown && isBottomSheetDataValid) {
-        //todo: remember seems to be not needed
         val currencies = remember(currenciesUiState) {
             (currenciesUiState as UiState.Success<List<Currency>>).data
         }
@@ -350,7 +342,7 @@ fun HomeScreenRoute() {
                 if (viewModel.doesBalanceExist(balance)) {
                     Toast.makeText(context, toastTextBalanceExists, Toast.LENGTH_SHORT).show()
                 } else {
-                    viewModel.addBalance(balance)
+                    viewModel.onEvent(BalanceUiEvent.Add(balance))
                     isAddBalanceSheetShown = false
                 }
             },

@@ -13,11 +13,15 @@ import app.extr.data.types.MoneyType
 import app.extr.data.types.Transaction
 import app.extr.data.types.TransactionType
 import app.extr.data.types.TransactionWithDetails
+import app.extr.data.types.UiMode
+import app.extr.data.types.User
 import app.extr.utils.helpers.UiState
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -26,6 +30,11 @@ import kotlinx.coroutines.launch
 import java.time.YearMonth
 import java.util.Calendar
 import kotlin.time.Duration.Companion.days
+
+sealed class TransactionUiEvent {
+    object Refresh : TransactionUiEvent()
+    data class Delete(val transaction: Transaction) : TransactionUiEvent()
+}
 
 data class CombinedExpensesIncomeState(
     val expensesState: UiState<List<TransactionWithDetails>>,
@@ -51,8 +60,7 @@ data class TimePeriodAmount(
 )
 
 class ExpensesIncomeViewModel(
-    private val expensesIncomeRepository: ExpensesIncomeRepository,
-    private val balancesRepository: BalancesRepository
+    private val expensesIncomeRepository: ExpensesIncomeRepository
 ) : ViewModel() {
     private val _expenses = MutableStateFlow<UiState<List<TransactionWithDetails>>>(UiState.Loading)
     private val _income = MutableStateFlow<UiState<List<TransactionWithDetails>>>(UiState.Loading)
@@ -60,6 +68,7 @@ class ExpensesIncomeViewModel(
     private val _incomeByCategories = MutableStateFlow<List<TransactionByType>>(emptyList())
     private val _timePeriodAmountExpenses = MutableStateFlow<TimePeriodAmount>(TimePeriodAmount())
     private val _timePeriodAmountIncome = MutableStateFlow<TimePeriodAmount>(TimePeriodAmount())
+    private var m_Date: Date = Date(0, 0)
 
     val combinedUiState: StateFlow<CombinedExpensesIncomeState> = combine(
         _expenses,
@@ -91,6 +100,60 @@ class ExpensesIncomeViewModel(
     )
 
     init {
+        loadWithCurrentDate()
+    }
+
+    fun insertTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            when (transaction) {
+                is Expense -> {
+                    expensesIncomeRepository.insertExpense(transaction)
+                }
+
+                is Income -> {
+                    expensesIncomeRepository.insertIncome(transaction)
+                }
+            }
+        }
+    }
+
+    fun loadTransactions(date: Date) {
+        m_Date = date
+        loadExpenses(date)
+        loadIncome(date)
+    }
+
+    fun onEvent(event: TransactionUiEvent) {
+        when (event) {
+            is TransactionUiEvent.Refresh -> {
+                refresh()
+            }
+
+            is TransactionUiEvent.Delete -> {
+                deleteTransaction(event.transaction)
+            }
+        }
+    }
+
+    private fun refresh() {
+        loadWithCurrentDate()
+    }
+
+    private fun deleteTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            when (transaction) {
+                is Expense -> {
+                    expensesIncomeRepository.deleteExpense(transaction)
+                }
+
+                is Income -> {
+                    expensesIncomeRepository.deleteIncome(transaction)
+                }
+            }
+        }
+    }
+
+    private fun loadWithCurrentDate() {
         val calendar = Calendar.getInstance()
         val month = calendar.get(Calendar.MONTH)
         val year = calendar.get(Calendar.YEAR)
@@ -104,12 +167,15 @@ class ExpensesIncomeViewModel(
                 _expenses.value = UiState.Loading
                 //delay(200)
                 expensesIncomeRepository.getExpensesForCurrentCurrency(date).collectLatest {
-                    val newIt = UiState.Success(it)
-                    _expenses.value = newIt
+                    if (m_Date == date) { // a workaround for an extra call with a wrong date done by ROOM
+                        val newIt = UiState.Success(it)
+                        _expenses.value = newIt
 
-                    val transactionsByType = sortTransactionsByTypes(newIt.data)
-                    _expensesByCategories.value = transactionsByType
-                    _timePeriodAmountExpenses.value = getTimePeriodAmount(transactionsByType, date)
+                        val transactionsByType = sortTransactionsByTypes(newIt.data)
+                        _expensesByCategories.value = transactionsByType
+                        _timePeriodAmountExpenses.value =
+                            getTimePeriodAmount(transactionsByType, date)
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -121,14 +187,16 @@ class ExpensesIncomeViewModel(
         try {
             viewModelScope.launch {
                 _income.value = UiState.Loading
-                expensesIncomeRepository.getIncomesForCurrentCurrency(date)
-                    .distinctUntilChanged().collect {
-                    val newIt = UiState.Success(it)
-                    _income.value = newIt
+                expensesIncomeRepository.getIncomesForCurrentCurrency(date).collectLatest {
+                    if (m_Date == date) { // a workaround for an extra call with a wrong date done by ROOM
+                        val newIt = UiState.Success(it)
+                        _income.value = newIt
 
-                    val transactionsByType = sortTransactionsByTypes(newIt.data)
-                    _incomeByCategories.value = transactionsByType
-                    _timePeriodAmountIncome.value = getTimePeriodAmount(transactionsByType, date)
+                        val transactionsByType = sortTransactionsByTypes(newIt.data)
+                        _incomeByCategories.value = transactionsByType
+                        _timePeriodAmountIncome.value =
+                            getTimePeriodAmount(transactionsByType, date)
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -161,38 +229,5 @@ class ExpensesIncomeViewModel(
         val byDay = byMonth / yearMonth.lengthOfMonth()
 
         return TimePeriodAmount(byDay, byWeek, byMonth)
-    }
-
-    fun insertTransaction(transaction: Transaction) {
-        viewModelScope.launch {
-            when (transaction) {
-                is Expense -> {
-                    expensesIncomeRepository.insertExpense(transaction)
-                }
-
-                is Income -> {
-                    expensesIncomeRepository.insertIncome(transaction)
-                }
-            }
-        }
-    }
-
-    fun deleteTransaction(transaction: Transaction) {
-        viewModelScope.launch {
-            when (transaction) {
-                is Expense -> {
-                    expensesIncomeRepository.deleteExpense(transaction)
-                }
-
-                is Income -> {
-                    expensesIncomeRepository.deleteIncome(transaction)
-                }
-            }
-        }
-    }
-
-    fun loadTransactions(date: Date) {
-        loadExpenses(date)
-        loadIncome(date)
     }
 }

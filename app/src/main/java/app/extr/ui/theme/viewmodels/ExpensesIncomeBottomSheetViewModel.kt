@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -81,7 +82,7 @@ class ExpensesIncomeBottomSheetViewModel(
         viewModelScope.launch {
             _balancesData.value = UiState.Loading
             try {
-                balancesRepository.getBalancesForCurrentCurrency().collect { balances ->
+                balancesRepository.getBalancesForCurrentCurrency().collectLatest { balances ->
                     _balancesData.value =
                         UiState.Success(balances)
                 }
@@ -95,7 +96,7 @@ class ExpensesIncomeBottomSheetViewModel(
         viewModelScope.launch {
             _expenseTypes.value = UiState.Loading
             try {
-                expensesIncomeTypesRepository.getAllExpenseTypes().collect {
+                expensesIncomeTypesRepository.getAllExpenseTypes().collectLatest {
                     _expenseTypes.value = UiState.Success(it)
                 }
             } catch (e: Exception) {
@@ -108,7 +109,7 @@ class ExpensesIncomeBottomSheetViewModel(
         viewModelScope.launch {
             _incomeTypes.value = UiState.Loading
             try {
-                expensesIncomeTypesRepository.getAllIncomeTypes().collect {
+                expensesIncomeTypesRepository.getAllIncomeTypes().collectLatest {
                     _incomeTypes.value = UiState.Success(it)
                 }
             } catch (e: Exception) {

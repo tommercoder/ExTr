@@ -134,7 +134,9 @@ fun CurrenciesDropDownMenu(
                         )
                     },
                     onClick = {
-                        onItemSelected(item)
+                        if(item != selectedItem) {
+                            onItemSelected(item)
+                        }
                         expanded = false
 
                         if (selectedPassed == null) {

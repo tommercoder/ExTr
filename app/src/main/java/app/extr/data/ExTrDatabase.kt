@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 @Database(
     entities = [MoneyType::class, Currency::class, User::class, Balance::class,
         UsedCurrency::class, ExpenseType::class, IncomeType::class, Expense::class, Income::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(UiModeConverter::class)

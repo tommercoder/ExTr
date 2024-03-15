@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -48,6 +49,7 @@ import app.extr.ui.theme.ExTrTheme
 import app.extr.ui.theme.shapeScheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun CustomKeyboard(
@@ -194,7 +196,7 @@ fun CustomKeyboard(
                         modifier = Modifier
                             .size(squareSize)
                             .padding(AppPadding.ExtraSmall),
-                        icon = Icons.Rounded.Email,
+                        icon = Icons.Rounded.DateRange,
                         onClicked = { onCalendarClick() }
                     )
                 }

@@ -26,8 +26,8 @@ object ViewModelsProvider {
         }
         initializer {
             ExpensesIncomeViewModel(
-                ExTrApplication.container.ExpensesIncomeRepository,
-                ExTrApplication.container.balancesRepository)
+                ExTrApplication.container.ExpensesIncomeRepository
+            )
         }
         initializer {
             ExpensesIncomeBottomSheetViewModel(

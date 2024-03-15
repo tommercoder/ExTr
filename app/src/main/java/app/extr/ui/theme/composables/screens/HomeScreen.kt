@@ -60,6 +60,8 @@ import app.extr.ui.theme.composables.reusablecomponents.ErrorScreen
 import app.extr.ui.theme.composables.reusablecomponents.NoDataYet
 import app.extr.ui.theme.composables.reusablecomponents.PlusButton
 import app.extr.ui.theme.composables.reusablecomponents.RoundedCard
+import app.extr.ui.theme.viewmodels.BalanceUiEvent
+import app.extr.ui.theme.viewmodels.TransactionUiEvent
 import app.extr.utils.helpers.AnimatedText
 import app.extr.utils.helpers.AnimatedTextWithSign
 import app.extr.utils.helpers.UiState
@@ -74,9 +76,8 @@ fun HomeScreen(
     totalBalance: Double,
     isAddBalanceEnabled: Boolean,
     moneyTypesRes: MoneyTypesRes,
-    onAddBalanceClicked: () -> Unit,
-    onDeleteBalanceClicked: (Balance) -> Unit,
-    onRefresh: () -> Unit
+    onEvent: (BalanceUiEvent) -> Unit,
+    onAddBalanceClicked: () -> Unit
 ) {
     when (uiState) {
         is UiState.Loading -> {
@@ -148,7 +149,7 @@ fun HomeScreen(
                 if (showDeleteDialog) {
                     DeleteBalanceDialog(
                         onDeleteClicked = {
-                            onDeleteBalanceClicked(longPressedBalance!!)
+                            onEvent(BalanceUiEvent.Delete(longPressedBalance!!))
                         },
                         onDismissed = { showDeleteDialog = false }
                     )
@@ -159,7 +160,7 @@ fun HomeScreen(
 
         is UiState.Error -> {
             ErrorScreen(
-                onRefresh = { onRefresh() },
+                onRefresh = { onEvent(BalanceUiEvent.Refresh)  },
                 resourceId = uiState.resourceId
             )
         }

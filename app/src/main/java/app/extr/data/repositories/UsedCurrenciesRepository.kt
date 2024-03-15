@@ -5,15 +5,16 @@ import app.extr.data.types.UsedCurrency
 import app.extr.data.types.UsedCurrencyDetails
 import kotlinx.coroutines.flow.Flow
 
-interface UsedCurrenciesRepository{
-    suspend fun insertIfNotExists(usedCurrency: UsedCurrency) //OnConflictStrategy.IGNORE
+interface UsedCurrenciesRepository {
+    suspend fun insertIfNotExists(usedCurrency: UsedCurrency) //OnConflictStrategy.REPLACE
     suspend fun delete(usedCurrencyId: Int)
     suspend fun selectCurrency(currencyId: Int)
-    fun getUsedCurrencies() : Flow<List<UsedCurrencyDetails>>
-    fun getCurrentlySelectedUsedCurrency() : Flow<UsedCurrencyDetails>
+    fun getUsedCurrencies(): Flow<List<UsedCurrencyDetails>>
+    fun getCurrentlySelectedUsedCurrency(): Flow<UsedCurrencyDetails>
 }
 
-class UsedCurrenciesRepositoryImpl(private val usedCurrencyDao: UsedCurrencyDao) : UsedCurrenciesRepository {
+class UsedCurrenciesRepositoryImpl(private val usedCurrencyDao: UsedCurrencyDao) :
+    UsedCurrenciesRepository {
     override suspend fun insertIfNotExists(usedCurrency: UsedCurrency) {
         usedCurrencyDao.insert(usedCurrency)
     }
@@ -23,10 +24,10 @@ class UsedCurrenciesRepositoryImpl(private val usedCurrencyDao: UsedCurrencyDao)
     }
 
     override fun getUsedCurrencies(): Flow<List<UsedCurrencyDetails>> {
-         return usedCurrencyDao.getUsedCurrencies()
+        return usedCurrencyDao.getUsedCurrencies()
     }
 
-    override suspend fun selectCurrency(currencyId: Int){
+    override suspend fun selectCurrency(currencyId: Int) {
         usedCurrencyDao.updateIndices(currencyId)
     }
 

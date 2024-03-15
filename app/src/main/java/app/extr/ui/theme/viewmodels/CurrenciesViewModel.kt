@@ -12,6 +12,7 @@ import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class CurrenciesViewModel(
@@ -24,10 +25,10 @@ class CurrenciesViewModel(
         viewModelScope.launch {
             _currencies.value = UiState.Loading
             try {
-                currenciesRepository.getAllCurrencies().collect {
+                currenciesRepository.getAllCurrencies().collectLatest {
                     _currencies.value = UiState.Success(it)
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
 
             }
         }

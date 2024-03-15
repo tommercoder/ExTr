@@ -47,12 +47,13 @@
     <string name="error_balances_couldnt_load">Couldn\'t load balances from the database.</string>
     <string name="error_transaction_types_couldnt_load">Couldn\'t load transaction types from the database.</string>
     <string name="error_profile_couldnt_load">Couldn\'t load profile info from the database.</string>
+    <string name="error_expenses_couldnt_load">Couldn\'t load expenses from the database</string>
+    <string name="error_income_couldnt_load">Couldn\'t load income from the database</string>
+    <string name="error_user_couldnt_load">Couldn\'t load user from the database</string>
 
     <!--CHART SCREENS-->
     <string name="button_expenses">Expenses</string>
     <string name="button_income">Income</string>
-    <string name="error_expenses_couldnt_load">Couldn\'t load expenses from the database</string>
-    <string name="error_income_couldnt_load">Couldn\'t load income from the database</string>
     <string name="label_expense">Expense</string>
     <string name="label_income">Income</string>
     <string name="label_add_description">Add description...</string>

@@ -6,11 +6,19 @@ import app.extr.R
 import app.extr.data.repositories.BalancesRepository
 import app.extr.data.types.Balance
 import app.extr.data.types.BalanceWithDetails
+import app.extr.data.types.Transaction
 import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+
+sealed class BalanceUiEvent {
+    object Refresh : BalanceUiEvent()
+    data class Delete(val balance: Balance) : BalanceUiEvent()
+    data class Add(val balance: Balance) : BalanceUiEvent()
+}
 
 class BalancesViewModel(
     private val balancesRepository: BalancesRepository
@@ -42,13 +50,29 @@ class BalancesViewModel(
         }
     }
 
-    fun addBalance(balance: Balance) {
+    fun onEvent(event: BalanceUiEvent) {
+        when (event) {
+            is BalanceUiEvent.Refresh -> {
+                refreshData()
+            }
+
+            is BalanceUiEvent.Delete -> {
+                deleteBalance(event.balance)
+            }
+
+            is BalanceUiEvent.Add -> {
+                addBalance(event.balance)
+            }
+        }
+    }
+
+    private fun addBalance(balance: Balance) {
         viewModelScope.launch {
             balancesRepository.insert(balance)
         }
     }
 
-    fun deleteBalance(balance: Balance) {
+    private fun deleteBalance(balance: Balance) {
         viewModelScope.launch {
             balancesRepository.delete(balance)
         }
@@ -58,7 +82,7 @@ class BalancesViewModel(
         viewModelScope.launch {
             _balances.value = UiState.Loading
             try {
-                balancesRepository.getBalancesForCurrentCurrency().collect { balances ->
+                balancesRepository.getBalancesForCurrentCurrency().collectLatest { balances ->
                     _balances.value =
                         UiState.Success(balances)
 

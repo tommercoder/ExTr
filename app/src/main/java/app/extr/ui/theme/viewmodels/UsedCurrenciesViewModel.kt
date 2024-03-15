@@ -12,6 +12,7 @@ import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class UsedCurrenciesViewModel(
@@ -35,36 +36,23 @@ class UsedCurrenciesViewModel(
         viewModelScope.launch {
             _usedCurrencies.value = UiState.Loading
             try {
-                usedCurrenciesRepository.getUsedCurrencies().collect {
+                usedCurrenciesRepository.getUsedCurrencies().collectLatest {
                     _usedCurrencies.value =
                         UiState.Success(it)
                 }
-            } catch (e: Exception) {
-                Log.e("YourViewModel", "Error fetching balances", e)
+            } catch (_: Exception) {
+
             }
         }
     }
 
     private fun loadCurrentlySelectedCurrency() {
         viewModelScope.launch {
-            usedCurrenciesRepository.getCurrentlySelectedUsedCurrency().collect { selected ->
+            usedCurrenciesRepository.getCurrentlySelectedUsedCurrency().collectLatest { selected ->
                 _currentlySelectedCurrency.value = selected
             }
         }
     }
-
-//    fun getSelectedCurrency(): Currency? {
-//        var currency: Currency? = null
-//        val state = _usedCurrencies.value
-//        if (state is UiState.Success) {
-//            if (state.data.isNotEmpty()) {
-//                val currentUsedCurrency = state.data.maxBy { it.usedCurrency.selectionIndex }
-//                currency = currentUsedCurrency.currency
-//            }
-//        }
-//
-//        return currency
-//    }
 
     fun selectCurrency(currencyId: Int) {
         viewModelScope.launch {
