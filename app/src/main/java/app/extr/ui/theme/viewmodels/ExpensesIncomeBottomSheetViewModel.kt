@@ -7,12 +7,12 @@ import app.extr.data.repositories.BalancesRepository
 import app.extr.data.repositories.ExpensesIncomeTypesRepository
 import app.extr.data.types.Balance
 import app.extr.data.types.BalanceWithDetails
-import app.extr.data.types.TransactionType
+import app.extr.utils.helpers.BalanceWithDetailsState
+import app.extr.utils.helpers.TransactionTypeState
 import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -20,9 +20,9 @@ import kotlinx.coroutines.launch
 
 data class CombinedUiState(
     val bottomSheetVisible: Boolean,
-    val balancesState: UiState<List<BalanceWithDetails>>,
-    val expenseTypesState: UiState<List<TransactionType>>,
-    val incomeTypesState: UiState<List<TransactionType>>,
+    val balancesState: BalanceWithDetailsState,
+    val expenseTypesState: TransactionTypeState,
+    val incomeTypesState: TransactionTypeState,
     val preSelectedTransactionTypeId: Int? = null
 )
 
@@ -32,9 +32,9 @@ class ExpensesIncomeBottomSheetViewModel(
 ) : ViewModel() {
 
     private val _bottomSheetVisible = MutableStateFlow(false)
-    private val _balancesData = MutableStateFlow<UiState<List<BalanceWithDetails>>>(UiState.Loading)
-    private val _expenseTypes = MutableStateFlow<UiState<List<TransactionType>>>(UiState.Loading)
-    private val _incomeTypes = MutableStateFlow<UiState<List<TransactionType>>>(UiState.Loading)
+    private val _balancesData = MutableStateFlow<BalanceWithDetailsState>(UiState.Loading)
+    private val _expenseTypes = MutableStateFlow<TransactionTypeState>(UiState.Loading)
+    private val _incomeTypes = MutableStateFlow<TransactionTypeState>(UiState.Loading)
     private val _preSelectedTransactionTypeId = MutableStateFlow<Int?>(null)
 
     val combinedUiState: StateFlow<CombinedUiState> = combine(

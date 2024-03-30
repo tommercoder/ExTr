@@ -1,66 +1,36 @@
 package app.extr.ui.theme.composables.reusablecomponents
 
-import android.util.Log
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.layout
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontVariation.width
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import app.extr.R
-import app.extr.ui.theme.mappers.DropdownItemUi
 import app.extr.data.types.Currency
+import app.extr.ui.theme.mappers.DropdownItemUi
 import app.extr.ui.theme.shapeScheme
 import app.extr.utils.helpers.crop
 
 
-//todo: move textfield to common composable
-//todo: Create common item?
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrenciesDropDownMenu(
@@ -193,13 +163,12 @@ fun ReusableDropdownMenu(
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent
             ),
-            textStyle = MaterialTheme.typography.bodyMedium,//  .copy(color = MaterialTheme.colorScheme.inversePrimary),
+            textStyle = MaterialTheme.typography.bodyMedium,
             readOnly = true,
             leadingIcon = {
                 Icon(
                     painterResource(id = selected.icon),
-                    contentDescription = null,
-                    //tint = MaterialTheme.colorScheme.onPrimary
+                    contentDescription = null
                 )
             },
             trailingIcon = {
@@ -208,8 +177,7 @@ fun ReusableDropdownMenu(
                         ImageVector.vectorResource(id = R.drawable.expand_less_icon)
                     else
                         ImageVector.vectorResource(id = R.drawable.expand_more_icon),
-                    contentDescription = null,
-                    //tint = MaterialTheme.colorScheme.onPrimary
+                    contentDescription = null
                 )
             }
         )
@@ -219,7 +187,6 @@ fun ReusableDropdownMenu(
             onDismissRequest = { expanded = false },
             modifier = Modifier
                 .crop(vertical = 1.dp)
-                //.background(color = selected.color),
         ) {
             items.forEach { item ->
                 DropdownMenuItem(

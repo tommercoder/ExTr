@@ -34,7 +34,7 @@
     <string name="label_add_custom_name">Add custom name…</string>
     <string name="label_balance">Balance</string>
     <string name="label_delete_balance">Delete balance</string>
-    <string name="label_delete_balance_confirmation">Are you sure you want to delete this balance?\nAll the related expenses/incomes will be deleted as well.</string> <!--todo: change to accept an argument-->
+    <string name="label_delete_balance_confirmation">Are you sure you want to delete this balance?\nAll the related expenses/incomes will be deleted as well.</string>
     <string name="header_total_balance">Total balance</string>
     <string name="label_no_balances">No balances yet</string>
     <string name="label_create_balance_hint">Create a new balance by pressing the "plus" button below</string>

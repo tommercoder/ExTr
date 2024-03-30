@@ -15,8 +15,6 @@ interface BalanceDao {
 
     @Insert
     suspend fun insert(balance: Balance)
-
-    //@Query("DELETE FROM balances WHERE balanceId = :balanceId") //todo: add used_currencies logic here
     @Delete
     suspend fun delete(balance: Balance)
 

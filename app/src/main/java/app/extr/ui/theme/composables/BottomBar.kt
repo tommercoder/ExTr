@@ -34,7 +34,7 @@ fun BottomBar(navController: NavHostController) {
                     )
                 },
                 onClick = { navController.navigateSingleTopTo(screen.route) },
-                selected = screen.route == navBackStackEntry, // handle parents later(so when some screen from screens open, what should happen?
+                selected = screen.route == navBackStackEntry,
                 modifier = Modifier.background(Color.Transparent)
             )
         }

@@ -3,7 +3,6 @@ package app.extr.ui.theme.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.extr.R
-import app.extr.data.repositories.BalancesRepository
 import app.extr.data.repositories.ExpensesIncomeRepository
 import app.extr.data.types.Balance
 import app.extr.data.types.Currency
@@ -13,23 +12,17 @@ import app.extr.data.types.MoneyType
 import app.extr.data.types.Transaction
 import app.extr.data.types.TransactionType
 import app.extr.data.types.TransactionWithDetails
-import app.extr.data.types.UiMode
-import app.extr.data.types.User
+import app.extr.utils.helpers.TransactionWithDetailsState
 import app.extr.utils.helpers.UiState
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.YearMonth
 import java.util.Calendar
-import kotlin.time.Duration.Companion.days
 
 sealed class TransactionUiEvent {
     object Refresh : TransactionUiEvent()
@@ -37,8 +30,8 @@ sealed class TransactionUiEvent {
 }
 
 data class CombinedExpensesIncomeState(
-    val expensesState: UiState<List<TransactionWithDetails>>,
-    val incomeState: UiState<List<TransactionWithDetails>>,
+    val expensesState: TransactionWithDetailsState,
+    val incomeState: TransactionWithDetailsState,
     val expensesByCategoriesState: List<TransactionByType>,
     val incomeByCategoriesState: List<TransactionByType>,
     val timePeriodAmountExpensesState: TimePeriodAmount,
@@ -62,8 +55,8 @@ data class TimePeriodAmount(
 class ExpensesIncomeViewModel(
     private val expensesIncomeRepository: ExpensesIncomeRepository
 ) : ViewModel() {
-    private val _expenses = MutableStateFlow<UiState<List<TransactionWithDetails>>>(UiState.Loading)
-    private val _income = MutableStateFlow<UiState<List<TransactionWithDetails>>>(UiState.Loading)
+    private val _expenses = MutableStateFlow<TransactionWithDetailsState>(UiState.Loading)
+    private val _income = MutableStateFlow<TransactionWithDetailsState>(UiState.Loading)
     private val _expensesByCategories = MutableStateFlow<List<TransactionByType>>(emptyList())
     private val _incomeByCategories = MutableStateFlow<List<TransactionByType>>(emptyList())
     private val _timePeriodAmountExpenses = MutableStateFlow<TimePeriodAmount>(TimePeriodAmount())
@@ -79,8 +72,8 @@ class ExpensesIncomeViewModel(
         _timePeriodAmountIncome
     ) { array: Array<Any> ->
         CombinedExpensesIncomeState(
-            expensesState = array[0] as UiState<List<TransactionWithDetails>>,
-            incomeState = array[1] as UiState<List<TransactionWithDetails>>,
+            expensesState = array[0] as TransactionWithDetailsState,
+            incomeState = array[1] as TransactionWithDetailsState,
             expensesByCategoriesState = array[2] as List<TransactionByType>,
             incomeByCategoriesState = array[3] as List<TransactionByType>,
             timePeriodAmountExpensesState = array[4] as TimePeriodAmount,

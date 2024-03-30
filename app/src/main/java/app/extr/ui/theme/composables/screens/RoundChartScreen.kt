@@ -30,7 +30,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.extr.R
 import app.extr.data.types.TransactionType
-import app.extr.data.types.TransactionWithDetails
 import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.animations.CustomCircularProgressIndicator
 import app.extr.ui.theme.composables.reusablecomponents.ErrorScreen
@@ -41,6 +40,7 @@ import app.extr.ui.theme.viewmodels.TransactionByType
 import app.extr.ui.theme.viewmodels.TransactionUiEvent
 import app.extr.utils.helpers.AnimatedTextWithSign
 import app.extr.utils.helpers.Constants
+import app.extr.utils.helpers.TransactionWithDetailsState
 import app.extr.utils.helpers.UiState
 import app.extr.utils.helpers.resproviders.ResProvider
 import kotlinx.coroutines.launch
@@ -48,7 +48,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RoundChartScreen(
     modifier: Modifier = Modifier,
-    uiState: UiState<List<TransactionWithDetails>>,
+    uiState: TransactionWithDetailsState,
     transactionsByTypes: List<TransactionByType>,
     resProvider: ResProvider,
     selectedType: SelectedTransactionType,
@@ -188,8 +188,6 @@ fun PercentageCircleChart( // chat gpt
             }
         }
 
-        //val targetTotalStr = Constants.precisionTwo.format(total)
-            //val targetTotal = targetTotalStr.toDouble()
         AnimatedTextWithSign(
             totalValue = total,
             format = Constants.precisionTwo,

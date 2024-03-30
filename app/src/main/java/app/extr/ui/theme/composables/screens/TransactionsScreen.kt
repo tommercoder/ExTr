@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.extr.R
-import app.extr.data.types.TransactionWithDetails
 import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.animations.CustomCircularProgressIndicator
 import app.extr.ui.theme.composables.reusablecomponents.ErrorScreen
@@ -21,12 +20,13 @@ import app.extr.ui.theme.composables.reusablecomponents.NoDataYet
 import app.extr.ui.theme.composables.reusablecomponents.SelectedTransactionType
 import app.extr.ui.theme.composables.reusablecomponents.TransactionCard
 import app.extr.ui.theme.viewmodels.TransactionUiEvent
+import app.extr.utils.helpers.TransactionWithDetailsState
 import app.extr.utils.helpers.UiState
 import app.extr.utils.helpers.resproviders.ResProvider
 
 @Composable
 fun TransactionsScreen(
-    uiState: UiState<List<TransactionWithDetails>>,
+    uiState: TransactionWithDetailsState,
     selectedType: SelectedTransactionType,
     resProvider: ResProvider,
     modifier: Modifier = Modifier,

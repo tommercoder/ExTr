@@ -51,7 +51,6 @@ fun ExpenseIncomeDateRow(
     ) {
         Box(
             modifier = Modifier
-                //.height(IntrinsicSize.Min)
                 .clip(MaterialTheme.shapeScheme.extraRoundedCorners)
                 .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
                 .padding(horizontal = 4.dp)

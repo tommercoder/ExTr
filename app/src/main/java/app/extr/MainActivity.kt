@@ -8,18 +8,14 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.extr.data.types.UiMode
-import app.extr.data.types.User
 import app.extr.ui.theme.ExTrTheme
 import app.extr.ui.theme.viewmodels.UserViewModel
 import app.extr.ui.theme.viewmodels.ViewModelsProvider
 import app.extr.utils.helpers.UiState
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -6,12 +6,14 @@ import app.extr.R
 import app.extr.data.repositories.BalancesRepository
 import app.extr.data.types.Balance
 import app.extr.data.types.BalanceWithDetails
-import app.extr.data.types.Transaction
+import app.extr.utils.helpers.BalanceWithDetailsState
 import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 sealed class BalanceUiEvent {
@@ -20,21 +22,33 @@ sealed class BalanceUiEvent {
     data class Add(val balance: Balance) : BalanceUiEvent()
 }
 
+data class BalancesState(
+    val balances: BalanceWithDetailsState,
+    val totalBalance: Double
+)
+
 class BalancesViewModel(
     private val balancesRepository: BalancesRepository
 ) : ViewModel() {
 
-    private var _balances = MutableStateFlow<UiState<List<BalanceWithDetails>>>(UiState.Loading)
-    val uiState: StateFlow<UiState<List<BalanceWithDetails>>> = _balances.asStateFlow()
-
+    private var _balances = MutableStateFlow<BalanceWithDetailsState>(UiState.Loading)
     private var _totalBalance = MutableStateFlow(0.0)
-    val totalBalance: StateFlow<Double> = _totalBalance.asStateFlow()
+
+    val combinedUiState: StateFlow<BalancesState> = combine(
+        _balances,
+        _totalBalance,
+    ) { balances, totalBalance ->
+        BalancesState(
+            balances = balances,
+            totalBalance = totalBalance
+        )
+    }.stateIn(viewModelScope, SharingStarted.Lazily, BalancesState(UiState.Loading,0.0))
 
     init {
         loadData()
     }
 
-    fun refreshData() {
+    private fun refreshData() {
         loadData()
     }
 

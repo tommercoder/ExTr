@@ -33,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.extr.R
-import app.extr.data.types.TransactionWithDetails
 import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.animations.CustomCircularProgressIndicator
 import app.extr.ui.theme.composables.reusablecomponents.CategoryCard
@@ -44,12 +43,13 @@ import app.extr.ui.theme.composables.reusablecomponents.TimePeriodCard
 import app.extr.ui.theme.viewmodels.TimePeriodAmount
 import app.extr.ui.theme.viewmodels.TransactionByType
 import app.extr.ui.theme.viewmodels.TransactionUiEvent
+import app.extr.utils.helpers.TransactionWithDetailsState
 import app.extr.utils.helpers.UiState
 import app.extr.utils.helpers.resproviders.ResProvider
 
 @Composable
 fun ChartScreen(
-    uiState: UiState<List<TransactionWithDetails>>,
+    uiState: TransactionWithDetailsState,
     transactionsByType: List<TransactionByType>,
     timePeriodAmount: TimePeriodAmount,
     selectedType: SelectedTransactionType,

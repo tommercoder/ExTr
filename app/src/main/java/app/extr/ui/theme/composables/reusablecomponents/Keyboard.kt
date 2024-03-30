@@ -104,8 +104,7 @@ fun CustomKeyboard(
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
                 focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                //cursorColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
             ),
             textStyle = TextStyle(textAlign = TextAlign.Center),
             placeholder = {
@@ -145,7 +144,6 @@ fun CustomKeyboard(
         val configuration = LocalConfiguration.current
         val screenWidth = remember(configuration) { configuration.screenWidthDp.dp }
         val squareSize = remember(configuration) { screenWidth / 4 }
-        //Log.d("TAG", squareSize.toString()) //102.75.dp
         val dotSign = "."
         val keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", dotSign)
 

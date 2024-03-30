@@ -7,6 +7,7 @@ import app.extr.data.repositories.UserRepository
 import app.extr.data.types.UiMode
 import app.extr.data.types.User
 import app.extr.utils.helpers.UiState
+import app.extr.utils.helpers.UserState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,8 +23,8 @@ sealed class UserUiEvent {
 class UserViewModel(
     private val userRepository: UserRepository
 ) : ViewModel() {
-    private val _user = MutableStateFlow<UiState<User?>>(UiState.Loading)
-    val uiState: StateFlow<UiState<User?>> = _user.asStateFlow()
+    private val _user = MutableStateFlow<UserState>(UiState.Loading)
+    val uiState: StateFlow<UserState> = _user.asStateFlow()
 
     init {
         loadData()

@@ -21,8 +21,6 @@ class BalancesRepositoryImpl(
     override suspend fun insert(balance: Balance) {
         balanceDao.insert(balance)
 
-        //if exists already will ignore
-        //todo: Think of the case when you add a balance for a currency that is not currently selected, what shall happen?
         val maxIndex = usedCurrenciesDao.getMaxSelectionIndex() ?: 0
         usedCurrenciesDao.insert(
             UsedCurrency(

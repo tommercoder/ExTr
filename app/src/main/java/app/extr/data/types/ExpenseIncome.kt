@@ -36,7 +36,7 @@ abstract class Transaction {
         )
     ],
     indices = [
-        Index(value = ["balanceId"]) // This line adds an index for balanceId
+        Index(value = ["balanceId"])
     ]
 )
 data class Expense(
@@ -69,7 +69,7 @@ data class Expense(
         )
     ],
     indices = [
-        Index(value = ["balanceId"]) // This line adds an index for balanceId
+        Index(value = ["balanceId"])
     ])
 data class Income(
     @PrimaryKey(autoGenerate = true)

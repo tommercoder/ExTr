@@ -4,8 +4,6 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-
-//todo: think if currency id must be a foreignkey here too
 @Entity(tableName = "used_currencies")
 data class UsedCurrency(
     @PrimaryKey

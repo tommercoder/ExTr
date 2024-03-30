@@ -18,7 +18,6 @@ import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import app.extr.ui.theme.AppPadding
 
-
 @Composable
 fun AnimatedTextWithSign(
     totalValue: Double,

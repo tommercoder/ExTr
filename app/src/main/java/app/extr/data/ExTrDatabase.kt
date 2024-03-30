@@ -31,8 +31,8 @@ import kotlinx.coroutines.launch
 @Database(
     entities = [MoneyType::class, Currency::class, User::class, Balance::class,
         UsedCurrency::class, ExpenseType::class, IncomeType::class, Expense::class, Income::class],
-    version = 3,
-    exportSchema = false
+    version = 1,
+    exportSchema = true
 )
 @TypeConverters(UiModeConverter::class)
 abstract class ExTrDatabase : RoomDatabase() {
@@ -62,7 +62,6 @@ abstract class ExTrDatabase : RoomDatabase() {
                             }
                         }
                     })
-                    .fallbackToDestructiveMigration() // remove after testing!!!
                     .build()
                     .also { Instance = it }
             }

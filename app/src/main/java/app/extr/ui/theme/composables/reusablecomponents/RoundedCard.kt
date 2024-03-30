@@ -81,7 +81,7 @@ fun RoundedCard(
     val coroutineScope =  rememberCoroutineScope()
 
     val backgroundColor by animateColorAsState(
-        targetValue = if (isLongPressed) Color.LightGray else color, //todo: works for dark mode?
+        targetValue = if (isLongPressed) Color.LightGray else color,
         animationSpec = tween(durationMillis = 100), label = ""
     )
 

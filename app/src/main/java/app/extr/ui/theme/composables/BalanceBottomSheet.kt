@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,30 +12,21 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import app.extr.R
 import app.extr.data.types.Currency
-import app.extr.data.types.MoneyType
 import app.extr.ui.theme.AppPadding
 import app.extr.ui.theme.composables.reusablecomponents.CurrenciesDropDownMenu
 import app.extr.ui.theme.composables.reusablecomponents.CustomKeyboard
 import app.extr.ui.theme.composables.reusablecomponents.ReusableDropdownMenu
-import app.extr.ui.theme.mappers.toDropdownItem
-import app.extr.utils.helpers.UiState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.stringResource
-import app.extr.R
-import app.extr.data.types.Balance
-import app.extr.ui.theme.LocalCustomColorsPalette
-import app.extr.ui.theme.animations.CustomCircularProgressIndicator
-import app.extr.ui.theme.composables.reusablecomponents.ErrorScreen
 import app.extr.ui.theme.mappers.DropdownItemUi
-import app.extr.ui.theme.mappers.toMoneyType
-import app.extr.utils.helpers.Constants
+import app.extr.utils.helpers.BottomSheetAcceptType
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -46,7 +36,7 @@ fun BalanceBottomSheet(
     moneyTypes: List<DropdownItemUi>,
     initialCurrency: Currency,
     initialMoneyType: DropdownItemUi,
-    onSaveClicked: (Balance) -> Unit,
+    onSaveClicked: (BottomSheetAcceptType) -> Unit,
     onDismissed: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -103,15 +93,15 @@ fun BalanceBottomSheet(
                 inputValue = inputValue,
                 onNameChange = { nameValue = it },
                 nameValue = nameValue,
-                showCalendar = false,
                 onEraseClick = { inputValue = inputValue.dropLast(1) },
+                showCalendar = false,
                 onCalendarClick = { },
                 onAcceptClick = {
-                    val balance = Balance( //todo: change to the special type
+                    val balance = BottomSheetAcceptType(
                         currencyId = selectedCurrency.currencyId,
-                        moneyTypeId = selectedMoneyType.id, //todo: check if work without a mapper
+                        moneyTypeId = selectedMoneyType.id,
                         amount = inputValue.toDouble(),
-                        customName = nameValue
+                        name = nameValue
                     )
 
                     onSaveClicked(balance)

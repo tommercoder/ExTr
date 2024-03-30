@@ -1,12 +1,10 @@
 package app.extr.ui.theme.composables
 
-import android.widget.Space
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,10 +22,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,14 +35,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import app.extr.R
 import app.extr.ui.theme.ExTrTheme
 import app.extr.ui.theme.shapeScheme
 import app.extr.ui.theme.viewmodels.Date
 import app.extr.ui.theme.viewmodels.DatePickerViewModel
 import app.extr.ui.theme.viewmodels.ExpensesIncomeViewModel
-import app.extr.ui.theme.viewmodels.ViewModelsProvider
 import app.extr.utils.helpers.Constants
 import java.util.Calendar
 
@@ -60,13 +55,11 @@ fun DatePickerDialog(
     val months = Constants.months
     var month by remember { mutableIntStateOf(selectedMonth) }
     var year by remember { mutableIntStateOf(selectedYear) }
-    //val interactionSource = remember { MutableInteractionSource() }
     val calendar = Calendar.getInstance()
     val currentMonth = calendar.get(Calendar.MONTH)
     val currentYear = calendar.get(Calendar.YEAR)
     AlertDialog(
         onDismissRequest = { onCancelClicked() },
-        //title = { Text(stringResource(id = R.string.label_delete_balance)) },
         text = {
             Column {
                 //year picker row
@@ -79,8 +72,6 @@ fun DatePickerDialog(
                         modifier = Modifier
                             .clip(MaterialTheme.shapeScheme.extraLarge)
                             .clickable(
-                                //indication = null,
-                                //interactionSource = interactionSource,
                                 onClick = {
                                     year--
                                 }
@@ -98,8 +89,6 @@ fun DatePickerDialog(
                             .clip(MaterialTheme.shapeScheme.extraLarge)
                             .clickable(
                                 enabled = year != currentYear,
-                               // indication = null,
-                               // interactionSource = interactionSource,
                                 onClick = {
                                     year++
                                     if(year == currentYear && month > currentMonth) month = currentMonth //reset to the actual month for the current year

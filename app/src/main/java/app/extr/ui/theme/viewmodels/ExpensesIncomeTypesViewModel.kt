@@ -3,22 +3,17 @@ package app.extr.ui.theme.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.extr.data.repositories.ExpensesIncomeTypesRepository
-import app.extr.data.types.TransactionType
+import app.extr.utils.helpers.TransactionTypeState
 import app.extr.utils.helpers.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class ExpensesIncomeTypesViewModel(
     private val ExpensesIncomeTypesRepository: ExpensesIncomeTypesRepository
 ) : ViewModel() {
-    private val _expenseTypes = MutableStateFlow<UiState<List<TransactionType>>>(UiState.Loading)
-    val expenseTypes: StateFlow<UiState<List<TransactionType>>> = _expenseTypes.asStateFlow()
-
-    private val _incomeTypes = MutableStateFlow<UiState<List<TransactionType>>>(UiState.Loading)
-    val incomeTypes: StateFlow<UiState<List<TransactionType>>> = _incomeTypes.asStateFlow()
+    private val _expenseTypes = MutableStateFlow<TransactionTypeState>(UiState.Loading)
+    private val _incomeTypes = MutableStateFlow<TransactionTypeState>(UiState.Loading)
 
     init {
         loadExpenseTypes()
